@@ -1,0 +1,33 @@
+# =========================
+# Editor & OS Files
+# =========================
+.vscode/*
+!.vscode/mcp.json
+.DS_Store
+Thumbs.db
+
+# =========================
+# Node & Monorepo
+# =========================
+node_modules/
+dist/
+build/
+.turbo/
+.next/
+
+# =========================
+# Python & Environments
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example

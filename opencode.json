@@ -1,0 +1,14 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "bash": "allow",
+    "edit": "allow"
+  },
+  "mcp": {
+    "project-master": {
+      "type": "local",
+      "command": ["python", "project_master_mcp.py"],
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "project-master": {
+      "command": "python",
+      "args": ["${workspaceFolder}/project_master_mcp.py"]
+    }
+  }
+}

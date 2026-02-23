@@ -1,6 +1,7 @@
 {
-  "name": "@repo/database",
+  "name": "@pearl/database",
   "version": "1.0.0",
+  "type": "module",
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
@@ -8,10 +9,10 @@
     "db:push": "prisma db push"
   },
   "dependencies": {
-    "@prisma/client": "latest"
+    "@prisma/client": "6.4.1"
   },
   "devDependencies": {
-    "prisma": "latest",
+    "prisma": "6.4.1",
     "typescript": "latest"
   }
 }

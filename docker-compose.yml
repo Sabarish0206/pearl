@@ -13,5 +13,17 @@ services:
     volumes:
       - pearl_pgdata:/var/lib/postgresql/data
 
+  pgweb:
+    image: sosedoff/pgweb
+    container_name: pearl-pgweb
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      PGWEB_DATABASE_URL: postgres://postgres:postgres@db:5432/pearl_local?sslmode=disable
+    command: pgweb --listen 8080 --bind 0.0.0.0 --host db --port 5432 --user postgres --pass postgres --db pearl_local --ssl=disable
+    depends_on:
+      - db
+
 volumes:
   pearl_pgdata:

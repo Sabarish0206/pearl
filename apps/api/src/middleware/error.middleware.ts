@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '../services/logger.service.js';
+import { logger } from '../services/logger.service';
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
 

@@ -1,7 +1,19 @@
 # System Patterns & Architecture
 
 ## Domain Context
-- **Core Product** : Context of the product to be added.
+- **Core Product** : An intelligent automation system for campus recruitment replaces the conventional, manual
+placement process with a centralized, real-time, data-integrated platform. Traditional methods
+rely on repeated data collection, manual eligibility verification, fragmented student records, and
+delayed shortlisting, often leading to inefficiencies, outdated information, human errors, and
+missed opportunities for students. The core idea of this system is to maintain a continuously
+updated student intelligence database by automatically parsing resumes, tracking
+coding-platform performance, and storing academic and skill data in real time, which can then
+be instantly mapped against job requirements. By automating resume evaluation, eligibility
+filtering, and candidate–job matching, the system eliminates redundant workflows, improves
+data accuracy, accelerates recruitment decision-making, and ensures transparency across the
+placement lifecycle. This modern, data-driven approach transforms campus placements into a
+proactive and efficient ecosystem where institutions can make faster, evidence-based
+recruitment decisions while students receive fair, timely, and optimized placement opportunities.
 
 ## Core Tech Stack
 - **Monorepo**: Turborepo with `pnpm` workspaces.

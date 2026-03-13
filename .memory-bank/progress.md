@@ -34,16 +34,16 @@
 - **Database (@pearl/database)**
   - Located: /packages/database
   - Package name standardized to @pearl/database
-  - Prisma initialized with SQLite datasource (v6.x)
+  - Prisma initialized with PostgreSQL datasource (v6.x)
   - Prisma Client singleton exported properly via ESM
-  - Schema created with User model
-  - .env configured with SQLite dev.db
+  - Schema created with User, Student, Faculty models + Role enum
+  - .env configured with PostgreSQL connection string
   - Scripts: db:generate, db:push
 
 - **Config (@pearl/config)**
   - Located: /packages/config
   - Setup centralized environment variable schemas with zod
-  - Exporting `apiEnvSchema` and `webEnvSchema`
+  - Exporting `apiEnvSchema` (includes JWT_SECRET, JWT_EXPIRES_IN) and `webEnvSchema`
   - Properly configured with `"type": "module"` for full ESM compatibility
 
 - **Common (@pearl/common)**
@@ -600,5 +600,59 @@ Server and client foundations initialized with type-safe environment variables. 
 Server and client foundations initialized with type-safe environment variables. Database transitioned from SQLite placeholder to PostgreSQL (running smoothly via Docker on port 5432 using `pearl_local` DB). Config package added to the monorepo to centralize environment variable schemas. Removed `.js` extension requirements by integrating `tsup` bundler for the API. Dead code cleaned up and verified end-to-end functionality (API successfully connects to PostgreSQL & responds appropriately). All changes are committed. Pgweb is now successfully integrated via Docker Compose and accessible at `http://localhost:8080`. Ready for further feature development and dependency linking.
 
 ## Next Steps
+- Configure CI/CD pipelines
+- Set up testing infrastructure
+### 5. IAM Module Implementation (Identity & Access Management)
+- **Database Schema Updated**
+  - Replaced dummy `User` model with production schema
+  - Added `Role` enum: STUDENT, FACULTY, ADMIN
+  - `users` table: UUID PK, email (unique), password_hash, role, created_at
+  - `students` table: UUID PK, FK → users, first_name, last_name, register_number, department, batch_year
+  - `faculty` table: UUID PK, FK → users, full_name, designation, department
+  - All FK relations use CASCADE delete
+
+- **Config Package Extended**
+  - Added `JWT_SECRET` (min 32 chars enforced by Zod) to `apiEnvSchema`
+  - Added `JWT_EXPIRES_IN` (default "7d") to `apiEnvSchema`
+
+- **Common Package Bootstrapped**
+  - Created `src/schemas/auth.schema.ts` with discriminated union signup schema, login schema, auth user/response schemas
+  - College email domain restriction enforced at schema level (`@psnacet.edu.in`)
+  - Created `src/index.ts` as barrel export
+
+- **Backend Auth Module (`apps/api/src/modules/auth/`)**
+  - `auth.service.ts`: signup (user + profile created in single Prisma transaction), login (bcrypt compare + JWT sign), getCurrentUser
+  - `auth.controller.ts`: Zod validation, sets/clears HttpOnly+Secure+SameSite=Strict JWT cookie
+  - `auth.router.ts`: POST /signup, POST /login, GET /me, POST /logout — all with rate limiting via express-rate-limit
+
+- **RBAC Middleware (`apps/api/src/middleware/`)**
+  - `verifySession.middleware.ts`: reads `auth_token` HttpOnly cookie, verifies JWT, attaches `req.user` typed as `JwtPayload`
+  - `requireRole.middleware.ts`: factory middleware accepting `allowedRoles[]` for route-level RBAC
+  - Express `Request` type augmented globally with `user?: JwtPayload`
+
+- **API Entry Point Updated**
+  - Added `cookie-parser` middleware
+  - Added `credentials: true` to CORS config for cookie support
+  - Registered `/api/auth` router
+
+- **Frontend Auth Feature (`apps/web/src/`)**
+  - `api/auth.api.ts`: fetch wrapper with `credentials: 'include'` for all auth API calls
+  - `stores/authStore.ts`: Zustand store with `currentUser`, `isAuthenticated`, setCurrentUser, clearCurrentUser
+  - `features/auth/LoginPage.tsx`: controlled form with client-side Zod validation + server error handling
+  - `features/auth/SignupPage.tsx`: dynamic form switching between STUDENT and FACULTY roles
+  - `components/ProtectedRoute.tsx`: redirects unauthenticated users, supports optional `allowedRoles` prop
+  - `App.tsx`: wired react-router-dom v7, TanStack Query v5, auth bootstrap on mount
+
+- **Security Hardened**
+  - Rate limiting applied to all auth routes (20 req/15min for signup/login, 60 req/min for /me)
+  - JWT stored only in HttpOnly cookies — never in localStorage/sessionStorage
+  - bcrypt with 12 salt rounds for password hashing
+  - Same-site=Strict + Secure cookie flags set in production
+
+## Current Status
+IAM module fully implemented. All TypeScript compiles cleanly (API + Web). CodeQL security scan passes with zero alerts. Ready for database migration (`pnpm db:push` in packages/database) and integration testing with a running PostgreSQL instance.
+
+## Next Steps
+- Run `pnpm db:push` in packages/database to apply IAM schema to PostgreSQL
 - Configure CI/CD pipelines
 - Set up testing infrastructure

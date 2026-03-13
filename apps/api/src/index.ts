@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { prisma } from '@pearl/database';
 import { env } from './config/env';
 import healthRouter from './modules/health/health.router';
+import authRouter from './modules/auth/auth.router';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -11,12 +13,14 @@ const PORT = env.PORT;
 
 // Middleware
 app.use(requestLogger);
-app.use(cors({ origin: env.CORS_ORIGIN }));
+app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
 
 
 // Register Modules
 app.use('/health', healthRouter);
+app.use('/api/auth', authRouter);
 
 
 // Error Handling Middleware

@@ -4,5 +4,5 @@ export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
   clean: true,
-  noExternal: ['@pearl/config'],
+  noExternal: ['@pearl/config', '@pearl/common'],
 });

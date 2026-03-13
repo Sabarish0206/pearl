@@ -10,8 +10,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  STUDENT
+  FACULTY
+  ADMIN
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         Role
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  student Student?
+  faculty Faculty?
+
+  @@map("users")
+}
+
+model Student {
+  id             String @id @default(uuid())
+  userId         String @unique @map("user_id")
+  firstName      String @map("first_name")
+  lastName       String @map("last_name")
+  registerNumber String @map("register_number")
+  department     String
+  batchYear      Int    @map("batch_year")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("students")
+}
+
+model Faculty {
+  id          String @id @default(uuid())
+  userId      String @unique @map("user_id")
+  fullName    String @map("full_name")
+  designation String
+  department  String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("faculty")
 }

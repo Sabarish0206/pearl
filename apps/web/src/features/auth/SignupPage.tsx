@@ -136,6 +136,11 @@ const SignupPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card auth-card--wide">
+        <div className="auth-brand">
+          <div className="auth-brand-logo">P</div>
+          <span className="auth-brand-name">Pearl</span>
+        </div>
+
         <h1>Create Account</h1>
         <p className="auth-subtitle">Join Pearl — your campus placement platform</p>
 

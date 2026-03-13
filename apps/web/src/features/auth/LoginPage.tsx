@@ -57,7 +57,12 @@ const LoginPage = () => {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1>Welcome Back</h1>
+        <div className="auth-brand">
+          <div className="auth-brand-logo">P</div>
+          <span className="auth-brand-name">Pearl</span>
+        </div>
+
+        <h1>Welcome back</h1>
         <p className="auth-subtitle">Sign in to your Pearl account</p>
 
         <form onSubmit={handleSubmit} noValidate>
@@ -96,7 +101,7 @@ const LoginPage = () => {
           {serverError && <p className="server-error">{serverError}</p>}
 
           <button type="submit" disabled={isSubmitting} className="btn-primary">
-            {isSubmitting ? 'Signing in...' : 'Sign In'}
+            {isSubmitting ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
 

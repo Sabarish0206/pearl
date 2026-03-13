@@ -11,11 +11,19 @@ const authRateLimiter = rateLimit({
   message: { success: false, message: 'Too many requests, please try again later.' },
 });
 
+const meRateLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many requests, please try again later.' },
+});
+
 const router = Router();
 
 router.post('/signup', authRateLimiter, handleSignup);
 router.post('/login', authRateLimiter, handleLogin);
-router.get('/me', verifySession, handleGetMe);
+router.get('/me', meRateLimiter, verifySession, handleGetMe);
 router.post('/logout', handleLogout);
 
 export default router;

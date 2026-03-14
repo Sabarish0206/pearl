@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import ResumeUpload from './ResumeUpload';
@@ -17,11 +16,10 @@ describe('ResumeUpload UI', () => {
 const originalXMLHttpRequest = globalThis.XMLHttpRequest;
   let mockXhr;
   beforeEach(() => {
-    requests = [];
     // Mock XMLHttpRequest for upload progress simulation
     mockXhr = jest.fn(() => ({
       open: jest.fn(),
-      send: jest.fn(function (formData) { this.upload.onprogress({ lengthComputable: true, loaded: 100, total: 100 }); this.status = 200; this.responseText = JSON.stringify({ url: 'uploaded-url.pdf' }); setTimeout(() => this.onload(), 0); }),
+      send: jest.fn(function (_formData) { this.upload.onprogress({ lengthComputable: true, loaded: 100, total: 100 }); this.status = 200; this.responseText = JSON.stringify({ url: 'uploaded-url.pdf' }); setTimeout(() => this.onload(), 0); }),
       setRequestHeader: jest.fn(),
       upload: {},
       onload: null,
@@ -46,7 +44,7 @@ globalThis.XMLHttpRequest = originalXMLHttpRequest;
   it('selects a valid PDF file', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     // Simulate file input
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
     const file = createFile('resume.pdf', 'application/pdf', 1024);
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -58,7 +56,7 @@ globalThis.XMLHttpRequest = originalXMLHttpRequest;
 
   it('rejects bad file type', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [createFile('invalid.png', 'image/png')] } });
     });
@@ -69,7 +67,7 @@ globalThis.XMLHttpRequest = originalXMLHttpRequest;
   it('rejects file over 4 MB', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     const bigFile = createFile('big.pdf', 'application/pdf', 5 * 1024 * 1024);
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [bigFile] } });
     });
@@ -80,7 +78,7 @@ globalThis.XMLHttpRequest = originalXMLHttpRequest;
     const callback = jest.fn();
     render(<ResumeUpload uploadUrl={apiUrl} studentId={42} onUploadComplete={callback} />);
     const file = createFile('resume.doc', 'application/msword');
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
     });
@@ -98,7 +96,7 @@ globalThis.XMLHttpRequest = originalXMLHttpRequest;
   it('removes a file after adding', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     const file = createFile('resume.pdf', 'application/pdf');
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement.querySelector('input[type="file"]');
+    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
     });

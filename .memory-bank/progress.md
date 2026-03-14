@@ -656,3 +656,17 @@ IAM module fully implemented. All TypeScript compiles cleanly (API + Web). CodeQ
 - Run `pnpm db:push` in packages/database to apply IAM schema to PostgreSQL
 - Configure CI/CD pipelines
 - Set up testing infrastructure
+Resume upload + AI common URL route is now implemented and wired into @pearl/api. Next steps: configure AWS_RESUME_BUCKET, AWS_REGION, AI_STUDIO_API_KEY, and PUBLIC_BASE_URL in .env; then test with Postman using POST http://localhost:3001/api/resume (form-data field 'file'). AI integration now uses the proper `GoogleGenAI` named export and `generateContent` call pattern from `@google/genai` inside `apps/api/src/services/ai.service.ts`. Dev server running at http://localhost:3001.
+
+Fixed repeated MulterError: Unexpected field in resume upload by switching the route to use `multer.any()` and reading the first file from `req.files`, so clients can POST any form-data field name without breaking. Next: verify a user can retry POST http://localhost:3001/api/resume from Postman without hitting MulterError.
+
+AI key diagnostics integrated for @pearl/api. `apps/api/src/services/api.service.ts` now checks for `AI_STUDIO_API_KEY` on startup and logs whether it is present. Added `pnpm --filter @pearl/api test:ai-key` as a focused check to verify the key against Gemini.
+
+Root `.env` now includes placeholders for `AWS_RESUME_BUCKET`, `AWS_REGION`, `AI_STUDIO_API_KEY`, and `PUBLIC_BASE_URL`. User must replace these placeholders with real values (bucket name, region, AI key, and base URL) and restart `pnpm run dev` to see `AI_STUDIO_API_KEY` presence reflected in the API startup logs.
+
+AI integration upgraded: `sendResumeToAI` now requests strict JSON from Gemini with fields `name`, `email`, `phone`, `skills`, `experience`, `education`, and `summary`, then parses it into `ParsedResume`. `aiResult` in the upload response now reflects structured JSON when the model adheres to the prompt.
+
+Improved robustness of aiResult parsing: `sendResumeToAI` now handles markdown-wrapped JSON and extracts the first JSON object from Gemini output before giving up. Next uploads to `/api/resume` should more reliably produce structured `aiResult` when the model includes JSON anywhere in the text.
+Resume upload flow now sends real resume text (PDF/DOCX/plain) into Gemini via `sendResumeToAI`, which returns structured `ParsedResume` JSON when possible. AI is no longer guessing from a URL alone.
+Switched resume AI parsing to use Gemini's multimodal file support: the backend now sends the actual uploaded file (as base64 inlineData with mimeType) to Gemini and gets structured ParsedResume JSON when possible. No local pdf-parse or mammoth extraction is used anymore.
+Resolved `uploadAndParseResume` ReferenceError by re-defining `resumeUrl` (using `PUBLIC_BASE_URL + /api/resume/${id}${ext}`) before returning the 201 response. Upload flow now consistently returns both `fileUrl` and `aiResult` after successfully calling Gemini with the uploaded file buffer.

@@ -31,3 +31,8 @@ ENV/
 .env
 .env.*
 !.env.example
+
+# =========================
+# Resume Upload Specific
+# =========================
+uploads/

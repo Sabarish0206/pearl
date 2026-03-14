@@ -738,3 +738,27 @@ Available at root level:
 - **Production Preparedness Fix**: Added `tsup.config.ts` to `@pearl/api` with `noExternal: ['@pearl/config']` to guarantee seamless `node dist/index.js` production deployments without ESM module resolution issues.
 - **Database Configuration Update**: Changed the internal database name from `pearl` to `pearl_local` across all environment configurations and `docker-compose.yml` for clarity during local development.
 - **Pgweb Integration**: Integrated Pgweb into `docker-compose.yml` for database visualization. Resolved port conflict and ensured correct container startup.
+- Implemented a resume upload + AI integration module in apps/api.
+    Added services: src/services/s3.service.ts (uploadToS3, getFromS3) and src/services/ai.service.ts (sendResumeToAI using @google/genai).
+    Added module: src/modules/resume/resume.controller.ts and resume.router.ts providing POST /api/resume and /api/resume/upload for uploads, GET /api/resume/:file for streaming from S3.
+    Wired resumeRouter into main Express app in src/index.ts via app.use('/api/resume', resumeRouter).
+    Fixed ai.service.ts import for @google/genai: switched to default import `import GoogleGenerativeAI from '@google/genai';` to resolve runtime SyntaxError about missing named export.
+    Updated ai.service.ts to use `GoogleGenAI` named export with a simple `generateContent` call for AI resume analysis.
+    Updated apps/api/src/modules/resume/resume.router.ts to use `upload.any()` instead of `upload.single('file')` so any multipart form field name from frontend/Postman is accepted.
+    Updated apps/api/src/modules/resume/resume.controller.ts to read the first file from `req.files` to align with the new `upload.any()` behavior.
+- Added AI key verification tooling to @pearl/api.
+    New script apps/api/src/ai-key-test.ts that calls GoogleGenAI.generateContent to validate AI_STUDIO_API_KEY.
+    Logged presence of AI_STUDIO_API_KEY in apps/api/src/services/ai.service.ts at startup.
+    Added npm script test:ai-key in apps/api/package.json to run the check via `pnpm --filter @pearl/api test:ai-key`.
+    Updated root .env to include AWS_RESUME_BUCKET, AWS_REGION, AI_STUDIO_API_KEY, and PUBLIC_BASE_URL for resume upload + AI integration.
+    Hardened ParsedResume JSON parsing in apps/api/src/services/ai.service.ts by attempting direct JSON.parse, stripping ```json fences, extracting the first {...} block, and logging raw output on failure.
+- Changed resume parsing flow to send actual resume text to Gemini instead of just a URL.
+    apps/api/src/modules/resume/resume.controller.ts now extracts text from PDF using pdf-parse and from DOCX using mammoth, falling back to UTF-8 text.
+    sendResumeToAI signature changed to accept resumeText and updated prompt to include the full resume content between <RESUME> tags.
+    apps/api/package.json now includes pdf-parse and mammoth dependencies.
+
+- Updated resume parsing to let Gemini parse the raw uploaded file instead of using pdf-parse/mammoth.
+    Removed pdf-parse and mammoth from apps/api/package.json.
+    In apps/api/src/modules/resume/resume.controller.ts, now pass the uploaded file buffer and mimeType to sendResumeToAI after uploading to S3.
+    In apps/api/src/services/ai.service.ts, sendResumeToAI now base64-encodes the file buffer and attaches it as inlineData with mimeType to GoogleGenAI.generateContent, along with a JSON-only extraction prompt.
+    Fixed ReferenceError in uploadAndParseResume by reintroducing resumeUrl: after S3 upload, we now compute publicBaseUrl + `/api/resume/${id}${ext}` and return that as fileUrl alongside aiResult.

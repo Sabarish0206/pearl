@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import LoginPage from './features/auth/LoginPage';
-import SignupPage from './features/auth/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
 import { fetchCurrentUser, logoutUser } from './api/auth.api';
+import LoginPage from './features/auth/LoginPage';
+import SignupPage from './features/auth/SignupPage';
+import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -65,6 +66,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+      <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
 
       <Route
         path="/dashboard"

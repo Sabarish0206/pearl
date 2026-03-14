@@ -12,11 +12,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
     "@types/node": "^25.3.0",
     "turbo": "latest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.30.1"
+  "packageManager": "pnpm@10.30.1",
+  "dependencies": {
+    "@mui/icons-material": "^7.3.9",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "ts-jest": "^29.4.6"
+  }
 }

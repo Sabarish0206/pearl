@@ -1,17 +1,14 @@
 import type { Request, Response } from 'express';
 import crypto from 'crypto';
 import path from 'path';
-import { uploadToS3, getFromS3 } from '../../services/s3.service';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - CommonJS helper, runtime import is valid
-import { getMimeType } from '../../utils/mimeType.js';
-import { sendResumeToAI, type ParsedResume } from '../../services/ai.service';
-import { env } from '../../config/env';
+import mime from 'mime-types';
+import { uploadToS3, getFromS3 } from '../services/s3.service';
+import { sendResumeToAI, type ParsedResume } from '../services/ai.service';
+import { env } from '../config/env';
 
-// Single handler that uploads to S3 and notifies AI using a common URL
+// POST /api/resume
 export async function uploadAndParseResume(req: Request, res: Response): Promise<void> {
   try {
-    // With upload.any(), Multer puts files in req.files as an array
     const files = (req as any).files as Express.Multer.File[] | undefined;
     const file = files && files.length > 0 ? files[0] : undefined;
     if (!file) {
@@ -22,7 +19,7 @@ export async function uploadAndParseResume(req: Request, res: Response): Promise
     const ext = path.extname(file.originalname).toLowerCase();
     const id = crypto.randomBytes(16).toString('hex');
     const key = `resumes/${id}${ext}`;
-    const mimeType: string = getMimeType(file.originalname) || 'application/octet-stream';
+    const mimeType: string = mime.lookup(file.originalname) || 'application/octet-stream';
 
     await uploadToS3(key, file.buffer, mimeType);
 
@@ -47,12 +44,12 @@ export async function uploadAndParseResume(req: Request, res: Response): Promise
   }
 }
 
-// Common URL used by AI (and your app) to stream the resume from S3
+// GET /api/resume/:file
 export async function streamResume(req: Request, res: Response): Promise<void> {
   try {
     const { file } = req.params; // e.g. <id>.pdf
     const key = `resumes/${file}`;
-    const mimeType: string = getMimeType(file) || 'application/octet-stream';
+    const mimeType: string = mime.lookup(file) || 'application/octet-stream';
 
     const bodyStream = await getFromS3(key);
 

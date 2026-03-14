@@ -670,3 +670,7 @@ Improved robustness of aiResult parsing: `sendResumeToAI` now handles markdown-w
 Resume upload flow now sends real resume text (PDF/DOCX/plain) into Gemini via `sendResumeToAI`, which returns structured `ParsedResume` JSON when possible. AI is no longer guessing from a URL alone.
 Switched resume AI parsing to use Gemini's multimodal file support: the backend now sends the actual uploaded file (as base64 inlineData with mimeType) to Gemini and gets structured ParsedResume JSON when possible. No local pdf-parse or mammoth extraction is used anymore.
 Resolved `uploadAndParseResume` ReferenceError by re-defining `resumeUrl` (using `PUBLIC_BASE_URL + /api/resume/${id}${ext}`) before returning the 201 response. Upload flow now consistently returns both `fileUrl` and `aiResult` after successfully calling Gemini with the uploaded file buffer.
+Resume upload + AI parsing feature is now split into conventional folders: controllers/resume.controller.ts, routes/resume.router.ts, and shared services in services/. App index now imports the resume router from routes/.
+MIME type helper simplified: removed utils/mimeType.ts and now use mime-types.lookup inline in resume.controller.ts for both upload and download responses.
+
+Resolved `require is not defined` in @pearl/api by switching resume.controller.ts from CommonJS `require('mime-types')` to an ESM `import` and using `mime.lookup` inline.

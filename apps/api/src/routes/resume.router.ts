@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { uploadAndParseResume, streamResume } from './resume.controller';
+import { uploadAndParseResume, streamResume } from '../controllers/resume.controller';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Webapp upload: single URL that uploads to S3 and notifies AI.
-// Use .any() so we don't care what the field name is (avoids Multer "Unexpected field").
+// Use .any() so the field name from frontend/Postman does not matter.
 router.post('/', upload.any(), uploadAndParseResume);
 
 // Backwards-compatible alias: /api/resume/upload

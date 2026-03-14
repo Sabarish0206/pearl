@@ -18,6 +18,7 @@ export type ParsedResume = {
   experience: string[];
   education: string[];
   summary: string | null;
+  atsScore: number | null; // 0-100 match score for typical ATS
 };
 
 export async function sendResumeToAI(fileBuffer: Buffer, mimeType: string): Promise<ParsedResume | null> {
@@ -49,12 +50,14 @@ export async function sendResumeToAI(fileBuffer: Buffer, mimeType: string): Prom
               '  "skills": string[],',
               '  "experience": string[],',
               '  "education": string[],',
-              '  "summary": string | null',
+              '  "summary": string | null,',
+              '  "atsScore": number | null  // integer from 0-100 representing how well this resume would score in a typical ATS system',
               '}',
               '',
               'Rules:',
               '- Respond with JSON only, no markdown, no backticks, no explanation.',
               '- If a field is unknown, set it to null (for strings) or [] (for arrays).',
+              '- For atsScore, return an integer from 0 to 100 (or null if you truly cannot estimate).',
             ].join('\n'),
           },
           {

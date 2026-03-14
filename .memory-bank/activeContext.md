@@ -757,8 +757,20 @@ Available at root level:
     sendResumeToAI signature changed to accept resumeText and updated prompt to include the full resume content between <RESUME> tags.
     apps/api/package.json now includes pdf-parse and mammoth dependencies.
 
-- Updated resume parsing to let Gemini parse the raw uploaded file instead of using pdf-parse/mammoth.
-    Removed pdf-parse and mammoth from apps/api/package.json.
-    In apps/api/src/modules/resume/resume.controller.ts, now pass the uploaded file buffer and mimeType to sendResumeToAI after uploading to S3.
-    In apps/api/src/services/ai.service.ts, sendResumeToAI now base64-encodes the file buffer and attaches it as inlineData with mimeType to GoogleGenAI.generateContent, along with a JSON-only extraction prompt.
-    Fixed ReferenceError in uploadAndParseResume by reintroducing resumeUrl: after S3 upload, we now compute publicBaseUrl + `/api/resume/${id}${ext}` and return that as fileUrl alongside aiResult.
+ - Updated resume parsing to let Gemini parse the raw uploaded file instead of using pdf-parse/mammoth.
+     Removed pdf-parse and mammoth from apps/api/package.json.
+     In apps/api/src/modules/resume/resume.controller.ts, now pass the uploaded file buffer and mimeType to sendResumeToAI after uploading to S3.
+     In apps/api/src/services/ai.service.ts, sendResumeToAI now base64-encodes the file buffer and attaches it as inlineData with mimeType to GoogleGenAI.generateContent, along with a JSON-only extraction prompt.
+     Fixed ReferenceError in uploadAndParseResume by reintroducing resumeUrl: after S3 upload, we now compute publicBaseUrl + `/api/resume/${id}${ext}` and return that as fileUrl alongside aiResult.
+
+  - Refactored resume feature into standard folders:
+      New router: apps/api/src/routes/resume.router.ts
+      New controller: apps/api/src/controllers/resume.controller.ts
+      Services remain in apps/api/src/services (s3.service.ts, ai.service.ts).
+      Updated index.ts to mount /api/resume from routes/resume.router.
+      Removed old apps/api/src/modules/resume/* files.
+  - Simplified MIME type handling for resumes:
+      Removed apps/api/src/utils/mimeType.ts helper.
+      apps/api/src/controllers/resume.controller.ts now uses mime-types.lookup directly in uploadAndParseResume and streamResume.
+      Fixed ESM ReferenceError in apps/api/src/controllers/resume.controller.ts by replacing dynamic require('mime-types') with a top-level ESM import `import mime from 'mime-types';` and using `mime.lookup` directly.
+  - Extended ParsedResume with atsScore (0-100) and updated the Gemini prompt in apps/api/src/services/ai.service.ts to request an ATS-style score in the JSON response.

@@ -10,7 +10,7 @@ export const handleGetResume = async (req: Request, res: Response): Promise<void
 
 export const handleParseResume = async (req: Request, res: Response): Promise<void> => {
   if (!req.file) {
-    res.status(400).json({ success: false, message: 'No PDF file uploaded' });
+    res.status(400).json({ success: false, message: 'No PDF file uploaded. Please provide a PDF in the "resume" field.' });
     return;
   }
 

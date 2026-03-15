@@ -31,3 +31,9 @@ ENV/
 .env
 .env.*
 !.env.example
+
+# =========================
+# Uploads
+# =========================
+apps/api/uploads/resumes/*
+!apps/api/uploads/resumes/.gitkeep

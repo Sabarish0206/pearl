@@ -7,6 +7,7 @@ import { fetchCurrentUser, logoutUser } from './api/auth.api';
 import LoginPage from './features/auth/LoginPage';
 import SignupPage from './features/auth/SignupPage';
 import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
+import ResumePage from './features/resume/ResumePage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -67,6 +68,15 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
+
+      <Route
+        path="/resume"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <ResumePage />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/dashboard"

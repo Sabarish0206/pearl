@@ -1,0 +1,258 @@
+import fs from 'fs';
+import path from 'path';
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { prisma } from '@pearl/database';
+import { env } from '../../config/env';
+import type { CommitResumeInput, ParsedResumeData } from '@pearl/common';
+
+const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+
+// Gemini structured output schema
+const resumeResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    ats_score: { type: SchemaType.INTEGER, description: 'ATS score from 0 to 100' },
+    cgpa: { type: SchemaType.NUMBER, description: 'CGPA or GPA, null if not found', nullable: true },
+    active_arrears: { type: SchemaType.INTEGER, description: 'Number of active arrears, null if not found', nullable: true },
+    history_of_arrears: { type: SchemaType.INTEGER, description: 'Total history of arrears, null if not found', nullable: true },
+    tenth_mark: { type: SchemaType.NUMBER, description: 'Tenth grade percentage, null if not found', nullable: true },
+    twelfth_mark: { type: SchemaType.NUMBER, description: 'Twelfth grade percentage, null if not found', nullable: true },
+    skills: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING },
+      description: 'List of technical and soft skills',
+    },
+    education: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          institution: { type: SchemaType.STRING },
+          degree: { type: SchemaType.STRING },
+          start_year: { type: SchemaType.STRING },
+          end_year: { type: SchemaType.STRING },
+          score: { type: SchemaType.STRING },
+        },
+        required: ['institution', 'degree', 'start_year', 'end_year', 'score'],
+      },
+    },
+    projects: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          title: { type: SchemaType.STRING },
+          description: { type: SchemaType.STRING },
+          technologies: { type: SchemaType.ARRAY, items: { type: SchemaType.STRING } },
+          link: { type: SchemaType.STRING, nullable: true },
+        },
+        required: ['title', 'description', 'technologies', 'link'],
+      },
+    },
+    certifications: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          name: { type: SchemaType.STRING },
+          issuer: { type: SchemaType.STRING },
+          date: { type: SchemaType.STRING },
+        },
+        required: ['name', 'issuer', 'date'],
+      },
+    },
+    experience: {
+      type: SchemaType.ARRAY,
+      items: {
+        type: SchemaType.OBJECT,
+        properties: {
+          role: { type: SchemaType.STRING },
+          company: { type: SchemaType.STRING },
+          duration: { type: SchemaType.STRING },
+          description: { type: SchemaType.STRING },
+        },
+        required: ['role', 'company', 'duration', 'description'],
+      },
+    },
+    achievements: {
+      type: SchemaType.ARRAY,
+      items: { type: SchemaType.STRING },
+    },
+  },
+  required: ['ats_score', 'skills', 'education', 'projects', 'certifications', 'experience', 'achievements'],
+};
+
+export const getStudentResume = async (userId: string) => {
+  const student = await prisma.student.findUnique({ where: { userId } });
+  if (!student) {
+    const err = new Error('Student profile not found') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  const resume = await prisma.resume.findUnique({ where: { studentId: student.id } });
+  if (!resume) {
+    return { status: 'NOT_UPLOADED' as const };
+  }
+
+  if (!resume.isVerified) {
+    return { status: 'DRAFT' as const, data: resume };
+  }
+
+  return { status: 'VERIFIED' as const, data: resume };
+};
+
+export const parseAndDraftResume = async (userId: string, filePath: string): Promise<{ resume_id: string; parsed_data: ParsedResumeData }> => {
+  const student = await prisma.student.findUnique({ where: { userId } });
+  if (!student) {
+    const err = new Error('Student profile not found') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  // Read file and convert to Base64
+  const fileBuffer = fs.readFileSync(filePath);
+  const base64Data = fileBuffer.toString('base64');
+
+  // Call Gemini API
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-flash',
+    generationConfig: {
+      responseMimeType: 'application/json',
+      responseSchema: resumeResponseSchema as any,
+    },
+  });
+
+  const result = await model.generateContent([
+    {
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: base64Data,
+      },
+    },
+    {
+      text: `You are an expert ATS resume parser for a campus placement platform.
+Analyze this student resume PDF and extract all information accurately.
+For ats_score: evaluate resume quality based on formatting, keywords, completeness, and relevance (0-100).
+For skills: extract all technical skills, programming languages, tools, frameworks mentioned.
+For cgpa, tenth_mark, twelfth_mark, active_arrears, history_of_arrears: extract if present, otherwise return null.
+For projects, education, certifications, experience: extract all entries found.
+Return a strictly valid JSON object matching the required schema.`,
+    },
+  ]);
+
+  const rawText = result.response.text();
+  let parsedData: ParsedResumeData;
+
+  try {
+    parsedData = JSON.parse(rawText) as ParsedResumeData;
+  } catch (parseErr) {
+    const err = new Error(`Failed to parse AI response: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`) as Error & { status: number };
+    err.status = 500;
+    throw err;
+  }
+
+  // Normalize relative file path for storage
+  const relativePath = path.relative(process.cwd(), filePath);
+
+  // Upsert into resumes table (Draft - is_verified = false)
+  const resume = await prisma.resume.upsert({
+    where: { studentId: student.id },
+    create: {
+      studentId: student.id,
+      filePath: relativePath,
+      atsScore: parsedData.ats_score,
+      parsedData: parsedData as any,
+      isVerified: false,
+    },
+    update: {
+      filePath: relativePath,
+      atsScore: parsedData.ats_score,
+      parsedData: parsedData as any,
+      isVerified: false,
+    },
+  });
+
+  return { resume_id: resume.id, parsed_data: parsedData };
+};
+
+export const commitResume = async (userId: string, input: CommitResumeInput): Promise<void> => {
+  const student = await prisma.student.findUnique({ where: { userId } });
+  if (!student) {
+    const err = new Error('Student profile not found') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  // Step 1: Verify resume belongs to this student
+  const resume = await prisma.resume.findUnique({ where: { id: input.resume_id } });
+  if (!resume || resume.studentId !== student.id) {
+    const err = new Error('Resume not found or access denied') as Error & { status: number };
+    err.status = 403;
+    throw err;
+  }
+
+  const { resume_id, skills: rawSkills, cgpa, active_arrears, history_of_arrears, tenth_mark, twelfth_mark, ...restData } = input;
+
+  // Normalize skills to lowercase
+  const normalizedSkills = rawSkills.map((s) => s.trim().toLowerCase()).filter(Boolean);
+
+  await prisma.$transaction(async (tx) => {
+    // Step 2: Update resume - set parsed_data to edited payload and mark as verified
+    await tx.resume.update({
+      where: { id: resume_id },
+      data: {
+        parsedData: {
+          ats_score: resume.atsScore,
+          cgpa,
+          active_arrears,
+          history_of_arrears,
+          tenth_mark,
+          twelfth_mark,
+          skills: normalizedSkills,
+          ...restData,
+        } as any,
+        isVerified: true,
+      },
+    });
+
+    // Step 3: Update students table with hard metrics
+    await tx.student.update({
+      where: { id: student.id },
+      data: {
+        cgpa: cgpa ?? null,
+        activeArrears: active_arrears ?? null,
+        historyOfArrears: history_of_arrears ?? null,
+        tenthMark: tenth_mark ?? null,
+        twelfthMark: twelfth_mark ?? null,
+      },
+    });
+
+    // Step 4: Upsert skills (INSERT ON CONFLICT DO NOTHING)
+    if (normalizedSkills.length > 0) {
+      await tx.skill.createMany({
+        data: normalizedSkills.map((name) => ({ name })),
+        skipDuplicates: true,
+      });
+    }
+
+    // Step 5: Sync student_skills - delete existing, insert new
+    await tx.studentSkill.deleteMany({ where: { studentId: student.id } });
+
+    if (normalizedSkills.length > 0) {
+      const skillRecords = await tx.skill.findMany({
+        where: { name: { in: normalizedSkills } },
+        select: { id: true },
+      });
+
+      await tx.studentSkill.createMany({
+        data: skillRecords.map((skill) => ({
+          studentId: student.id,
+          skillId: skill.id,
+          source: 'RESUME',
+        })),
+        skipDuplicates: true,
+      });
+    }
+  });
+};

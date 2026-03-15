@@ -69,30 +69,8 @@ export default function ResumePage() {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ---- Initial load ----
-  const loadResume = useCallback(async () => {
-    setUiState('loading');
-    try {
-      const result = await fetchResume();
-      if (result.status === 'NOT_UPLOADED') {
-        setUiState('not_uploaded');
-      } else if (result.status === 'DRAFT' && result.data) {
-        populateDraft(result.data);
-      } else if (result.status === 'VERIFIED' && result.data) {
-        setVerifiedData(result.data);
-        setUiState('verified');
-      }
-    } catch {
-      toast.error('Failed to load resume data. Please refresh.');
-      setUiState('not_uploaded');
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadResume();
-  }, [loadResume]);
-
-  function populateDraft(row: ResumeRow) {
+  // ---- Populate draft state from a ResumeRow ----
+  const populateDraft = useCallback((row: ResumeRow) => {
     const pd = row.parsed_data;
     setDraftData({
       resume_id: row.id,
@@ -110,7 +88,33 @@ export default function ResumePage() {
       achievements: pd?.achievements ?? [],
     });
     setUiState('draft');
-  }
+  }, []);
+
+  // ---- Initial load ----
+  const loadResume = useCallback(async () => {
+    setUiState('loading');
+    try {
+      const result = await fetchResume();
+      if (result.status === 'NOT_UPLOADED') {
+        setUiState('not_uploaded');
+      } else if (result.status === 'DRAFT' && result.data) {
+        populateDraft(result.data);
+      } else if (result.status === 'VERIFIED' && result.data) {
+        setVerifiedData(result.data);
+        setUiState('verified');
+      }
+    } catch {
+      toast.error('Failed to load resume data. Please refresh the page or try again later.');
+      setUiState('not_uploaded');
+    }
+  }, [populateDraft]);
+
+  useEffect(() => {
+    const init = async () => {
+      await loadResume();
+    };
+    void init();
+  }, [loadResume]);
 
   // ---- File upload handling ----
   const handleFile = async (file: File) => {
@@ -137,7 +141,7 @@ export default function ResumePage() {
       populateDraft(partialRow);
       toast.success('Resume parsed successfully! Please review and confirm the data below.');
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to parse resume.');
+      toast.error(err instanceof Error ? err.message : 'Failed to parse resume. Please ensure the file is a valid, readable PDF and try again.');
       setUiState('not_uploaded');
     }
   };
@@ -179,7 +183,7 @@ export default function ResumePage() {
       toast.success('Resume verified and saved!');
       await loadResume();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to save resume.');
+      toast.error(err instanceof Error ? err.message : 'Failed to save resume. Please check your connection and try again.');
       setUiState('draft');
     }
   };

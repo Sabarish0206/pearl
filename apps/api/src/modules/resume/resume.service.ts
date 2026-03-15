@@ -3,6 +3,7 @@ import path from 'path';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { prisma } from '@pearl/database';
 import { env } from '../../config/env';
+import { logger } from '../../services/logger.service';
 import type { CommitResumeInput, ParsedResumeData } from '@pearl/common';
 
 const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
@@ -147,7 +148,8 @@ Return a strictly valid JSON object matching the required schema.`,
   try {
     parsedData = JSON.parse(rawText) as ParsedResumeData;
   } catch (parseErr) {
-    const err = new Error(`Failed to parse AI response: ${parseErr instanceof Error ? parseErr.message : String(parseErr)}`) as Error & { status: number };
+    logger.error('Failed to parse Gemini AI response as JSON', parseErr);
+    const err = new Error('AI parsing failed. Please try a different PDF or contact support.') as Error & { status: number };
     err.status = 500;
     throw err;
   }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useThemeStore } from '../stores/themeStore';
@@ -24,6 +24,34 @@ interface NavItem {
   roles?: string[];
 }
 
+const MOBILE_BREAKPOINT = 768;
+
+function useIsMobile(): boolean {
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    return window.innerWidth < MOBILE_BREAKPOINT;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return isMobile;
+}
+
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, path: '/dashboard' },
   { label: 'My Profile', icon: <PersonIcon />, path: '/profile', roles: ['STUDENT'] },
@@ -47,6 +75,7 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
   const { theme, toggleTheme } = useThemeStore();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -67,7 +96,9 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
 
   return (
     <div className="portal-container">
-      {sidebarOpen && <div className="portal-overlay" onClick={() => setSidebarOpen(false)} />}
+      {isMobile && sidebarOpen && (
+        <div className="portal-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
       <aside className={`portal-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="portal-sidebar-header">
           <div

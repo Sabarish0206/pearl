@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
-import './stores/themeStore';
 import { fetchCurrentUser } from './api/auth.api';
 import LandingPage from './features/landing/LandingPage';
 import LoginPage from './features/auth/LoginPage';
@@ -120,6 +119,13 @@ function AppRoutes() {
 }
 
 function App() {
+  useEffect(() => {
+    // Dynamically load theme store for its side effects in a browser-only effect
+    import('./stores/themeStore').catch(() => {
+      // Optional: handle or log theme initialization errors
+    });
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

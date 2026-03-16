@@ -136,7 +136,7 @@ export const parseAndDraftResume = async (userId: string, filePath: string): Pro
 
   // Call Gemini API
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.0-flash',
     generationConfig: {
       responseMimeType: 'application/json',
       responseSchema: resumeResponseSchema as any,

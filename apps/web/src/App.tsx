@@ -53,15 +53,16 @@ function DashboardPage() {
 }
 
 function AppRoutes() {
-  const { isAuthenticated, setCurrentUser } = useAuthStore();
+  const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
       const user = await fetchCurrentUser();
       setCurrentUser(user);
+      setIsLoading(false);
     };
     bootstrapAuth();
-  }, [setCurrentUser]);
+  }, [setCurrentUser, setIsLoading]);
 
   return (
     <Routes>

@@ -1,0 +1,382 @@
+/* ================================================================
+   JOB REQUIREMENT FORM — Animated & Responsive
+   ================================================================ */
+
+.job-form-page {
+  max-width: 760px;
+  margin: 0 auto;
+  animation: fadeInUp 0.45s var(--ease-spring) both;
+}
+
+/* Steps */
+.jf-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  gap: 0;
+  animation: fadeInDown 0.4s var(--ease-spring) 0.05s both;
+}
+
+.jf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-width: 80px;
+  transition: color 0.2s ease;
+}
+
+.jf-step.active { color: var(--color-primary); }
+
+.jf-step-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--color-card);
+  transition: all 0.3s var(--ease-spring);
+}
+
+.jf-step.active .jf-step-num {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  animation: scaleInBounce 0.4s var(--ease-spring) both;
+}
+
+.jf-step.done .jf-step-num {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: #fff;
+}
+
+.jf-step-divider {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  max-width: 80px;
+  margin-bottom: 1.25rem;
+  transition: background 0.3s ease;
+}
+
+.jf-step-divider.done { background: var(--color-success); }
+
+/* Section — with slide-in animation */
+.jf-section {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 2rem;
+  animation: fadeInUp 0.4s var(--ease-spring) both;
+  box-shadow: 0 2px 12px var(--color-shadow);
+}
+
+@media (max-width: 480px) {
+  .jf-section { padding: 1.25rem; border-radius: 14px; }
+}
+
+.jf-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.375rem;
+}
+
+.jf-section-sub {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0 0 1.75rem;
+}
+
+/* Fields */
+.jf-field { margin-bottom: 1.25rem; }
+
+.jf-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.375rem;
+}
+
+.jf-hint {
+  font-weight: 400;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.jf-input,
+.jf-textarea {
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  background: var(--color-input-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  font-family: inherit;
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.15s var(--ease-spring);
+  outline: none;
+}
+
+.jf-input:focus,
+.jf-textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+  transform: translateY(-1px);
+}
+
+.jf-input.error,
+.jf-textarea.error {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.jf-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.jf-error {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-danger);
+  margin-top: 0.3rem;
+  animation: fadeInDown 0.25s ease both;
+}
+
+/* Skill preview */
+.jf-skill-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+}
+
+.jf-skill-chip {
+  padding: 0.25rem 0.625rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  animation: scaleIn 0.2s var(--ease-spring) both;
+  transition: all 0.15s ease;
+}
+
+.jf-skill-chip:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* Grids */
+.jf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.jf-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .jf-grid-2,
+  .jf-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Department cards */
+.jf-dept-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 600px) { .jf-dept-grid { grid-template-columns: 1fr; } }
+
+.jf-dept-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  background: var(--color-bg);
+  animation: fadeInUp 0.35s var(--ease-spring) both;
+}
+
+.jf-dept-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+}
+
+.jf-dept-card.selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.15);
+}
+
+.jf-dept-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  background: var(--color-card);
+  transition: all 0.2s var(--ease-spring);
+}
+
+.jf-dept-card.selected .jf-dept-check {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  animation: scaleInBounce 0.35s var(--ease-spring) both;
+}
+
+.jf-dept-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.3;
+}
+
+.jf-selection-count {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.25s ease both;
+}
+
+/* Toggle */
+.jf-active-toggle {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-bg);
+  transition: border-color 0.15s ease;
+}
+
+.jf-active-toggle:focus-within {
+  border-color: var(--color-primary);
+}
+
+.jf-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.jf-checkbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Nav */
+.jf-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 400px) {
+  .jf-nav { flex-direction: column; }
+  .jf-btn-primary,
+  .jf-btn-secondary,
+  .jf-btn-submit { width: 100%; justify-content: center; }
+}
+
+.jf-btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.jf-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.35);
+}
+
+.jf-btn-secondary {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.jf-btn-secondary:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.jf-btn-submit {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--color-success), #059669);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.2);
+}
+
+.jf-btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+}
+
+.jf-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+

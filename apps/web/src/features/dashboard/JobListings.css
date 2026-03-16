@@ -1,0 +1,242 @@
+/* ================================================================
+   JOB LISTINGS PAGE — Animated & Responsive
+   ================================================================ */
+
+.jl-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 1100px;
+  animation: fadeInUp 0.45s var(--ease-spring) both;
+}
+
+.jl-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.jl-title { font-size: 1.25rem; font-weight: 700; color: var(--color-text); margin: 0; }
+.jl-sub   { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.2rem; }
+
+.jl-btn-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+  white-space: nowrap;
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.2);
+}
+
+.jl-btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(79, 70, 229, 0.35);
+}
+
+.jl-loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.jl-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.jl-empty {
+  text-align: center;
+  padding: 3rem;
+  background: var(--color-card);
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  color: var(--color-text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  animation: scaleIn 0.4s var(--ease-spring) both;
+}
+
+.jl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .jl-grid { grid-template-columns: 1fr; }
+}
+
+.jl-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  transition: all 0.25s var(--ease-spring);
+  animation: fadeInUp 0.45s var(--ease-spring) both;
+  position: relative;
+  overflow: hidden;
+}
+
+.jl-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary), #7c3aed);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.jl-card:nth-child(1) { animation-delay: 0.04s; }
+.jl-card:nth-child(2) { animation-delay: 0.08s; }
+.jl-card:nth-child(3) { animation-delay: 0.12s; }
+.jl-card:nth-child(4) { animation-delay: 0.16s; }
+.jl-card:nth-child(5) { animation-delay: 0.20s; }
+.jl-card:nth-child(6) { animation-delay: 0.24s; }
+
+.jl-card:hover {
+  box-shadow: 0 8px 32px var(--color-shadow);
+  transform: translateY(-4px);
+  border-color: var(--color-primary);
+}
+
+.jl-card:hover::before { transform: scaleX(1); }
+
+.jl-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.jl-job-title { font-size: 1rem; font-weight: 700; color: var(--color-text); margin: 0; }
+.jl-company   { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.2rem; }
+
+.jl-status {
+  padding: 0.2rem 0.625rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.jl-status.active {
+  background: #f0fdf4;
+  color: #059669;
+  box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+  animation: pulseGlow 2.5s ease infinite;
+}
+.jl-status.closed { background: var(--color-bg); color: var(--color-text-muted); }
+
+.jl-description {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+.jl-meta-row,
+.jl-dept-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.jl-meta-pill {
+  padding: 0.2rem 0.625rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: all 0.15s ease;
+}
+
+.jl-meta-pill.green  { background: #f0fdf4; color: #059669; border-color: #bbf7d0; }
+.jl-meta-pill.orange { background: #fffbeb; color: #d97706; border-color: #fde68a; }
+
+.jl-dept-chip {
+  padding: 0.2rem 0.5rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.jl-dept-chip.more { background: var(--color-border); color: var(--color-text-muted); }
+
+.jl-card-actions {
+  display: flex;
+  gap: 0.625rem;
+  margin-top: auto;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.jl-shortlist-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s var(--ease-spring);
+}
+
+.jl-shortlist-btn:hover {
+  background: var(--color-primary);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.jl-delete-btn {
+  padding: 0.5rem;
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s var(--ease-spring);
+  min-width: 38px;
+  justify-content: center;
+}
+
+.jl-delete-btn:hover {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+  transform: scale(1.08);
+}
+
+.jl-delete-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+

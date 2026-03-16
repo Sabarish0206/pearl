@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { prisma } from '@pearl/database';
+import { prisma, Prisma } from '@pearl/database';
 import { env } from '../../config/env';
 import { logger } from '../../services/logger.service';
 import { ParsedResumeDataSchema } from '@pearl/common';
@@ -238,7 +238,7 @@ export const commitResume = async (userId: string, input: CommitResumeInput): Pr
   // Normalize skills to lowercase and de-duplicate
   const normalizedSkills = [...new Set(rawSkills.map((s) => s.trim().toLowerCase()).filter(Boolean))];
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // Step 2: Update resume - set parsed_data to edited payload and mark as verified
     await tx.resume.update({
       where: { id: resume_id },
@@ -287,7 +287,7 @@ export const commitResume = async (userId: string, input: CommitResumeInput): Pr
       });
 
       await tx.studentSkill.createMany({
-        data: skillRecords.map((skill) => ({
+        data: skillRecords.map((skill: { id: string }) => ({
           studentId: student.id,
           skillId: skill.id,
           source: 'RESUME',

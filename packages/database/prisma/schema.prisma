@@ -44,8 +44,8 @@ model Student {
   twelfthMark      Decimal? @map("twelfth_mark") @db.Decimal(5, 2)
 
   user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  resume Resume?
-  skills StudentSkill[]
+  resume        Resume?
+  studentSkills StudentSkill[]
 
   @@map("students")
 }
@@ -57,7 +57,6 @@ model Skill {
 
   studentSkills StudentSkill[]
 
-  @@index([name])
   @@map("skills")
 }
 

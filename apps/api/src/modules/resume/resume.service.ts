@@ -1,12 +1,14 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { prisma } from '@pearl/database';
 import { env } from '../../config/env';
 import { logger } from '../../services/logger.service';
+import { ParsedResumeDataSchema } from '@pearl/common';
 import type { CommitResumeInput, ParsedResumeData } from '@pearl/common';
 
-const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+// Gemini client is instantiated lazily — GEMINI_API_KEY is optional and
+// validated at call time so the server starts fine without it (e.g. CI/test).
 
 // Gemini structured output schema
 const resumeResponseSchema = {
@@ -104,6 +106,14 @@ export const getStudentResume = async (userId: string) => {
 };
 
 export const parseAndDraftResume = async (userId: string, filePath: string): Promise<{ resume_id: string; parsed_data: ParsedResumeData }> => {
+  if (!env.GEMINI_API_KEY) {
+    const err = new Error('Resume parsing is not available. Please contact support.') as Error & { status: number };
+    err.status = 503;
+    throw err;
+  }
+
+  const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
+
   const student = await prisma.student.findUnique({ where: { userId } });
   if (!student) {
     const err = new Error('Student profile not found') as Error & { status: number };
@@ -111,8 +121,8 @@ export const parseAndDraftResume = async (userId: string, filePath: string): Pro
     throw err;
   }
 
-  // Read file and convert to Base64
-  const fileBuffer = fs.readFileSync(filePath);
+  // Read file asynchronously and convert to Base64
+  const fileBuffer = await fs.readFile(filePath);
   const base64Data = fileBuffer.toString('base64');
 
   // Call Gemini API
@@ -146,8 +156,17 @@ Return a strictly valid JSON object matching the required schema.`,
   let parsedData: ParsedResumeData;
 
   try {
-    parsedData = JSON.parse(rawText) as ParsedResumeData;
+    const rawJson = JSON.parse(rawText) as unknown;
+    const validation = ParsedResumeDataSchema.safeParse(rawJson);
+    if (!validation.success) {
+      logger.error('Gemini response failed schema validation', validation.error.flatten());
+      const err = new Error('AI returned unexpected data format. Please try again.') as Error & { status: number };
+      err.status = 500;
+      throw err;
+    }
+    parsedData = validation.data;
   } catch (parseErr) {
+    if ((parseErr as { status?: number }).status) throw parseErr; // re-throw our own typed errors
     logger.error('Failed to parse Gemini AI response as JSON', parseErr);
     const err = new Error('AI parsing failed. Please try a different PDF or contact support.') as Error & { status: number };
     err.status = 500;
@@ -196,8 +215,8 @@ export const commitResume = async (userId: string, input: CommitResumeInput): Pr
 
   const { resume_id, skills: rawSkills, cgpa, active_arrears, history_of_arrears, tenth_mark, twelfth_mark, ...restData } = input;
 
-  // Normalize skills to lowercase
-  const normalizedSkills = rawSkills.map((s) => s.trim().toLowerCase()).filter(Boolean);
+  // Normalize skills to lowercase and de-duplicate
+  const normalizedSkills = [...new Set(rawSkills.map((s) => s.trim().toLowerCase()).filter(Boolean))];
 
   await prisma.$transaction(async (tx) => {
     // Step 2: Update resume - set parsed_data to edited payload and mark as verified

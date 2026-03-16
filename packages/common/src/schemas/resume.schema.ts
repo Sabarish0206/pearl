@@ -69,14 +69,15 @@ export const CommitResumeSchema = z.object({
 export type CommitResumeInput = z.infer<typeof CommitResumeSchema>;
 
 // --- TypeScript interfaces for frontend ---
+// Field names match the camelCase JSON returned directly by the Prisma-backed API.
 
 export interface ResumeRow {
   id: string;
-  student_id: string;
-  file_path: string;
-  ats_score: number | null;
-  parsed_data: ParsedResumeData | null;
-  is_verified: boolean;
+  studentId: string;
+  filePath: string;
+  atsScore: number | null;
+  parsedData: ParsedResumeData | null;
+  isVerified: boolean;
 }
 
 export interface GetResumeResponse {

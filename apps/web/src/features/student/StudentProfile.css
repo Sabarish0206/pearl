@@ -1,0 +1,295 @@
+/* ================================================================
+   STUDENT PROFILE PAGE (inside PortalLayout) — Animated
+   ================================================================ */
+
+.student-profile-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 860px;
+  animation: fadeInUp 0.45s var(--ease-spring) both;
+}
+
+
+
+.profile-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.profile-brand-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.profile-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.profile-brand-text h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.profile-brand-text p {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-logout:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-logout:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ---- Main Content ---- */
+.profile-main {
+  flex: 1;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ---- Cards ---- */
+.profile-card {
+  background: var(--color-card);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s var(--ease-spring);
+  animation: fadeInUp 0.4s var(--ease-spring) both;
+}
+
+.profile-card:nth-child(1) { animation-delay: 0.05s; }
+.profile-card:nth-child(2) { animation-delay: 0.10s; }
+.profile-card:nth-child(3) { animation-delay: 0.15s; }
+.profile-card:nth-child(4) { animation-delay: 0.20s; }
+
+.profile-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.12);
+  transform: translateY(-2px);
+}
+
+/* ---- Welcome Card ---- */
+.profile-welcome {
+  background: linear-gradient(135deg, var(--color-primary-light), #f0fdf4);
+  border: 1px solid var(--color-primary);
+  display: flex;
+  gap: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-welcome::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 80% 50%, rgba(79,70,229,0.07), transparent 60%);
+  pointer-events: none;
+}
+
+.welcome-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.welcome-content h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.email-display {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.role-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.375rem 0.875rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+  animation: scaleIn 0.35s var(--ease-spring) 0.2s both;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
+  animation: scaleInBounce 0.5s var(--ease-spring) 0.1s both;
+}
+
+/* ---- Info/Links Card ---- */
+.profile-info {
+  padding: 2rem;
+}
+
+.profile-info h3 {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-text);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.info-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.22s var(--ease-spring);
+  color: var(--color-text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.info-link:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.15);
+}
+
+.link-icon {
+  font-size: 1.5rem;
+  transition: transform 0.2s var(--ease-spring);
+}
+
+.info-link:hover .link-icon {
+  transform: rotate(-5deg) scale(1.15);
+}
+
+/* ---- Resume Card ---- */
+.profile-resume {
+  min-height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .btn-logout {
+    width: 100%;
+    text-align: center;
+  }
+
+  .profile-main {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .profile-card {
+    padding: 1.5rem;
+  }
+
+  .welcome-content {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info-link {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-brand-text h1 {
+    font-size: 1rem;
+  }
+
+  .welcome-content h2 {
+    font-size: 1.25rem;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-main {
+    padding: 0.75rem;
+  }
+
+  .profile-card {
+    padding: 1rem;
+  }
+}

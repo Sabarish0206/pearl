@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
 import { handleGetResume, handleParseResume, handleCommitResume } from './resume.controller';
+import { asyncHandler } from '../../utils/asyncHandler';
 
 const UPLOAD_DIR = path.resolve('uploads/resumes');
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -61,9 +62,9 @@ const router = Router();
 // All resume routes require authentication and STUDENT role
 router.use(resumeRateLimiter, verifySession, requireRole(['STUDENT']));
 
-router.get('/', handleGetResume);
-router.post('/parse', parseRateLimiter, upload.single('resume'), handleParseResume);
-router.put('/commit', handleCommitResume);
+router.get('/', asyncHandler(handleGetResume));
+router.post('/parse', parseRateLimiter, upload.single('resume'), asyncHandler(handleParseResume));
+router.put('/commit', asyncHandler(handleCommitResume));
 
 // Map multer-specific errors to proper HTTP status codes before the global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

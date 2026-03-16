@@ -1,8 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { randomUUID } from 'crypto';
-import { Router } from 'express';
-import multer from 'multer';
+import { Router, Request, Response, NextFunction } from 'express';
+import multer, { MulterError } from 'multer';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
@@ -26,7 +26,9 @@ const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true);
   } else {
-    cb(new Error('Only PDF files are allowed'));
+    const err = new Error('Only PDF files are accepted. Please upload a valid PDF.') as Error & { status: number };
+    err.status = 400;
+    cb(err);
   }
 };
 
@@ -62,5 +64,20 @@ router.use(resumeRateLimiter, verifySession, requireRole(['STUDENT']));
 router.get('/', handleGetResume);
 router.post('/parse', parseRateLimiter, upload.single('resume'), handleParseResume);
 router.put('/commit', handleCommitResume);
+
+// Map multer-specific errors to proper HTTP status codes before the global error handler.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+router.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+  if (err instanceof MulterError) {
+    const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    const message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'File too large. Maximum allowed size is 5 MB.'
+        : `Upload error: ${err.message}`;
+    res.status(status).json({ success: false, message });
+    return;
+  }
+  next(err);
+});
 
 export default router;

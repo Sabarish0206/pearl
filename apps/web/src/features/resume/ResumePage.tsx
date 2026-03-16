@@ -71,10 +71,10 @@ export default function ResumePage() {
 
   // ---- Populate draft state from a ResumeRow ----
   const populateDraft = useCallback((row: ResumeRow) => {
-    const pd = row.parsed_data;
+    const pd = row.parsedData;
     setDraftData({
       resume_id: row.id,
-      ats_score: row.ats_score ?? 0,
+      ats_score: row.atsScore ?? 0,
       cgpa: pd?.cgpa ?? null,
       active_arrears: pd?.active_arrears ?? null,
       history_of_arrears: pd?.history_of_arrears ?? null,
@@ -132,11 +132,11 @@ export default function ResumePage() {
       const result = await parseResume(file);
       const partialRow: ResumeRow = {
         id: result.resume_id,
-        student_id: '',
-        file_path: '',
-        ats_score: result.parsed_data.ats_score,
-        parsed_data: result.parsed_data,
-        is_verified: false,
+        studentId: '',
+        filePath: '',
+        atsScore: result.parsed_data.ats_score,
+        parsedData: result.parsed_data,
+        isVerified: false,
       };
       populateDraft(partialRow);
       toast.success('Resume parsed successfully! Please review and confirm the data below.');
@@ -275,6 +275,9 @@ function DropzoneState({
         Our AI will parse your resume and extract key information for verification.
       </p>
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Upload resume PDF — click or press Enter/Space to browse files"
         style={{
           ...styles.dropzone,
           ...(isDragging ? styles.dropzoneActive : {}),
@@ -283,6 +286,12 @@ function DropzoneState({
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onClick={() => fileInputRef.current?.click()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            fileInputRef.current?.click();
+          }
+        }}
       >
         <div style={styles.dropzoneIcon}>📄</div>
         <p style={styles.dropzoneText}>
@@ -676,7 +685,7 @@ function DraftForm({
 }
 
 function VerifiedDashboard({ data, onReplace }: { data: ResumeRow; onReplace: () => void }) {
-  const pd = data.parsed_data;
+  const pd = data.parsedData;
 
   return (
     <div style={styles.verifiedWrapper}>
@@ -692,7 +701,7 @@ function VerifiedDashboard({ data, onReplace }: { data: ResumeRow; onReplace: ()
 
       <div style={styles.atsCard}>
         <span style={styles.atsLabel}>ATS Score</span>
-        <span style={styles.atsScore}>{data.ats_score}</span>
+        <span style={styles.atsScore}>{data.atsScore}</span>
         <span style={styles.atsMax}>/100</span>
       </div>
 

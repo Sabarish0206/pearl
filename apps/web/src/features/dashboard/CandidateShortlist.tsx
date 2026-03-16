@@ -37,7 +37,15 @@ export default function CandidateShortlist() {
       c.rank, `${c.firstName} ${c.lastName}`, c.registerNumber, c.department, c.email,
       c.cgpa ?? 'N/A', c.atsScore ?? 'N/A', `${c.skillMatchPct}%`, c.compositeScore,
     ]);
-    const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
+    const escapeCsvValue = (value: unknown): string => {
+      const str = value == null ? '' : String(value);
+      const needsQuoting = /[",\n\r]/.test(str);
+      const escaped = str.replace(/"/g, '""');
+      return needsQuoting ? `"${escaped}"` : escaped;
+    };
+    const csv = [headers, ...rows]
+      .map((r) => r.map(escapeCsvValue).join(','))
+      .join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

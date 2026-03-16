@@ -125,6 +125,15 @@ export const parseAndDraftResume = async (userId: string, filePath: string): Pro
   const fileBuffer = await fs.readFile(filePath);
   const base64Data = fileBuffer.toString('base64');
 
+  // Helper to clean up the uploaded file on Gemini-side failures
+  const deleteUploadedFile = async () => {
+    try {
+      await fs.unlink(filePath);
+    } catch (unlinkErr) {
+      logger.error('Failed to delete uploaded resume file after parse error', unlinkErr);
+    }
+  };
+
   // Call Gemini API
   const model = genAI.getGenerativeModel({
     model: 'gemini-1.5-flash',
@@ -134,23 +143,32 @@ export const parseAndDraftResume = async (userId: string, filePath: string): Pro
     },
   });
 
-  const result = await model.generateContent([
-    {
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: base64Data,
+  let result: Awaited<ReturnType<typeof model.generateContent>>;
+  try {
+    result = await model.generateContent([
+      {
+        inlineData: {
+          mimeType: 'application/pdf',
+          data: base64Data,
+        },
       },
-    },
-    {
-      text: `You are an expert ATS resume parser for a campus placement platform.
+      {
+        text: `You are an expert ATS resume parser for a campus placement platform.
 Analyze this student resume PDF and extract all information accurately.
 For ats_score: evaluate resume quality based on formatting, keywords, completeness, and relevance (0-100).
 For skills: extract all technical skills, programming languages, tools, frameworks mentioned.
 For cgpa, tenth_mark, twelfth_mark, active_arrears, history_of_arrears: extract if present, otherwise return null.
 For projects, education, certifications, experience: extract all entries found.
 Return a strictly valid JSON object matching the required schema.`,
-    },
-  ]);
+      },
+    ]);
+  } catch (geminiErr) {
+    logger.error('Gemini API call failed', geminiErr);
+    await deleteUploadedFile();
+    const err = new Error('AI service is unavailable. Please try again later.') as Error & { status: number };
+    err.status = 502;
+    throw err;
+  }
 
   const rawText = result.response.text();
   let parsedData: ParsedResumeData;
@@ -160,14 +178,16 @@ Return a strictly valid JSON object matching the required schema.`,
     const validation = ParsedResumeDataSchema.safeParse(rawJson);
     if (!validation.success) {
       logger.error('Gemini response failed schema validation', validation.error.flatten());
+      await deleteUploadedFile();
       const err = new Error('AI returned unexpected data format. Please try again.') as Error & { status: number };
       err.status = 500;
       throw err;
     }
     parsedData = validation.data;
   } catch (parseErr) {
-    if ((parseErr as { status?: number }).status) throw parseErr; // re-throw our own typed errors
+    if ((parseErr as { status?: number }).status) throw parseErr; // re-throw our own typed errors (already cleaned up)
     logger.error('Failed to parse Gemini AI response as JSON', parseErr);
+    await deleteUploadedFile();
     const err = new Error('AI parsing failed. Please try a different PDF or contact support.') as Error & { status: number };
     err.status = 500;
     throw err;

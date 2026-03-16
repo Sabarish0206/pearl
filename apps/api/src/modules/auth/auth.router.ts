@@ -25,6 +25,6 @@ const router = Router();
 router.post('/signup', authRateLimiter, asyncHandler(handleSignup));
 router.post('/login', authRateLimiter, asyncHandler(handleLogin));
 router.get('/me', meRateLimiter, verifySession, asyncHandler(handleGetMe));
-router.post('/logout', asyncHandler(handleLogout));
+router.post('/logout', handleLogout);
 
 export default router;

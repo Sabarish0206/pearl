@@ -235,21 +235,6 @@ export default function ResumePage() {
 // ============================================================
 // Sub-components
 // ============================================================
-function PageHeader({ onBack }: { onBack: () => void }) {
-  return (
-    <header style={styles.header}>
-      <div style={styles.headerLeft}>
-        <div style={styles.logo}>P</div>
-        <div>
-          <span style={styles.brandName}>Pearl</span>
-          <p style={styles.brandSub}>Resume Processing</p>
-        </div>
-      </div>
-      <button style={styles.btnSecondary} onClick={onBack}>← Dashboard</button>
-    </header>
-  );
-}
-
 function DropzoneState({
   isDragging,
   fileInputRef,

@@ -57,7 +57,7 @@ router.post('/', asyncHandler(async (req, res) => {
 }));
 
 router.get('/:id', asyncHandler(async (req, res) => {
-  const job = await getJob(req.params.id);
+  const job = await getJob(req.params['id'] as string);
   res.json({ success: true, data: job });
 }));
 
@@ -67,18 +67,18 @@ router.put('/:id', asyncHandler(async (req, res) => {
     res.status(400).json({ success: false, message: 'Validation failed', errors: parsed.error.flatten().fieldErrors });
     return;
   }
-  const job = await updateJob(req.params.id, parsed.data);
+  const job = await updateJob(req.params['id'] as string, parsed.data);
   res.json({ success: true, data: job });
 }));
 
 router.delete('/:id', asyncHandler(async (req, res) => {
-  await deleteJob(req.params.id);
+  await deleteJob(req.params['id'] as string);
   res.json({ success: true, message: 'Job deleted' });
 }));
 
 // Shortlist
 router.get('/:id/shortlist', asyncHandler(async (req, res) => {
-  const candidates = await getShortlist(req.params.id);
+  const candidates = await getShortlist(req.params['id'] as string);
   res.json({ success: true, data: candidates });
 }));
 

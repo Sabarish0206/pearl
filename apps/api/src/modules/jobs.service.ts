@@ -2,12 +2,10 @@ import { prisma } from '@pearl/database';
 import type { CreateJobInput, ShortlistedCandidate, PlacementAnalytics } from '@pearl/common';
 import type { ParsedResumeData } from '@pearl/common';
 
-const db = prisma as any;
-
 // ─── Job CRUD ─────────────────────────────────────────────────────────────────
 
 export const createJob = async (input: CreateJobInput, createdBy: string) => {
-  return db.jobRequirement.create({
+  return prisma.jobRequirement.create({
     data: {
       title: input.title,
       companyName: input.companyName,
@@ -26,14 +24,14 @@ export const createJob = async (input: CreateJobInput, createdBy: string) => {
 };
 
 export const listJobs = async () => {
-  return db.jobRequirement.findMany({
+  return prisma.jobRequirement.findMany({
     orderBy: { createdAt: 'desc' },
     include: { creator: { select: { email: true } } },
   });
 };
 
 export const getJob = async (id: string) => {
-  const job = await db.jobRequirement.findUnique({ where: { id } });
+  const job = await prisma.jobRequirement.findUnique({ where: { id } });
   if (!job) {
     const err = new Error('Job not found') as Error & { status: number };
     err.status = 404;
@@ -43,23 +41,30 @@ export const getJob = async (id: string) => {
 };
 
 export const updateJob = async (id: string, input: Partial<CreateJobInput>) => {
-  const job = await db.jobRequirement.findUnique({ where: { id } });
+  const job = await prisma.jobRequirement.findUnique({ where: { id } });
   if (!job) {
     const err = new Error('Job not found') as Error & { status: number };
     err.status = 404;
     throw err;
   }
-  return db.jobRequirement.update({ where: { id }, data: input });
+  const { deadline, ...rest } = input;
+  return prisma.jobRequirement.update({
+    where: { id },
+    data: {
+      ...rest,
+      ...(deadline !== undefined ? { deadline: deadline ? new Date(deadline) : null } : {}),
+    },
+  });
 };
 
 export const deleteJob = async (id: string) => {
-  await db.jobRequirement.delete({ where: { id } });
+  await prisma.jobRequirement.delete({ where: { id } });
 };
 
 // ─── Shortlisting ─────────────────────────────────────────────────────────────
 
 export const getShortlist = async (jobId: string): Promise<ShortlistedCandidate[]> => {
-  const job = await db.jobRequirement.findUnique({ where: { id: jobId } });
+  const job = await prisma.jobRequirement.findUnique({ where: { id: jobId } });
   if (!job) {
     const err = new Error('Job not found') as Error & { status: number };
     err.status = 404;

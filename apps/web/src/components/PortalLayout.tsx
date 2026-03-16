@@ -70,7 +70,18 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
       {sidebarOpen && <div className="portal-overlay" onClick={() => setSidebarOpen(false)} />}
       <aside className={`portal-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="portal-sidebar-header">
-          <div className="portal-logo" onClick={() => navigate('/dashboard')} role="button" tabIndex={0}>
+          <div
+            className="portal-logo"
+            onClick={() => navigate('/dashboard')}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                navigate('/dashboard');
+              }
+            }}
+            role="button"
+            tabIndex={0}
+          >
             <div className="portal-logo-icon">P</div>
             <span className="portal-logo-text">Pearl</span>
           </div>

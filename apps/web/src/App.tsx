@@ -1,75 +1,71 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
-import { fetchCurrentUser, logoutUser } from './api/auth.api';
+import './stores/themeStore';
+import { fetchCurrentUser } from './api/auth.api';
+import LandingPage from './features/landing/LandingPage';
 import LoginPage from './features/auth/LoginPage';
 import SignupPage from './features/auth/SignupPage';
-import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
+import Dashboard from './features/dashboard/Dashboard';
+import StudentProfile from './features/student/StudentProfile';
 import ResumePage from './features/resume/ResumePage';
+import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
+import JobRequirementForm from './features/dashboard/JobRequirementForm';
+import JobListings from './features/dashboard/JobListings';
+import CandidateShortlist from './features/dashboard/CandidateShortlist';
+import { NotFoundPage, UnauthorizedPage, ServerErrorPage } from './pages/ErrorPages';
 import './App.css';
 
 const queryClient = new QueryClient();
 
-function DashboardPage() {
-  const navigate = useNavigate();
-  const { currentUser, clearCurrentUser } = useAuthStore();
-
-  const handleLogout = async () => {
-    await logoutUser();
-    clearCurrentUser();
-    navigate('/login');
-  };
-
-  return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <div className="auth-brand-logo" style={{ width: '1.75rem', height: '1.75rem', fontSize: '0.9rem' }}>P</div>
-            <span className="auth-brand-name">Pearl</span>
-          </div>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-            Campus Placement Platform
-          </p>
-        </div>
-        <button className="btn-secondary" onClick={handleLogout}>
-          Sign out
-        </button>
-      </div>
-
-      <div className="dashboard-card">
-        <h2>Signed in as</h2>
-        <p style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginTop: '0.25rem' }}>
-          {currentUser?.email}
-        </p>
-        <span className="dashboard-badge">
-          {currentUser?.role}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 function AppRoutes() {
-  const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();
+  const { setCurrentUser, setIsLoading } = useAuthStore();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
-      const user = await fetchCurrentUser();
-      setCurrentUser(user);
-      setIsLoading(false);
+      try {
+        const user = await fetchCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        // User not authenticated
+      } finally {
+        setIsLoading(false);
+      }
     };
     bootstrapAuth();
   }, [setCurrentUser, setIsLoading]);
 
   return (
     <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
+
+      {/* Demo Route */}
       <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
 
+      {/* Protected Routes - Dashboard (role-aware) */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Protected Routes - Student Only */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <StudentProfile />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/resume"
         element={
@@ -79,30 +75,46 @@ function AppRoutes() {
         }
       />
 
+      {/* Protected Routes - Recruiter/Faculty/Admin */}
       <Route
-        path="/dashboard"
+        path="/recruiter/jobs/new"
         element={
-          <ProtectedRoute>
-            <DashboardPage />
+          <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
+            <JobRequirementForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/recruiter/jobs"
+        element={
+          <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
+            <JobListings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/recruiter/jobs/:jobId/candidates"
+        element={
+          <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
+            <CandidateShortlist />
           </ProtectedRoute>
         }
       />
 
+      {/* Alias for recruiter analytics → dashboard */}
       <Route
-        path="/unauthorized"
+        path="/recruiter/analytics"
         element={
-          <div className="error-page">
-            <h1>403</h1>
-            <p>You do not have permission to view this page.</p>
-            <Link to="/dashboard">Go back to Dashboard</Link>
-          </div>
+          <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
+            <Dashboard />
+          </ProtectedRoute>
         }
       />
 
-      <Route
-        path="/"
-        element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
-      />
+      {/* Error Routes */}
+      <Route path="/403" element={<UnauthorizedPage />} />
+      <Route path="/500" element={<ServerErrorPage />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
@@ -118,3 +130,4 @@ function App() {
 }
 
 export default App;
+

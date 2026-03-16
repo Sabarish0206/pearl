@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import type { ParsedResumeData, ResumeRow } from '@pearl/common';
 import { fetchResume, parseResume, commitResume } from '../../api/resume.api';
+import PortalLayout from '../../components/PortalLayout';
 
 // ============================================================
 // Types
@@ -62,7 +62,6 @@ function SkeletonLoader() {
 // Main Component
 // ============================================================
 export default function ResumePage() {
-  const navigate = useNavigate();
   const [uiState, setUiState] = useState<UIState>('loading');
   const [draftData, setDraftData] = useState<DraftFormData | null>(null);
   const [verifiedData, setVerifiedData] = useState<ResumeRow | null>(null);
@@ -190,10 +189,8 @@ export default function ResumePage() {
 
   // ---- Render ----
   return (
-    <div style={styles.page}>
+    <PortalLayout title="My Resume">
       <ToastContainer position="top-right" autoClose={4000} theme="dark" />
-      <PageHeader onBack={() => navigate('/dashboard')} />
-
       <div style={styles.container}>
         {uiState === 'loading' && <SkeletonLoader />}
         {uiState === 'not_uploaded' && (
@@ -231,7 +228,7 @@ export default function ResumePage() {
           />
         )}
       </div>
-    </div>
+    </PortalLayout>
   );
 }
 

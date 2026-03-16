@@ -22,11 +22,11 @@ export interface JobRequirementRow {
   companyName: string;
   description: string;
   requiredSkills: string[];
-  minCgpa: number | null;
+  minCgpa: string | null;
   maxArrears: number | null;
   eligibleDepts: string[];
   minExperienceYr: number;
-  salaryLpa: number | null;
+  salaryLpa: string | null;
   deadline: string | null;
   isActive: boolean;
   createdBy: string;

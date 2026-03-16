@@ -8,17 +8,21 @@ interface ThemeState {
 }
 
 function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'light';
   const stored = localStorage.getItem('pearl-theme') as Theme | null;
   if (stored === 'light' || stored === 'dark') return stored;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 function applyTheme(theme: Theme) {
+  if (typeof document === 'undefined') return;
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('pearl-theme', theme);
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('pearl-theme', theme);
+  }
 }
 
-// Apply on load
+// Apply on load (browser-only)
 const initialTheme = getInitialTheme();
 applyTheme(initialTheme);
 

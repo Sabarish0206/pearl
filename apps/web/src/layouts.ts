@@ -1,2 +1,2 @@
 // Layout components for the portal
-export { default as PortalLayout } from './PortalLayout';
+export { default as PortalLayout } from './components/PortalLayout';

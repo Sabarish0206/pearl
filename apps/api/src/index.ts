@@ -25,6 +25,7 @@ app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/student/resume', resumeRouter);
 app.use('/api/recruiter', jobsRouter);
+app.use('/api/placement', jobsRouter);
 
 
 // Error Handling Middleware

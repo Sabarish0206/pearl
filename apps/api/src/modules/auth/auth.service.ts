@@ -12,6 +12,21 @@ export interface JwtPayload {
   role: 'STUDENT' | 'FACULTY' | 'ADMIN';
 }
 
+const buildDisplayName = (user: {
+  student?: { firstName: string; lastName: string } | null;
+  faculty?: { fullName: string } | null;
+}): string | undefined => {
+  if (user.student) {
+    return `${user.student.firstName} ${user.student.lastName}`.trim();
+  }
+
+  if (user.faculty?.fullName) {
+    return user.faculty.fullName;
+  }
+
+  return undefined;
+};
+
 export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
   const emailLower = input.email.toLowerCase();
 
@@ -55,7 +70,12 @@ export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
       },
     });
 
-    return { id: user.id, email: user.email, role: 'STUDENT' };
+    return {
+      id: user.id,
+      email: user.email,
+      role: 'STUDENT',
+      name: `${input.firstName} ${input.lastName}`.trim(),
+    };
   }
 
   const user = await prisma.user.create({
@@ -73,7 +93,7 @@ export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
     },
   });
 
-  return { id: user.id, email: user.email, role: 'FACULTY' };
+  return { id: user.id, email: user.email, role: 'FACULTY', name: input.fullName };
 };
 
 export const loginUser = async (
@@ -83,6 +103,10 @@ export const loginUser = async (
 
   const user = await prisma.user.findUnique({
     where: { email: emailLower },
+    include: {
+      student: { select: { firstName: true, lastName: true } },
+      faculty: { select: { fullName: true } },
+    },
   });
 
   if (!user) {
@@ -105,7 +129,12 @@ export const loginUser = async (
   });
 
   return {
-    user: { id: user.id, email: user.email, role: user.role },
+    user: {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      name: buildDisplayName(user),
+    },
     token,
   };
 };
@@ -113,7 +142,13 @@ export const loginUser = async (
 export const getCurrentUser = async (userId: string): Promise<AuthUser> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, role: true },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      student: { select: { firstName: true, lastName: true } },
+      faculty: { select: { fullName: true } },
+    },
   });
 
   if (!user) {
@@ -122,5 +157,10 @@ export const getCurrentUser = async (userId: string): Promise<AuthUser> => {
     throw error;
   }
 
-  return { id: user.id, email: user.email, role: user.role };
+  return {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    name: buildDisplayName(user),
+  };
 };

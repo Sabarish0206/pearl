@@ -88,7 +88,7 @@ export default function LandingPage() {
             { icon: '📊', title: 'ATS Score Tracking', desc: 'Real-time feedback on ATS compatibility and smart suggestions to optimize your profile.' },
             { icon: '🎯', title: 'Smart Job Matching', desc: 'Discover opportunities that align perfectly with your skills and academic qualifications.' },
             { icon: '👥', title: 'Employer Network', desc: 'Connect with 500+ companies actively recruiting directly from your campus.' },
-            { icon: '📈', title: 'Career Analytics', desc: 'Track placement progress with live dashboards for students, recruiters, and coordinators.' },
+            { icon: '📈', title: 'Career Analytics', desc: 'Track placement progress with live dashboards for students and placement officers.' },
             { icon: '🤝', title: 'Faculty Support', desc: 'Coordinators get ATS-ranked shortlists and one-click CSV exports for placement drives.' },
           ].map((f, i) => (
             <div key={i} className="feature-card">
@@ -128,7 +128,7 @@ export default function LandingPage() {
           {[
             { num: '1', title: 'Upload Your Resume', desc: 'Our AI parser instantly extracts your skills, education, and projects.' },
             { num: '2', title: 'Get Your ATS Score', desc: 'See how your profile ranks and get actionable improvement tips.' },
-            { num: '3', title: 'Apply & Get Shortlisted', desc: 'Match with job requirements and appear on recruiter shortlists automatically.' },
+            { num: '3', title: 'Apply & Get Shortlisted', desc: 'Match with job requirements and appear on placement shortlists automatically.' },
           ].map((step, i) => (
             <div key={i} className="how-step">
               <div className="how-step-num">{step.num}</div>

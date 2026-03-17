@@ -15,6 +15,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import { getRoleLabel, getUserDisplayName } from '../utils/userDisplay';
 import './PortalLayout.css';
 
 interface NavItem {
@@ -56,11 +57,11 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, path: '/dashboard' },
   { label: 'My Profile', icon: <PersonIcon />, path: '/profile', roles: ['STUDENT'] },
   { label: 'My Resume', icon: <DescriptionIcon />, path: '/resume', roles: ['STUDENT'] },
-  { label: 'Analytics', icon: <BarChartIcon />, path: '/recruiter/analytics', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Post a Job', icon: <AddBoxIcon />, path: '/recruiter/jobs/new', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Job Listings', icon: <WorkIcon />, path: '/recruiter/jobs', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'All Students', icon: <PeopleIcon />, path: '/recruiter/students', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Shortlists', icon: <ListAltIcon />, path: '/recruiter/shortlists', roles: ['FACULTY', 'ADMIN'] },
+  { label: 'Analytics', icon: <BarChartIcon />, path: '/placement/analytics', roles: ['FACULTY', 'ADMIN'] },
+  { label: 'Post a Job', icon: <AddBoxIcon />, path: '/placement/jobs/new', roles: ['FACULTY', 'ADMIN'] },
+  { label: 'Job Listings', icon: <WorkIcon />, path: '/placement/jobs', roles: ['FACULTY', 'ADMIN'] },
+  { label: 'All Students', icon: <PeopleIcon />, path: '/placement/students', roles: ['FACULTY', 'ADMIN'] },
+  { label: 'Shortlists', icon: <ListAltIcon />, path: '/placement/shortlists', roles: ['FACULTY', 'ADMIN'] },
 ];
 
 interface PortalLayoutProps {
@@ -94,6 +95,8 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
   const filteredNav = NAV_ITEMS.filter(
     (item) => !item.roles || item.roles.includes(currentUser?.role ?? '')
   );
+  const displayName = getUserDisplayName(currentUser);
+  const roleLabel = currentUser ? getRoleLabel(currentUser.role) : '';
 
   const currentPath = pathname;
 
@@ -136,10 +139,10 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
 
         <div className="portal-sidebar-footer">
           <div className="portal-user-pill">
-            <div className="portal-avatar">{currentUser?.email?.charAt(0).toUpperCase()}</div>
+            <div className="portal-avatar">{displayName.charAt(0).toUpperCase()}</div>
             <div className="portal-user-info">
-              <p className="portal-user-name">{currentUser?.email?.split('@')[0]}</p>
-              <p className="portal-user-role">{currentUser?.role}</p>
+              <p className="portal-user-name">{displayName}</p>
+              <p className="portal-user-role">{roleLabel}</p>
             </div>
           </div>
         </div>

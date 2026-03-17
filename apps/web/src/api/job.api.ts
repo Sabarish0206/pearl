@@ -18,17 +18,17 @@ const fetchWithCredentials = async <T>(path: string, options: RequestInit = {}):
 };
 
 export const fetchJobs = async (): Promise<JobRequirementRow[]> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow[] }>('/api/recruiter');
+  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow[] }>('/api/placement');
   return res.data;
 };
 
 export const fetchJob = async (id: string): Promise<JobRequirementRow> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>(`/api/recruiter/${id}`);
+  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>(`/api/placement/${id}`);
   return res.data;
 };
 
 export const createJobReq = async (input: CreateJobInput): Promise<JobRequirementRow> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>('/api/recruiter', {
+  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>('/api/placement', {
     method: 'POST',
     body: JSON.stringify(input),
   });
@@ -36,7 +36,7 @@ export const createJobReq = async (input: CreateJobInput): Promise<JobRequiremen
 };
 
 export const updateJobReq = async (id: string, input: Partial<CreateJobInput>): Promise<JobRequirementRow> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>(`/api/recruiter/${id}`, {
+  const res = await fetchWithCredentials<{ success: boolean; data: JobRequirementRow }>(`/api/placement/${id}`, {
     method: 'PUT',
     body: JSON.stringify(input),
   });
@@ -44,12 +44,12 @@ export const updateJobReq = async (id: string, input: Partial<CreateJobInput>): 
 };
 
 export const deleteJobReq = async (id: string): Promise<void> => {
-  await fetchWithCredentials<{ success: boolean }>(`/api/recruiter/${id}`, { method: 'DELETE' });
+  await fetchWithCredentials<{ success: boolean }>(`/api/placement/${id}`, { method: 'DELETE' });
 };
 
 export const fetchShortlist = async (jobId: string): Promise<ShortlistedCandidate[]> => {
   const res = await fetchWithCredentials<{ success: boolean; data: ShortlistedCandidate[] }>(
-    `/api/recruiter/${jobId}/shortlist`
+    `/api/placement/${jobId}/shortlist`
   );
   return res.data;
 };

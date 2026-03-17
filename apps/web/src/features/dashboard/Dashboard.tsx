@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import PortalLayout from '../../components/PortalLayout';
+import { getRoleLabel, getUserDisplayName } from '../../utils/userDisplay';
 import './Dashboard.css';
 
 interface DashboardLink {
@@ -16,12 +17,12 @@ const STUDENT_LINKS: DashboardLink[] = [
   { label: 'Settings', path: '/settings' },
 ];
 
-const RECRUITER_LINKS: DashboardLink[] = [
-  { label: 'Analytics', path: '/recruiter/analytics' },
-  { label: 'Post a Job', path: '/recruiter/jobs/new' },
-  { label: 'Job Listings', path: '/recruiter/jobs' },
-  { label: 'All Students', path: '/recruiter/students' },
-  { label: 'Shortlists', path: '/recruiter/shortlists' },
+const PLACEMENT_LINKS: DashboardLink[] = [
+  { label: 'Analytics', path: '/placement/analytics' },
+  { label: 'Post a Job', path: '/placement/jobs/new' },
+  { label: 'Job Listings', path: '/placement/jobs' },
+  { label: 'All Students', path: '/placement/students' },
+  { label: 'Shortlists', path: '/placement/shortlists' },
   { label: 'Settings', path: '/settings' },
 ];
 
@@ -32,9 +33,9 @@ export default function Dashboard() {
   if (!currentUser) return null;
 
   const isStudent = currentUser.role === 'STUDENT';
-  const links = isStudent ? STUDENT_LINKS : RECRUITER_LINKS;
-  const userName = currentUser.email.split('@')[0];
-  const roleLabel = isStudent ? 'Student' : 'Recruiter';
+  const links = isStudent ? STUDENT_LINKS : PLACEMENT_LINKS;
+  const userName = getUserDisplayName(currentUser);
+  const roleLabel = getRoleLabel(currentUser.role);
 
   return (
     <PortalLayout title="Dashboard">

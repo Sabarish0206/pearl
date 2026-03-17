@@ -9,6 +9,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import StarIcon from '@mui/icons-material/Star';
 import WorkIcon from '@mui/icons-material/Work';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import { getUserDisplayName } from '../../utils/userDisplay';
 import './StudentDashboard.css';
 
 export default function StudentDashboard() {
@@ -35,13 +36,14 @@ export default function StudentDashboard() {
     { label: 'Certifications', done: (pd?.certifications?.length ?? 0) > 0 },
   ];
   const completionPct = Math.round((completionItems.filter((i) => i.done).length / completionItems.length) * 100);
+  const displayName = getUserDisplayName(currentUser);
 
   return (
     <div className="student-dash">
       {/* Welcome */}
       <div className="sdash-welcome">
         <div>
-          <h2 className="sdash-greeting">Welcome back, {currentUser?.email?.split('@')[0]}! 👋</h2>
+          <h2 className="sdash-greeting">Welcome back, {displayName}! 👋</h2>
           <p className="sdash-subtitle">Here's your placement readiness overview</p>
         </div>
         <span className={`sdash-status-badge ${resumeStatus === 'VERIFIED' ? 'verified' : resumeStatus === 'DRAFT' ? 'draft' : 'pending'}`}>

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
@@ -72,9 +72,9 @@ function AppRoutes() {
         }
       />
 
-      {/* Protected Routes - Recruiter/Faculty/Admin */}
+      {/* Protected Routes - Placement Officer/Admin */}
       <Route
-        path="/recruiter/jobs/new"
+        path="/placement/jobs/new"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <ComingSoonPage
@@ -85,18 +85,18 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/recruiter/jobs"
+        path="/placement/jobs"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <ComingSoonPage
               title="Job Listings"
-              message="Recruiter job management will be delivered in a separate PR."
+              message="Placement job management will be delivered in a separate PR."
             />
           </ProtectedRoute>
         }
       />
       <Route
-        path="/recruiter/jobs/:jobId/candidates"
+        path="/placement/jobs/:jobId/candidates"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <ComingSoonPage
@@ -107,7 +107,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/recruiter/students"
+        path="/placement/students"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <ComingSoonPage
@@ -118,7 +118,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/recruiter/shortlists"
+        path="/placement/shortlists"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <ComingSoonPage
@@ -164,15 +164,23 @@ function AppRoutes() {
         }
       />
 
-      {/* Alias for recruiter analytics → dashboard */}
+      {/* Alias for placement analytics → dashboard */}
       <Route
-        path="/recruiter/analytics"
+        path="/placement/analytics"
         element={
           <ProtectedRoute allowedRoles={['FACULTY', 'ADMIN']}>
             <Dashboard />
           </ProtectedRoute>
         }
       />
+
+      {/* Backward compatibility for old recruiter routes */}
+      <Route path="/recruiter/analytics" element={<Navigate to="/placement/analytics" replace />} />
+      <Route path="/recruiter/jobs/new" element={<Navigate to="/placement/jobs/new" replace />} />
+      <Route path="/recruiter/jobs" element={<Navigate to="/placement/jobs" replace />} />
+      <Route path="/recruiter/jobs/:jobId/candidates" element={<Navigate to="/placement/jobs" replace />} />
+      <Route path="/recruiter/students" element={<Navigate to="/placement/students" replace />} />
+      <Route path="/recruiter/shortlists" element={<Navigate to="/placement/shortlists" replace />} />
 
       {/* Error Routes */}
       <Route path="/403" element={<UnauthorizedPage />} />

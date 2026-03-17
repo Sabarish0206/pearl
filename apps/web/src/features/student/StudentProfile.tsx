@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import ResumeSection from './ResumeSection';
 import PortalLayout from '../../components/PortalLayout';
+import { getRoleLabel, getUserDisplayName } from '../../utils/userDisplay';
 import './StudentProfile.css';
 
 export default function StudentProfile() {
@@ -15,6 +16,9 @@ export default function StudentProfile() {
 
   if (!currentUser) return null;
 
+  const displayName = getUserDisplayName(currentUser);
+  const roleLabel = getRoleLabel(currentUser.role);
+
   return (
     <PortalLayout title="My Profile">
       <div className="student-profile-content">
@@ -23,11 +27,12 @@ export default function StudentProfile() {
           <div className="welcome-content">
             <div>
               <h2>Your Profile 👤</h2>
+              <p className="email-display">{displayName}</p>
               <p className="email-display">{currentUser.email}</p>
-              <span className="role-badge">{currentUser.role}</span>
+              <span className="role-badge">{roleLabel}</span>
             </div>
             <div className="profile-avatar">
-              {currentUser.email.charAt(0).toUpperCase()}
+              {displayName.charAt(0).toUpperCase()}
             </div>
           </div>
         </section>

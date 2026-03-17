@@ -18,36 +18,7 @@
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-bg) 60%, var(--color-card) 100%);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle background blobs */
-.auth-page::before,
-.auth-page::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  pointer-events: none;
-  opacity: 0.35;
-  filter: blur(60px);
-}
-
-.auth-page::before {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, var(--color-primary-light), transparent);
-  top: -160px;
-  right: -160px;
-}
-
-.auth-page::after {
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, #d1fae5, transparent);
-  bottom: -120px;
-  left: -100px;
+  background: var(--color-bg);
 }
 
 .auth-brand {
@@ -56,13 +27,12 @@
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  animation: fadeInDown 0.5s var(--ease-spring) both;
 }
 
 .auth-brand-logo {
   width: 2.25rem;
   height: 2.25rem;
-  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  background: var(--color-primary);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -71,7 +41,6 @@
   font-size: 1.1rem;
   font-weight: 800;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
 }
 
 .auth-brand-name {
@@ -83,17 +52,12 @@
 
 .auth-card {
   background: var(--color-card);
-  border-radius: 20px;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06),
-    0 12px 48px rgba(79, 70, 229, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px var(--color-shadow);
   padding: 2.5rem 2rem;
   width: 100%;
   max-width: 420px;
   border: 1px solid var(--color-border);
-  position: relative;
-  z-index: 1;
-  animation: fadeInUp 0.55s var(--ease-spring) 0.05s both;
 }
 
 .auth-card--wide {
@@ -123,7 +87,6 @@
   margin-bottom: 1.5rem;
   border: 1px solid var(--color-border);
   gap: 4px;
-  animation: fadeIn 0.4s ease 0.2s both;
 }
 
 .role-btn {
@@ -141,8 +104,7 @@
 .role-btn--active {
   background: var(--color-card);
   color: var(--color-primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transform: scale(1.02);
+  box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 /* --- Form Groups --- */
@@ -152,14 +114,7 @@
   flex-direction: column;
   gap: 0.35rem;
   margin-bottom: 1.1rem;
-  animation: fadeInUp 0.4s var(--ease-spring) both;
 }
-
-.form-group:nth-child(1) { animation-delay: 0.15s; }
-.form-group:nth-child(2) { animation-delay: 0.20s; }
-.form-group:nth-child(3) { animation-delay: 0.25s; }
-.form-group:nth-child(4) { animation-delay: 0.30s; }
-.form-group:nth-child(5) { animation-delay: 0.35s; }
 
 .form-row {
   display: grid;
@@ -207,7 +162,6 @@
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
   background: var(--color-card);
-  transform: translateY(-1px);
 }
 
 .form-group input:disabled,
@@ -234,7 +188,6 @@
   font-size: 0.85rem;
   margin-bottom: 1rem;
   font-weight: 500;
-  animation: scaleIn 0.3s var(--ease-spring) both;
 }
 
 /* --- Submit Button --- */
@@ -242,7 +195,7 @@
 .btn-primary {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, var(--color-primary), #4338ca);
+  background: var(--color-primary);
   color: #fff;
   font-size: 0.925rem;
   border-radius: 10px;
@@ -250,26 +203,10 @@
   margin-top: 0.5rem;
   letter-spacing: 0.01em;
   transition: all 0.2s var(--ease-spring);
-  position: relative;
-  overflow: hidden;
-  animation: fadeInUp 0.4s var(--ease-spring) 0.35s both;
-}
-
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0);
-  transition: background 0.2s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
-}
-
-.btn-primary:hover:not(:disabled)::after {
-  background: rgba(255,255,255,0.07);
+  background: var(--color-primary-hover);
 }
 
 .btn-primary:disabled {
@@ -285,7 +222,6 @@
   text-align: center;
   font-size: 0.875rem;
   color: var(--color-text-muted);
-  animation: fadeIn 0.4s ease 0.45s both;
 }
 
 /* --- Divider --- */

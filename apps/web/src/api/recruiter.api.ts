@@ -34,11 +34,11 @@ export interface StudentListItem {
 }
 
 export const fetchAnalytics = async (): Promise<PlacementAnalytics> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: PlacementAnalytics }>('/api/recruiter/analytics');
+  const res = await fetchWithCredentials<{ success: boolean; data: PlacementAnalytics }>('/api/placement/analytics');
   return res.data;
 };
 
 export const fetchStudents = async (): Promise<StudentListItem[]> => {
-  const res = await fetchWithCredentials<{ success: boolean; data: StudentListItem[] }>('/api/recruiter/students');
+  const res = await fetchWithCredentials<{ success: boolean; data: StudentListItem[] }>('/api/placement/students');
   return res.data;
 };

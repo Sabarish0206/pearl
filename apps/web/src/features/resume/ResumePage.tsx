@@ -1,17 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {
-  Box,
-  CircularProgress,
-  Typography,
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
-} from '@mui/material';
 import type { ResumeRow } from '@pearl/common';
 import { fetchResume, parseResume, commitResume } from '../../api/resume.api';
 import PortalLayout from '../../components/PortalLayout';
+import { useThemeStore } from '../../stores/themeStore';
 
 // ============================================================
 // Types
@@ -46,7 +39,7 @@ function SkeletonLoader() {
           style={{
             height: '80px',
             borderRadius: '12px',
-            background: 'linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%)',
+            background: 'linear-gradient(90deg, var(--color-card) 0%, var(--color-primary-light) 50%, var(--color-card) 100%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 1.5s infinite',
           }}
@@ -70,6 +63,7 @@ function SkeletonLoader() {
 // Main Component
 // ============================================================
 export default function ResumePage() {
+  const theme = useThemeStore((state) => state.theme);
   const [uiState, setUiState] = useState<UIState>('loading');
   const [draftData, setDraftData] = useState<DraftFormData | null>(null);
   const [verifiedData, setVerifiedData] = useState<ResumeRow | null>(null);
@@ -205,7 +199,7 @@ export default function ResumePage() {
 
   return (
     <PortalLayout title="My Resume">
-      <ToastContainer position="top-right" autoClose={4000} theme="dark" />
+      <ToastContainer position="top-right" autoClose={4000} theme={theme} />
       <style>{responsiveStyles}</style>
       <div style={styles.container} className="resume-container">
         {uiState === 'loading' && <SkeletonLoader />}
@@ -932,8 +926,8 @@ const responsiveStyles = `
 const styles: Record<string, React.CSSProperties> = {
   page: {
     minHeight: '100vh',
-    backgroundColor: '#0f172a',
-    color: '#e2e8f0',
+    backgroundColor: 'var(--color-bg)',
+    color: 'var(--color-text)',
     fontFamily: "'Inter', -apple-system, sans-serif",
   },
   header: {
@@ -941,8 +935,8 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '0.75rem 1rem',
-    borderBottom: '1px solid #1e293b',
-    backgroundColor: '#0f172a',
+    borderBottom: '1px solid var(--color-border)',
+    backgroundColor: 'var(--color-card)',
     position: 'sticky' as const,
     top: 0,
     zIndex: 100,
@@ -967,11 +961,11 @@ const styles: Record<string, React.CSSProperties> = {
   brandName: {
     fontSize: '1rem',
     fontWeight: 700,
-    color: '#f1f5f9',
+    color: 'var(--color-text)',
   },
   brandSub: {
     fontSize: '0.7rem',
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     margin: 0,
   },
   container: {
@@ -989,8 +983,8 @@ const styles: Record<string, React.CSSProperties> = {
   spinner: {
     width: '48px',
     height: '48px',
-    border: '4px solid #1e293b',
-    borderTop: '4px solid #6366f1',
+    border: '4px solid var(--color-border)',
+    borderTop: '4px solid var(--color-primary)',
     borderRadius: '50%',
     animation: 'spin 0.8s linear infinite',
   },
@@ -1000,63 +994,63 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '1rem',
   },
   dropzone: {
-    border: '2px dashed #334155',
+    border: '2px dashed var(--color-border)',
     borderRadius: '16px',
     padding: '2rem 1rem',
     textAlign: 'center' as const,
     cursor: 'pointer',
     transition: 'all 0.2s',
-    backgroundColor: '#111827',
+    backgroundColor: 'var(--color-card)',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     gap: '0.5rem',
   },
   dropzoneActive: {
-    borderColor: '#6366f1',
-    backgroundColor: '#1e1b4b',
+    borderColor: 'var(--color-primary)',
+    backgroundColor: 'var(--color-primary-light)',
   },
   dropzoneIcon: { fontSize: '2.5rem' },
   dropzoneText: {
     fontSize: '1rem',
     fontWeight: 600,
-    color: '#cbd5e1',
+    color: 'var(--color-text)',
     margin: 0,
   },
-  dropzoneSubText: { color: '#64748b', fontSize: '0.875rem', margin: 0 },
+  dropzoneSubText: { color: 'var(--color-text-muted)', fontSize: '0.875rem', margin: 0 },
   badge: {
     display: 'inline-block',
     padding: '0.25rem 0.75rem',
     borderRadius: '999px',
-    backgroundColor: '#1e293b',
+    backgroundColor: 'var(--color-primary-light)',
     fontSize: '0.75rem',
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     marginTop: '0.5rem',
   },
   sectionTitle: {
     fontSize: '1.25rem',
     fontWeight: 700,
-    color: '#f1f5f9',
+    color: 'var(--color-text)',
     margin: 0,
   },
   sectionDesc: {
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     fontSize: '0.9rem',
     margin: '0.5rem 0 0',
   },
   parsingTitle: {
     fontSize: '1.25rem',
     fontWeight: 600,
-    color: '#f1f5f9',
+    color: 'var(--color-text)',
     margin: 0,
   },
   parsingDesc: {
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     fontSize: '0.9rem',
     textAlign: 'center' as const,
     margin: 0,
   },
-  savingText: { color: '#94a3b8', margin: 0 },
+  savingText: { color: 'var(--color-text-muted)', margin: 0 },
   draftForm: {
     display: 'flex',
     flexDirection: 'column' as const,
@@ -1071,16 +1065,16 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'inline-flex',
     alignItems: 'baseline',
     gap: '0.25rem',
-    backgroundColor: '#1e293b',
+    backgroundColor: 'var(--color-card)',
     padding: '0.75rem 1.25rem',
     borderRadius: '12px',
-    border: '1px solid #334155',
+    border: '1px solid var(--color-border)',
     width: 'fit-content',
     marginTop: '0.5rem',
   },
   atsLabel: {
     fontSize: '0.75rem',
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.05em',
     marginRight: '0.5rem',
@@ -1088,17 +1082,17 @@ const styles: Record<string, React.CSSProperties> = {
   atsScore: {
     fontSize: '2rem',
     fontWeight: 700,
-    color: '#6366f1',
+    color: 'var(--color-primary)',
   },
   atsMax: {
     fontSize: '1rem',
-    color: '#475569',
+    color: 'var(--color-text-muted)',
   },
   section: {
-    backgroundColor: '#111827',
+    backgroundColor: 'var(--color-card)',
     borderRadius: '12px',
     padding: '1rem',
-    border: '1px solid #1e293b',
+    border: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '1rem',
@@ -1106,7 +1100,7 @@ const styles: Record<string, React.CSSProperties> = {
   sectionSubTitle: {
     fontSize: '1rem',
     fontWeight: 600,
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase' as const,
     letterSpacing: '0.05em',
     margin: 0,
@@ -1124,29 +1118,29 @@ const styles: Record<string, React.CSSProperties> = {
   label: {
     fontSize: '0.8rem',
     fontWeight: 500,
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
   },
   input: {
     width: '100%',
     padding: '0.625rem 0.875rem',
-    backgroundColor: '#1e293b',
-    border: '1px solid #334155',
+    backgroundColor: 'var(--color-input-bg)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
-    color: '#e2e8f0',
+    color: 'var(--color-text)',
     fontSize: '0.9rem',
     outline: 'none',
     boxSizing: 'border-box' as const,
   },
   hint: {
     fontSize: '0.75rem',
-    color: '#475569',
+    color: 'var(--color-text-muted)',
     margin: 0,
   },
   card: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'var(--color-bg)',
     borderRadius: '10px',
     padding: '1rem',
-    border: '1px solid #334155',
+    border: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '0.75rem',
@@ -1156,12 +1150,12 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     alignItems: 'center',
     fontSize: '0.9rem',
-    color: '#cbd5e1',
+    color: 'var(--color-text)',
   },
   removeBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#ef4444',
+    color: 'var(--color-danger)',
     cursor: 'pointer',
     fontSize: '1rem',
     padding: '0.25rem',
@@ -1170,8 +1164,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
   addBtn: {
     background: 'transparent',
-    border: '1px dashed #334155',
-    color: '#6366f1',
+    border: '1px dashed var(--color-border)',
+    color: 'var(--color-primary)',
     cursor: 'pointer',
     fontSize: '0.875rem',
     padding: '0.5rem 1rem',
@@ -1197,10 +1191,10 @@ const styles: Record<string, React.CSSProperties> = {
   },
   btnSecondary: {
     padding: '0.5rem 1.25rem',
-    backgroundColor: '#1e293b',
-    border: '1px solid #334155',
+    backgroundColor: 'var(--color-card)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
-    color: '#94a3b8',
+    color: 'var(--color-text-muted)',
     fontWeight: 500,
     fontSize: '0.9rem',
     cursor: 'pointer',
@@ -1222,12 +1216,12 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'inline-block',
     padding: '0.25rem 0.75rem',
     borderRadius: '999px',
-    backgroundColor: '#052e16',
-    color: '#4ade80',
+    backgroundColor: 'color-mix(in srgb, var(--color-success) 22%, transparent)',
+    color: 'var(--color-success)',
     fontSize: '0.75rem',
     fontWeight: 600,
     marginBottom: '0.5rem',
-    border: '1px solid #166534',
+    border: '1px solid color-mix(in srgb, var(--color-success) 38%, transparent)',
   },
   metricsGrid: {
     display: 'grid',
@@ -1235,10 +1229,10 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0.75rem',
   },
   metricCard: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'var(--color-bg)',
     borderRadius: '10px',
     padding: '0.75rem',
-    border: '1px solid #334155',
+    border: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
@@ -1247,11 +1241,11 @@ const styles: Record<string, React.CSSProperties> = {
   metricValue: {
     fontSize: '1.25rem',
     fontWeight: 700,
-    color: '#6366f1',
+    color: 'var(--color-primary)',
   },
   metricLabel: {
     fontSize: '0.7rem',
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     textAlign: 'center' as const,
     textTransform: 'uppercase' as const,
     letterSpacing: '0.05em',
@@ -1265,34 +1259,34 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'inline-block',
     padding: '0.25rem 0.75rem',
     borderRadius: '999px',
-    backgroundColor: '#1e1b4b',
-    color: '#a5b4fc',
+    backgroundColor: 'var(--color-primary-light)',
+    color: 'var(--color-primary)',
     fontSize: '0.8rem',
-    border: '1px solid #3730a3',
+    border: '1px solid var(--color-border)',
   },
   tagSmall: {
     display: 'inline-block',
     padding: '0.15rem 0.5rem',
     borderRadius: '6px',
-    backgroundColor: '#1e293b',
-    color: '#94a3b8',
+    backgroundColor: 'var(--color-card)',
+    color: 'var(--color-text-muted)',
     fontSize: '0.75rem',
-    border: '1px solid #334155',
+    border: '1px solid var(--color-border)',
   },
   listCard: {
-    backgroundColor: '#1e293b',
+    backgroundColor: 'var(--color-bg)',
     borderRadius: '10px',
     padding: '1rem',
-    border: '1px solid #334155',
+    border: '1px solid var(--color-border)',
     fontSize: '0.9rem',
     lineHeight: 1.6,
   },
   mutedText: {
-    color: '#64748b',
+    color: 'var(--color-text-muted)',
     fontSize: '0.8rem',
   },
   link: {
-    color: '#6366f1',
+    color: 'var(--color-primary)',
     textDecoration: 'none',
   },
 };

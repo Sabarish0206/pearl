@@ -23,9 +23,8 @@ model User {
   role         Role
   createdAt    DateTime @default(now()) @map("created_at")
 
-  student     Student?
-  faculty     Faculty?
-  createdJobs JobRequirement[] @relation("CreatedJobs")
+  student Student?
+  faculty Faculty?
 
   @@map("users")
 }
@@ -96,26 +95,4 @@ model Faculty {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("faculty")
-}
-
-model JobRequirement {
-  id              String    @id @default(uuid())
-  title           String
-  companyName     String    @map("company_name")
-  description     String
-  requiredSkills  String[]  @map("required_skills")
-  minCgpa         Decimal?  @map("min_cgpa") @db.Decimal(4, 2)
-  maxArrears      Int?      @map("max_arrears")
-  eligibleDepts   String[]  @map("eligible_depts")
-  minExperienceYr Int       @default(0) @map("min_experience_yr")
-  salaryLpa       Decimal?  @map("salary_lpa") @db.Decimal(8, 2)
-  deadline        DateTime?
-  isActive        Boolean   @default(true) @map("is_active")
-  createdBy       String    @map("created_by")
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-
-  creator User @relation("CreatedJobs", fields: [createdBy], references: [id], onDelete: Cascade)
-
-  @@map("job_requirements")
 }

@@ -8,13 +8,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import HomeIcon from '@mui/icons-material/Home';
-import PersonIcon from '@mui/icons-material/Person';
 import DescriptionIcon from '@mui/icons-material/Description';
-import WorkIcon from '@mui/icons-material/Work';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import PeopleIcon from '@mui/icons-material/People';
-import BarChartIcon from '@mui/icons-material/BarChart';
-import ListAltIcon from '@mui/icons-material/ListAlt';
 import { getRoleLabel, getUserDisplayName } from '../utils/userDisplay';
 import './PortalLayout.css';
 
@@ -55,13 +49,7 @@ function useIsMobile(): boolean {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', icon: <HomeIcon />, path: '/dashboard' },
-  { label: 'My Profile', icon: <PersonIcon />, path: '/profile', roles: ['STUDENT'] },
   { label: 'My Resume', icon: <DescriptionIcon />, path: '/resume', roles: ['STUDENT'] },
-  { label: 'Analytics', icon: <BarChartIcon />, path: '/placement/analytics', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Post a Job', icon: <AddBoxIcon />, path: '/placement/jobs/new', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Job Listings', icon: <WorkIcon />, path: '/placement/jobs', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'All Students', icon: <PeopleIcon />, path: '/placement/students', roles: ['FACULTY', 'ADMIN'] },
-  { label: 'Shortlists', icon: <ListAltIcon />, path: '/placement/shortlists', roles: ['FACULTY', 'ADMIN'] },
 ];
 
 interface PortalLayoutProps {

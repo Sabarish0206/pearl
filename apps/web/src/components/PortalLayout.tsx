@@ -73,7 +73,10 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
   const { pathname } = useLocation();
   const { currentUser, clearCurrentUser } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= MOBILE_BREAKPOINT;
+  });
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isMobile = useIsMobile();
 
@@ -123,7 +126,7 @@ export default function PortalLayout({ children, title }: PortalLayoutProps) {
             <button
               key={item.path}
               className={`portal-nav-item ${currentPath.startsWith(item.path) && item.path !== '/dashboard' ? 'active' : currentPath === item.path ? 'active' : ''}`}
-              onClick={() => { navigate(item.path); }}
+              onClick={() => { navigate(item.path); if (isMobile) setSidebarOpen(false); }}
             >
               <span className="portal-nav-icon">{item.icon}</span>
               <span className="portal-nav-label">{item.label}</span>

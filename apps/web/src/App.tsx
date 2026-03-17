@@ -1,22 +1,20 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
 import { fetchCurrentUser } from './api/auth.api';
-import LandingPage from './features/landing/LandingPage';
 import LoginPage from './features/auth/LoginPage';
 import SignupPage from './features/auth/SignupPage';
 import Dashboard from './features/dashboard/Dashboard';
 import ResumePage from './features/resume/ResumePage';
 import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
-import { NotFoundPage, UnauthorizedPage, ServerErrorPage } from './pages/ErrorPages';
 import './App.css';
 
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { setCurrentUser, setIsLoading } = useAuthStore();
+  const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
@@ -34,12 +32,8 @@ function AppRoutes() {
 
   return (
     <Routes>
-      {/* Public Routes */}
-      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
-
-      {/* Demo Route */}
       <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
 
       {/* Protected Routes - Dashboard (role-aware) */}
@@ -62,10 +56,22 @@ function AppRoutes() {
         }
       />
 
-      {/* Error Routes */}
-      <Route path="/403" element={<UnauthorizedPage />} />
-      <Route path="/500" element={<ServerErrorPage />} />
-      <Route path="*" element={<NotFoundPage />} />
+      <Route
+        path="/unauthorized"
+        element={
+          <div className="error-page">
+            <h1>403</h1>
+            <p>You do not have permission to view this page.</p>
+            <Link to="/dashboard">Go back to Dashboard</Link>
+          </div>
+        }
+      />
+
+      <Route
+        path="/"
+        element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

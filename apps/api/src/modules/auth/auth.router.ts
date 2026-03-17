@@ -2,7 +2,6 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { handleSignup, handleLogin, handleGetMe, handleLogout } from './auth.controller';
 import { verifySession } from '../../middleware/verifySession.middleware';
-import { asyncHandler } from '../../utils/asyncHandler';
 
 const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -22,9 +21,9 @@ const meRateLimiter = rateLimit({
 
 const router = Router();
 
-router.post('/signup', authRateLimiter, asyncHandler(handleSignup));
-router.post('/login', authRateLimiter, asyncHandler(handleLogin));
-router.get('/me', meRateLimiter, verifySession, asyncHandler(handleGetMe));
+router.post('/signup', authRateLimiter, handleSignup);
+router.post('/login', authRateLimiter, handleLogin);
+router.get('/me', meRateLimiter, verifySession, handleGetMe);
 router.post('/logout', handleLogout);
 
 export default router;

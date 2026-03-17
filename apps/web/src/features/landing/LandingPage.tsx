@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Landing.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const hamburgerBarClass = `landing-hamburger-bar${mobileNavOpen ? ' open' : ''}`;
 
   return (
     <div className="landing-page">
@@ -17,7 +20,23 @@ export default function LandingPage() {
             <button className="btn-text" onClick={() => navigate('/login')}>Sign In</button>
             <button className="btn-gradient" onClick={() => navigate('/signup')}>Get Started →</button>
           </div>
+          <button
+            className="landing-hamburger"
+            aria-label="Toggle navigation"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen((o) => !o)}
+          >
+            <span className={hamburgerBarClass} />
+            <span className={hamburgerBarClass} />
+            <span className={hamburgerBarClass} />
+          </button>
         </div>
+        {mobileNavOpen && (
+          <div className="landing-mobile-nav">
+            <button className="btn-text" onClick={() => { navigate('/login'); setMobileNavOpen(false); }}>Sign In</button>
+            <button className="btn-gradient" onClick={() => { navigate('/signup'); setMobileNavOpen(false); }}>Get Started →</button>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}

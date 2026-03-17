@@ -6,7 +6,6 @@ import { env } from './config/env';
 import healthRouter from './modules/health/health.router';
 import authRouter from './modules/auth/auth.router';
 import resumeRouter from './modules/resume/resume.router';
-import jobsRouter from './modules/jobs.router';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -24,8 +23,6 @@ app.use(cookieParser());
 app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/student/resume', resumeRouter);
-app.use('/api/recruiter', jobsRouter);
-app.use('/api/placement', jobsRouter);
 
 
 // Error Handling Middleware

@@ -206,7 +206,8 @@ export default function ResumePage() {
   return (
     <PortalLayout title="My Resume">
       <ToastContainer position="top-right" autoClose={4000} theme="dark" />
-      <div style={styles.container}>
+      <style>{responsiveStyles}</style>
+      <div style={styles.container} className="resume-container">
         {uiState === 'loading' && <SkeletonLoader />}
         {uiState === 'not_uploaded' && (
           <DropzoneState
@@ -267,7 +268,7 @@ function DropzoneState({
 }) {
   return (
     <div style={styles.dropzoneWrapper}>
-      <h2 style={styles.sectionTitle}>Upload Your Resume</h2>
+      <h2 style={styles.sectionTitle} className="section-title">Upload Your Resume</h2>
       <p style={styles.sectionDesc}>
         Our AI will parse your resume and extract key information for verification.
       </p>
@@ -275,6 +276,7 @@ function DropzoneState({
         role="button"
         tabIndex={0}
         aria-label="Upload resume PDF — click or press Enter/Space to browse files"
+        className="dropzone"
         style={{
           ...styles.dropzone,
           ...(isDragging ? styles.dropzoneActive : {}),
@@ -290,8 +292,8 @@ function DropzoneState({
           }
         }}
       >
-        <div style={styles.dropzoneIcon}>📄</div>
-        <p style={styles.dropzoneText}>
+        <div style={styles.dropzoneIcon} className="dropzone-icon">📄</div>
+        <p style={styles.dropzoneText} className="dropzone-text">
           {isDragging ? 'Drop your PDF here' : 'Drag & drop your resume PDF here'}
         </p>
         <p style={styles.dropzoneSubText}>or click to browse</p>
@@ -339,20 +341,20 @@ function DraftForm({
   return (
     <form onSubmit={onSubmit} style={styles.draftForm}>
       <div style={styles.draftHeader}>
-        <h2 style={styles.sectionTitle}>Review Parsed Data</h2>
+        <h2 style={styles.sectionTitle} className="section-title">Review Parsed Data</h2>
         <p style={styles.sectionDesc}>
           Our AI has extracted the following information. Please review, edit if necessary, then submit.
         </p>
-        <div style={styles.atsCard}>
+        <div style={styles.atsCard} className="ats-card">
           <span style={styles.atsLabel}>ATS Score</span>
-          <span style={styles.atsScore}>{data.ats_score}</span>
+          <span style={styles.atsScore} className="ats-score">{data.ats_score}</span>
           <span style={styles.atsMax}>/100</span>
         </div>
       </div>
 
       {/* Academic Metrics */}
       <Section title="Academic Metrics">
-        <div style={styles.fieldGrid}>
+        <div style={styles.fieldGrid} className="field-grid">
           <FormField label="CGPA">
             <input
               style={styles.input}
@@ -434,7 +436,7 @@ function DraftForm({
       {/* Education */}
       <Section title="Education">
         {data.education.map((edu, i) => (
-          <div key={i} style={styles.card}>
+          <div key={i} style={styles.card} className="card">
             <div style={styles.cardHeader}>
               <strong>{edu.institution || 'Institution'}</strong>
               <button
@@ -445,7 +447,7 @@ function DraftForm({
                 ✕
               </button>
             </div>
-            <div style={styles.fieldGrid}>
+            <div style={styles.fieldGrid} className="field-grid">
               <FormField label="Institution">
                 <input style={styles.input} value={edu.institution} onChange={(e) => {
                   const updated = [...data.education];
@@ -494,7 +496,7 @@ function DraftForm({
       {/* Experience */}
       <Section title="Experience">
         {data.experience.map((exp, i) => (
-          <div key={i} style={styles.card}>
+          <div key={i} style={styles.card} className="card">
             <div style={styles.cardHeader}>
               <strong>{exp.role || 'Role'} @ {exp.company || 'Company'}</strong>
               <button
@@ -505,7 +507,7 @@ function DraftForm({
                 ✕
               </button>
             </div>
-            <div style={styles.fieldGrid}>
+            <div style={styles.fieldGrid} className="field-grid">
               <FormField label="Role">
                 <input style={styles.input} value={exp.role} onChange={(e) => {
                   const updated = [...data.experience];
@@ -547,7 +549,7 @@ function DraftForm({
       {/* Projects */}
       <Section title="Projects">
         {data.projects.map((proj, i) => (
-          <div key={i} style={styles.card}>
+          <div key={i} style={styles.card} className="card">
             <div style={styles.cardHeader}>
               <strong>{proj.title || 'Project'}</strong>
               <button
@@ -558,7 +560,7 @@ function DraftForm({
                 ✕
               </button>
             </div>
-            <div style={styles.fieldGrid}>
+            <div style={styles.fieldGrid} className="field-grid">
               <FormField label="Title">
                 <input style={styles.input} value={proj.title} onChange={(e) => {
                   const updated = [...data.projects];
@@ -600,7 +602,7 @@ function DraftForm({
       {/* Certifications */}
       <Section title="Certifications">
         {data.certifications.map((cert, i) => (
-          <div key={i} style={styles.card}>
+          <div key={i} style={styles.card} className="card">
             <div style={styles.cardHeader}>
               <strong>{cert.name || 'Certification'}</strong>
               <button
@@ -611,7 +613,7 @@ function DraftForm({
                 ✕
               </button>
             </div>
-            <div style={styles.fieldGrid}>
+            <div style={styles.fieldGrid} className="field-grid">
               <FormField label="Name">
                 <input style={styles.input} value={cert.name} onChange={(e) => {
                   const updated = [...data.certifications];
@@ -673,7 +675,7 @@ function DraftForm({
       </Section>
 
       <div style={styles.submitRow}>
-        <button type="submit" style={styles.btnPrimary}>
+        <button type="submit" style={styles.btnPrimary} className="btn-primary">
           ✓ Confirm & Save Resume
         </button>
       </div>
@@ -689,23 +691,23 @@ function VerifiedDashboard({ data, onReplace }: { data: ResumeRow; onReplace: ()
       <div style={styles.verifiedHeader}>
         <div>
           <div style={styles.verifiedBadge}>✓ Verified</div>
-          <h2 style={styles.sectionTitle}>Your Resume</h2>
+          <h2 style={styles.sectionTitle} className="section-title">Your Resume</h2>
         </div>
-        <button style={styles.btnSecondary} onClick={onReplace}>
+        <button style={styles.btnSecondary} className="btn-secondary" onClick={onReplace}>
           ↑ Update Resume
         </button>
       </div>
 
-      <div style={styles.atsCard}>
+      <div style={styles.atsCard} className="ats-card">
         <span style={styles.atsLabel}>ATS Score</span>
-        <span style={styles.atsScore}>{data.atsScore}</span>
+        <span style={styles.atsScore} className="ats-score">{data.atsScore}</span>
         <span style={styles.atsMax}>/100</span>
       </div>
 
       {pd && (
         <>
           <Section title="Academic Metrics">
-            <div style={styles.metricsGrid}>
+            <div style={styles.metricsGrid} className="metrics-grid">
               <Metric label="CGPA" value={pd.cgpa ?? '—'} />
               <Metric label="10th %" value={pd.tenth_mark ?? '—'} />
               <Metric label="12th %" value={pd.twelfth_mark ?? '—'} />
@@ -789,8 +791,8 @@ function VerifiedDashboard({ data, onReplace }: { data: ResumeRow; onReplace: ()
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionSubTitle}>{title}</h3>
+    <div style={styles.section} className="section">
+      <h3 style={styles.sectionSubTitle} className="section-subtitle">{title}</h3>
       {children}
     </div>
   );
@@ -808,11 +810,121 @@ function FormField({ label, children }: { label: string; children: React.ReactNo
 function Metric({ label, value }: { label: string; value: string | number }) {
   return (
     <div style={styles.metricCard}>
-      <span style={styles.metricValue}>{value}</span>
+      <span style={styles.metricValue} className="metric-value">{value}</span>
       <span style={styles.metricLabel}>{label}</span>
     </div>
   );
 }
+
+// ============================================================
+// Responsive Styles
+// ============================================================
+const responsiveStyles = `
+  @media (max-width: 768px) {
+    /* Mobile adjustments */
+    .resume-container {
+      padding: 0.75rem !important;
+    }
+
+    /* Make buttons full width on mobile */
+    button[type="submit"],
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      padding: 0.875rem 1rem !important;
+      font-size: 0.95rem !important;
+    }
+
+    /* Adjust dropzone for mobile */
+    .dropzone {
+      padding: 1.5rem 0.75rem !important;
+    }
+
+    /* Smaller font sizes for mobile */
+    .section-title {
+      font-size: 1.1rem !important;
+    }
+
+    .section-subtitle {
+      font-size: 0.9rem !important;
+    }
+
+    /* Make forms stack on mobile */
+    .field-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.5rem !important;
+    }
+
+    /* Adjust ATS card */
+    .ats-card {
+      padding: 0.5rem 1rem !important;
+    }
+
+    .ats-score {
+      font-size: 1.5rem !important;
+    }
+
+    /* Card padding adjustments */
+    .section {
+      padding: 0.75rem !important;
+    }
+
+    .card {
+      padding: 0.75rem !important;
+    }
+
+    /* Header adjustments */
+    .header {
+      padding: 0.75rem !important;
+    }
+
+    .brand-name {
+      font-size: 0.9rem !important;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    /* Tablet adjustments */
+    .resume-container {
+      padding: 1.5rem !important;
+    }
+
+    .field-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .metrics-grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    /* Extra small mobile devices */
+    .metrics-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    .metric-value {
+      font-size: 1rem !important;
+    }
+
+    .ats-score {
+      font-size: 1.25rem !important;
+    }
+
+    .dropzone-icon {
+      font-size: 2rem !important;
+    }
+
+    .dropzone-text {
+      font-size: 0.9rem !important;
+    }
+  }
+`;
 
 // ============================================================
 // Styles
@@ -828,7 +940,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '1rem 2rem',
+    padding: '0.75rem 1rem',
     borderBottom: '1px solid #1e293b',
     backgroundColor: '#0f172a',
     position: 'sticky' as const,
@@ -838,41 +950,41 @@ const styles: Record<string, React.CSSProperties> = {
   headerLeft: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: '0.5rem',
   },
   logo: {
-    width: '2rem',
-    height: '2rem',
+    width: '1.75rem',
+    height: '1.75rem',
     borderRadius: '8px',
     background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 700,
-    fontSize: '1rem',
+    fontSize: '0.9rem',
     color: '#fff',
   },
   brandName: {
-    fontSize: '1.1rem',
+    fontSize: '1rem',
     fontWeight: 700,
     color: '#f1f5f9',
   },
   brandSub: {
-    fontSize: '0.75rem',
+    fontSize: '0.7rem',
     color: '#64748b',
     margin: 0,
   },
   container: {
     maxWidth: '860px',
     margin: '0 auto',
-    padding: '2rem 1.5rem',
+    padding: '1rem',
   },
   centerBox: {
     display: 'flex',
     flexDirection: 'column' as const,
     alignItems: 'center',
     gap: '1rem',
-    padding: '3rem 1rem',
+    padding: '2rem 1rem',
   },
   spinner: {
     width: '48px',
@@ -890,7 +1002,7 @@ const styles: Record<string, React.CSSProperties> = {
   dropzone: {
     border: '2px dashed #334155',
     borderRadius: '16px',
-    padding: '4rem 2rem',
+    padding: '2rem 1rem',
     textAlign: 'center' as const,
     cursor: 'pointer',
     transition: 'all 0.2s',
@@ -904,9 +1016,9 @@ const styles: Record<string, React.CSSProperties> = {
     borderColor: '#6366f1',
     backgroundColor: '#1e1b4b',
   },
-  dropzoneIcon: { fontSize: '3rem' },
+  dropzoneIcon: { fontSize: '2.5rem' },
   dropzoneText: {
-    fontSize: '1.1rem',
+    fontSize: '1rem',
     fontWeight: 600,
     color: '#cbd5e1',
     margin: 0,
@@ -922,7 +1034,7 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: '0.5rem',
   },
   sectionTitle: {
-    fontSize: '1.5rem',
+    fontSize: '1.25rem',
     fontWeight: 700,
     color: '#f1f5f9',
     margin: 0,
@@ -985,7 +1097,7 @@ const styles: Record<string, React.CSSProperties> = {
   section: {
     backgroundColor: '#111827',
     borderRadius: '12px',
-    padding: '1.5rem',
+    padding: '1rem',
     border: '1px solid #1e293b',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -1001,7 +1113,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   fieldGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(200px, 100%), 1fr))',
     gap: '1rem',
   },
   formField: {
@@ -1100,8 +1212,11 @@ const styles: Record<string, React.CSSProperties> = {
   },
   verifiedHeader: {
     display: 'flex',
+    flexDirection: 'row' as const,
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: '0.5rem',
+    flexWrap: 'wrap' as const,
   },
   verifiedBadge: {
     display: 'inline-block',
@@ -1116,13 +1231,13 @@ const styles: Record<string, React.CSSProperties> = {
   },
   metricsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-    gap: '1rem',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(120px, 100%), 1fr))',
+    gap: '0.75rem',
   },
   metricCard: {
     backgroundColor: '#1e293b',
     borderRadius: '10px',
-    padding: '1rem',
+    padding: '0.75rem',
     border: '1px solid #334155',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -1130,7 +1245,7 @@ const styles: Record<string, React.CSSProperties> = {
     gap: '0.25rem',
   },
   metricValue: {
-    fontSize: '1.5rem',
+    fontSize: '1.25rem',
     fontWeight: 700,
     color: '#6366f1',
   },

@@ -1,5 +1,3 @@
-import fs from 'fs/promises';
-import path from 'path';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { prisma } from '@pearl/database';
 import { env } from '../../config/env';
@@ -71,10 +69,9 @@ For unstructuredData.responsibilities: extract the list of job responsibilities.
 For unstructuredData.perks: extract the list of perks or benefits.
 Return a strictly valid JSON object matching the required schema.`;
 
-const UPLOAD_DIR = path.resolve('uploads/jds');
-
+// Service accepts pre-read base64 data or raw text — no filesystem access here.
 export const parseAndDraftJob = async (
-  input: { filePath: string } | { rawText: string },
+  input: { base64Data: string } | { rawText: string },
 ): Promise<{ job_id: string; parsed_data: ParsedJobData }> => {
   if (!env.GEMINI_API_KEY) {
     const err = new Error('Job parsing is not available. Please contact support.') as Error & { status: number };
@@ -92,41 +89,15 @@ export const parseAndDraftJob = async (
     },
   });
 
-  // Helper to clean up uploaded file on failure
-  const deleteUploadedFile = async () => {
-    if ('filePath' in input) {
-      try {
-        // Validate the path stays within the expected upload directory
-        const resolvedPath = path.resolve(input.filePath);
-        if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
-          logger.error('Attempted to delete file outside of upload directory', { filePath: input.filePath });
-          return;
-        }
-        await fs.unlink(resolvedPath);
-      } catch (unlinkErr) {
-        logger.error('Failed to delete uploaded JD file after parse error', unlinkErr);
-      }
-    }
-  };
-
   let result: Awaited<ReturnType<typeof model.generateContent>>;
 
   try {
-    if ('filePath' in input) {
-      const resolvedPath = path.resolve(input.filePath);
-      // Validate the path stays within the expected upload directory to prevent path traversal
-      if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
-        const err = new Error('Invalid file path.') as Error & { status: number };
-        err.status = 400;
-        throw err;
-      }
-      const fileBuffer = await fs.readFile(resolvedPath);
-      const base64Data = fileBuffer.toString('base64');
+    if ('base64Data' in input) {
       result = await model.generateContent([
         {
           inlineData: {
             mimeType: 'application/pdf',
-            data: base64Data,
+            data: input.base64Data,
           },
         },
         { text: JD_PARSE_PROMPT },
@@ -138,7 +109,6 @@ export const parseAndDraftJob = async (
     }
   } catch (geminiErr) {
     logger.error('Gemini API call failed for JD parsing', geminiErr);
-    await deleteUploadedFile();
     const err = new Error('AI service is unavailable. Please try again later.') as Error & { status: number };
     err.status = 502;
     throw err;
@@ -152,7 +122,6 @@ export const parseAndDraftJob = async (
     const validation = ParsedJobDataSchema.safeParse(rawJson);
     if (!validation.success) {
       logger.error('Gemini response failed job schema validation', validation.error.flatten());
-      await deleteUploadedFile();
       const err = new Error('AI returned unexpected data format. Please try again.') as Error & { status: number };
       err.status = 500;
       throw err;
@@ -161,14 +130,10 @@ export const parseAndDraftJob = async (
   } catch (parseErr) {
     if ((parseErr as { status?: number }).status) throw parseErr;
     logger.error('Failed to parse Gemini AI response for JD as JSON', parseErr);
-    await deleteUploadedFile();
     const err = new Error('AI parsing failed. Please try a different PDF or contact support.') as Error & { status: number };
     err.status = 500;
     throw err;
   }
-
-  // Clean up uploaded file after successful parse
-  await deleteUploadedFile();
 
   // Save draft job to database
   const job = await prisma.job.create({

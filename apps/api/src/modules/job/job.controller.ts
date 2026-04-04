@@ -1,5 +1,18 @@
+import fs from 'fs/promises';
+import path from 'path';
 import { Request, Response } from 'express';
+import { logger } from '../../services/logger.service';
 import * as JobService from './job.service';
+
+const UPLOAD_DIR = path.resolve('uploads/jds');
+
+const safeDeleteFile = async (filePath: string) => {
+  try {
+    await fs.unlink(filePath);
+  } catch (unlinkErr) {
+    logger.error('Failed to delete uploaded JD file', unlinkErr);
+  }
+};
 
 export const handleParseJob = async (req: Request, res: Response): Promise<void> => {
   const rawText = typeof req.body?.rawText === 'string' ? (req.body.rawText as string).trim() : '';
@@ -12,7 +25,32 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  const input = req.file ? { filePath: req.file.path } : { rawText };
+  let input: { base64Data: string } | { rawText: string };
+
+  if (req.file) {
+    // Validate path is within the expected upload directory before reading
+    const resolvedPath = path.resolve(req.file.path);
+    if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
+      res.status(400).json({ success: false, message: 'Invalid file path.' });
+      return;
+    }
+
+    let base64Data: string;
+    try {
+      const fileBuffer = await fs.readFile(resolvedPath);
+      base64Data = fileBuffer.toString('base64');
+    } catch (readErr) {
+      logger.error('Failed to read uploaded JD file', readErr);
+      res.status(500).json({ success: false, message: 'Failed to read uploaded file. Please try again.' });
+      return;
+    } finally {
+      await safeDeleteFile(resolvedPath);
+    }
+
+    input = { base64Data };
+  } else {
+    input = { rawText };
+  }
 
   const result = await JobService.parseAndDraftJob(input);
   res.status(200).json({ success: true, ...result });

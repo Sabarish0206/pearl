@@ -96,3 +96,26 @@ model Faculty {
 
   @@map("faculty")
 }
+
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
+model Job {
+  id                  String    @id @default(uuid())
+  companyName         String    @map("company_name")
+  jobRole             String    @map("job_role")
+  ctc                 String?
+  minCgpa             Decimal   @default(0) @map("min_cgpa") @db.Decimal(4, 2)
+  maxActiveArrears    Int       @default(0) @map("max_active_arrears")
+  maxHistoryOfArrears Int       @default(99) @map("max_history_of_arrears")
+  allowedDepartments  String[]  @map("allowed_departments")
+  status              JobStatus @default(DRAFT)
+  parsedData          Json?     @map("parsed_data")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  @@map("jobs")
+}

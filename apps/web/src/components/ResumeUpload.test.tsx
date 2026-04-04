@@ -3,7 +3,6 @@ import '@testing-library/jest-dom';
 import ResumeUpload from './ResumeUpload';
 
 // Helper to create a mock file
-// @ts-ignore
 const createFile = (name: string, type: string, size = 1000) => {
   const file = new File(['resume'], name, { type });
   Object.defineProperty(file, 'size', { value: size, writable: false });
@@ -12,25 +11,23 @@ const createFile = (name: string, type: string, size = 1000) => {
 
 describe('ResumeUpload UI', () => {
   const apiUrl = '/mock-upload';
-  // @ts-ignore
-const originalXMLHttpRequest = globalThis.XMLHttpRequest;
+  const originalXMLHttpRequest = globalThis.XMLHttpRequest;
   let mockXhr;
   beforeEach(() => {
     // Mock XMLHttpRequest for upload progress simulation
     mockXhr = jest.fn(() => ({
       open: jest.fn(),
-      send: jest.fn(function (_formData) { this.upload.onprogress({ lengthComputable: true, loaded: 100, total: 100 }); this.status = 200; this.responseText = JSON.stringify({ url: 'uploaded-url.pdf' }); setTimeout(() => this.onload(), 0); }),
+      send: jest.fn(function () { this.upload.onprogress({ lengthComputable: true, loaded: 100, total: 100 }); this.status = 200; this.responseText = JSON.stringify({ url: 'uploaded-url.pdf' }); setTimeout(() => this.onload(), 0); }),
       setRequestHeader: jest.fn(),
       upload: {},
       onload: null,
       onerror: null,
     }));
-    // @ts-ignore
-globalThis.XMLHttpRequest = mockXhr;
+    // @ts-expect-error - Assigning mock to globalThis.XMLHttpRequest which TypeScript doesn't recognize
+    globalThis.XMLHttpRequest = mockXhr;
   });
   afterEach(() => {
-    // @ts-ignore
-globalThis.XMLHttpRequest = originalXMLHttpRequest;
+    globalThis.XMLHttpRequest = originalXMLHttpRequest;
     jest.clearAllMocks();
   });
 

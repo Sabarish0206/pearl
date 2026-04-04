@@ -2,10 +2,9 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
-import { handleSearchStudents } from './student.controller';
 
-// General rate limit for student admin endpoints
-const studentRateLimiter = rateLimit({
+// General rate limit for student self-service endpoints
+const studentUserRateLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
   max: 60,
   standardHeaders: true,
@@ -15,9 +14,9 @@ const studentRateLimiter = rateLimit({
 
 const router = Router();
 
-// All student admin routes require authentication and ADMIN or FACULTY role
-router.use(studentRateLimiter, verifySession, requireRole(['ADMIN', 'FACULTY']));
+// All routes require authentication and STUDENT role
+router.use(studentUserRateLimiter, verifySession, requireRole(['STUDENT']));
 
-router.post('/search', handleSearchStudents);
+// Student self-service routes go here
 
 export default router;

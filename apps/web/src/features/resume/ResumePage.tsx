@@ -1,18 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Box,
   CircularProgress,
   Typography,
-  ThemeProvider,
-  createTheme,
-  CssBaseline,
 } from '@mui/material';
 import type { ResumeRow } from '@pearl/common';
 import { fetchResume, parseResume, commitResume } from '../../api/resume.api';
-import PageHeader from './components/PageHeader';
+import { useThemeStore } from '../../stores/themeStore';
+import PortalLayout from '../../components/PortalLayout';
 import SkeletonLoader from './components/SkeletonLoader';
 import DropzoneState from './components/DropzoneState';
 import ParsingState from './components/ParsingState';
@@ -20,42 +17,8 @@ import DraftForm from './components/DraftForm';
 import VerifiedDashboard from './components/VerifiedDashboard';
 import type { DraftFormData, UIState } from './components/types';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#6366f1',
-    },
-    background: {
-      default: '#0f172a',
-      paper: '#111827',
-    },
-    divider: '#1e293b',
-    text: {
-      primary: '#e2e8f0',
-      secondary: '#94a3b8',
-      disabled: '#475569',
-    },
-    error: {
-      main: '#ef4444',
-    },
-  },
-  typography: {
-    fontFamily: "'Inter', -apple-system, sans-serif",
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-      },
-    },
-  },
-});
-
 export default function ResumePage() {
-  const navigate = useNavigate();
+  const { theme } = useThemeStore();
   const [uiState, setUiState] = useState<UIState>('loading');
   const [draftData, setDraftData] = useState<DraftFormData | null>(null);
   const [verifiedData, setVerifiedData] = useState<ResumeRow | null>(null);
@@ -190,61 +153,57 @@ export default function ResumePage() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
-        <ToastContainer position="top-right" autoClose={4000} theme="dark" />
-        <PageHeader onBack={() => navigate('/dashboard')} />
-
-        <Box sx={{ maxWidth: 860, mx: 'auto', px: 3, py: 4 }}>
-          {uiState === 'loading' && <SkeletonLoader />}
-          {uiState === 'not_uploaded' && (
-            <DropzoneState
-              isDragging={isDragging}
-              fileInputRef={fileInputRef}
-              onDrop={handleDrop}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onFileInput={handleFileInput}
-            />
-          )}
-          {uiState === 'parsing' && <ParsingState />}
-          {uiState === 'draft' && draftData && (
-            <DraftForm
-              data={draftData}
-              onChange={setDraftData}
-              onSubmit={handleCommit}
-            />
-          )}
-          {uiState === 'saving' && (
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 2,
-                py: 6,
-              }}
-            >
-              <CircularProgress color="primary" size={48} />
-              <Typography color="text.secondary">Saving your verified resume...</Typography>
-            </Box>
-          )}
-          {uiState === 'verified' && verifiedData && (
-            <VerifiedDashboard
-              data={verifiedData}
-              onReplace={() => {
-                setVerifiedData(null);
-                setDraftData(null);
-                setUiState('not_uploaded');
-              }}
-            />
-          )}
-        </Box>
+    <PortalLayout title="My Resume">
+      <ToastContainer position="top-right" autoClose={4000} theme={theme} />
+      
+      <Box sx={{ maxWidth: 860, mx: 'auto', px: 3, py: 4 }}>
+        {uiState === 'loading' && <SkeletonLoader />}
+        {uiState === 'not_uploaded' && (
+          <DropzoneState
+            isDragging={isDragging}
+            fileInputRef={fileInputRef}
+            onDrop={handleDrop}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onFileInput={handleFileInput}
+          />
+        )}
+        {uiState === 'parsing' && <ParsingState />}
+        {uiState === 'draft' && draftData && (
+          <DraftForm
+            data={draftData}
+            onChange={setDraftData}
+            onSubmit={handleCommit}
+          />
+        )}
+        {uiState === 'saving' && (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              py: 6,
+            }}
+          >
+            <CircularProgress color="primary" size={48} />
+            <Typography color="text.secondary">Saving your verified resume...</Typography>
+          </Box>
+        )}
+        {uiState === 'verified' && verifiedData && (
+          <VerifiedDashboard
+            data={verifiedData}
+            onReplace={() => {
+              setVerifiedData(null);
+              setDraftData(null);
+              setUiState('not_uploaded');
+            }}
+          />
+        )}
       </Box>
-    </ThemeProvider>
+    </PortalLayout>
   );
 }

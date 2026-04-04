@@ -11,14 +11,6 @@
   --color-bg: #f9fafb;
   --color-card: #ffffff;
   --color-input-bg: #f9fafb;
-  --color-shadow: rgba(0, 0, 0, 0.06);
-
-  /* Animation tokens */
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --duration-fast: 0.18s;
-  --duration-base: 0.28s;
-  --duration-slow: 0.45s;
 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
@@ -30,120 +22,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
 }
-
-[data-theme='dark'] {
-  --color-primary: #818cf8;
-  --color-primary-hover: #6366f1;
-  --color-primary-light: #1e1b4b;
-  --color-danger: #f87171;
-  --color-danger-light: #450a0a;
-  --color-success: #34d399;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-border: #334155;
-  --color-bg: #0f172a;
-  --color-card: #1e293b;
-  --color-input-bg: #1e293b;
-  --color-shadow: rgba(0, 0, 0, 0.3);
-}
-
-/* ================================================================
-   GLOBAL KEYFRAMES
-   ================================================================ */
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(22px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes fadeInRight {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.88); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes scaleInBounce {
-  0%   { opacity: 0; transform: scale(0.7); }
-  60%  { opacity: 1; transform: scale(1.05); }
-  100% { transform: scale(1); }
-}
-
-@keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-100%); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
-}
-
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-  50%       { box-shadow: 0 0 0 8px rgba(79, 70, 229, 0); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33%       { transform: translateY(-12px) rotate(1deg); }
-  66%       { transform: translateY(-6px) rotate(-1deg); }
-}
-
-@keyframes progressFill {
-  from { width: 0; }
-}
-
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(10px) scale(0.9); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ================================================================
-   ANIMATION UTILITY CLASSES
-   ================================================================ */
-
-.anim-fade-up   { animation: fadeInUp    var(--duration-slow) var(--ease-spring) both; }
-.anim-fade-in   { animation: fadeIn      var(--duration-base) ease both; }
-.anim-scale-in  { animation: scaleIn     var(--duration-base) var(--ease-spring) both; }
-.anim-fade-left { animation: fadeInLeft  var(--duration-slow) var(--ease-spring) both; }
-.anim-fade-right{ animation: fadeInRight var(--duration-slow) var(--ease-spring) both; }
-
-/* Stagger delays */
-.anim-delay-1 { animation-delay: 0.06s; }
-.anim-delay-2 { animation-delay: 0.12s; }
-.anim-delay-3 { animation-delay: 0.18s; }
-.anim-delay-4 { animation-delay: 0.24s; }
-.anim-delay-5 { animation-delay: 0.30s; }
-.anim-delay-6 { animation-delay: 0.36s; }
-
-/* ================================================================
-   RESET
-   ================================================================ */
 
 *,
 *::before,
@@ -153,31 +32,16 @@
   padding: 0;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   min-height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
-  overflow-x: hidden;
 }
-
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 99px;
-}
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
 
 a {
   color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
-  transition: color var(--duration-fast) ease;
 }
 
 a:hover {
@@ -198,11 +62,7 @@ button {
   border: none;
   border-radius: 8px;
   font-weight: 600;
-  touch-action: manipulation;
-  transition: background-color var(--duration-fast) ease,
-              box-shadow var(--duration-fast) ease,
-              transform var(--duration-fast) var(--ease-spring),
-              opacity var(--duration-fast) ease;
+  transition: background-color 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
 button:focus-visible {
@@ -210,29 +70,6 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-button:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-input, textarea, select {
+input {
   font-family: inherit;
-  touch-action: manipulation;
-}
-
-/* ================================================================
-   RESPONSIVE UTILITIES
-   ================================================================ */
-
-/* Respect iOS safe areas on notched phones */
-@supports (padding: max(0px)) {
-  body {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
-}
-
-/* Prevent text size adjustment on orientation change */
-html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
 }

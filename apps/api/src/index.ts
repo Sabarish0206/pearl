@@ -7,6 +7,7 @@ import healthRouter from './modules/health/health.router';
 import authRouter from './modules/auth/auth.router';
 import resumeRouter from './modules/resume/resume.router';
 import jobRouter from './modules/job/job.router';
+import studentRouter from './modules/student/student.router';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -25,6 +26,7 @@ app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/student/resume', resumeRouter);
 app.use('/api/admin/jobs', jobRouter);
+app.use('/api/admin/students', studentRouter);
 
 
 // Error Handling Middleware

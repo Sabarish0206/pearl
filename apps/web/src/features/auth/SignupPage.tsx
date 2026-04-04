@@ -157,7 +157,7 @@ const SignupPage = () => {
             className={`role-btn ${!isStudent ? 'role-btn--active' : ''}`}
             onClick={() => handleRoleChange('FACULTY')}
           >
-            Placement Officer / Incharge
+            Faculty
           </button>
         </div>
 
@@ -324,7 +324,7 @@ const SignupPage = () => {
                     type="text"
                     value={(formData as FacultyFormData).designation}
                     onChange={handleChange}
-                    placeholder="e.g., Placement Officer"
+                    placeholder="e.g., Assistant Professor"
                     disabled={isSubmitting}
                   />
                   {fieldErrors.designation && (

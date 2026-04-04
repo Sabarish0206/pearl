@@ -8,25 +8,9 @@ const SALT_ROUNDS = 12;
 const COLLEGE_EMAIL_DOMAIN = '@psnacet.edu.in';
 
 export interface JwtPayload {
-  userId: number;
-  email: string;
+  id: string;
   role: 'STUDENT' | 'FACULTY' | 'ADMIN';
 }
-
-const buildDisplayName = (user: {
-  student?: { firstName: string; lastName: string } | null;
-  faculty?: { fullName: string } | null;
-}): string | undefined => {
-  if (user.student) {
-    return `${user.student.firstName} ${user.student.lastName}`.trim();
-  }
-
-  if (user.faculty?.fullName) {
-    return user.faculty.fullName;
-  }
-
-  return undefined;
-};
 
 export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
   const emailLower = input.email.toLowerCase();
@@ -71,12 +55,7 @@ export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
       },
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      role: 'STUDENT',
-      name: `${input.firstName} ${input.lastName}`.trim(),
-    };
+    return { id: user.id, email: user.email, role: 'STUDENT' };
   }
 
   const user = await prisma.user.create({
@@ -94,7 +73,7 @@ export const signupUser = async (input: SignupInput): Promise<AuthUser> => {
     },
   });
 
-  return { id: user.id, email: user.email, role: 'FACULTY', name: input.fullName };
+  return { id: user.id, email: user.email, role: 'FACULTY' };
 };
 
 export const loginUser = async (

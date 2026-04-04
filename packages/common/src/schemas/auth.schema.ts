@@ -63,7 +63,6 @@ export const AuthUserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
   role: z.enum(["STUDENT", "FACULTY", "ADMIN"]),
-  name: z.string().optional(),
 });
 
 export type AuthUser = z.infer<typeof AuthUserSchema>;

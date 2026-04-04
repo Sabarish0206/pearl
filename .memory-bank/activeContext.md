@@ -4,737 +4,141 @@
 
 ### Architecture Overview
 Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + SQLite
-- Build System: Turborepo
-- Package Manager: pnpm
+- **Web**: React 19 + Vite + TypeScript + Material UI v7 (dark theme) — runs on Port 3000
+- **API**: Express.js + TypeScript + Prisma ORM + PostgreSQL — runs on Port 3001
+- **AI Integration**: Google Gemini (`gemini-2.5-flash`) for resume and job-description parsing
+- **Build System**: Turborepo
+- **Package Manager**: pnpm
 
 ### Workspace Structure
+```
 pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
+├── apps/
+│   ├── api/           (@pearl/api)      - Express REST API
+│   └── web/           (@pearl/web)      - React Vite SPA
+├── packages/
+│   ├── common/        (@pearl/common)   - Shared Zod schemas & TS interfaces
+│   ├── config/        (@pearl/config)   - Centralized env-var validation (Zod)
+│   └── database/      (@pearl/database) - Prisma schema & client singleton
+├── docker-compose.yml                   - PostgreSQL on port 5432
+├── turbo.json
+├── pnpm-workspace.yaml
+└── .memory-bank/
+    ├── systemPatterns.md
+    ├── progress.md
+    └── activeContext.md  ← this file
+```
 
 ### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-SQLite database with initial User model:
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Resolved database provider configuration mismatch to properly utilize SQLite and pushed schema.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL (added `docker-compose.yml` and updated connection strings).# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5433** to avoid collisions with any locally running PostgreSQL services.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.
-- Executed dead-code cleanup: Removed unused variables (like `Request` and `Response` in `api/src/index.ts`) and console.logs in React's `App.tsx`.
-- Ran E2E functionality testing via `curl` and `pnpm lint` / `pnpm build` across workspace.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-- Build: Configured with `tsup` using `tsup.config.ts` to bundle `@pearl/config` seamlessly for production deployments.
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.
-- Executed dead-code cleanup: Removed unused variables (like `Request` and `Response` in `api/src/index.ts`) and console.logs in React's `App.tsx`.
-- Ran E2E functionality testing via `curl` and `pnpm lint` / `pnpm build` across workspace.
-- **Production Preparedness Fix**: Added `tsup.config.ts` to `@pearl/api` with `noExternal: ['@pearl/config']` to guarantee seamless `node dist/index.js` production deployments without ESM module resolution issues.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-- Build: Configured with `tsup` using `tsup.config.ts` to bundle `@pearl/config` seamlessly for production deployments.
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.
-- Executed dead-code cleanup: Removed unused variables (like `Request` and `Response` in `api/src/index.ts`) and console.logs in React's `App.tsx`.
-- Ran E2E functionality testing via `curl` and `pnpm lint` / `pnpm build` across workspace.
-- **Production Preparedness Fix**: Added `tsup.config.ts` to `@pearl/api` with `noExternal: ['@pearl/config']` to guarantee seamless `node dist/index.js` production deployments without ESM module resolution issues.
-- **Database Configuration Update**: Changed the internal database name from `pearl` to `pearl_local` across all environment configurations and `docker-compose.yml` for clarity during local development.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-- Build: Configured with `tsup` using `tsup.config.ts` to bundle `@pearl/config` seamlessly for production deployments.
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.
-- Executed dead-code cleanup: Removed unused variables (like `Request` and `Response` in `api/src/index.ts`) and console.logs in React's `App.tsx`.
-- Ran E2E functionality testing via `curl` and `pnpm lint` / `pnpm build` across workspace.
-- **Production Preparedness Fix**: Added `tsup.config.ts` to `@pearl/api` with `noExternal: ['@pearl/config']` to guarantee seamless `node dist/index.js` production deployments without ESM module resolution issues.
-- **Database Configuration Update**: Changed the internal database name from `pearl` to `pearl_local` across all environment configurations and `docker-compose.yml` for clarity during local development.# Active Context - Project Pearl Monorepo
-
-## Current Project State
-
-### Architecture Overview
-Project Pearl is a full-stack monorepo using:
-- Web: React 19 + Vite + TypeScript (SPA) initialized in apps/web
-- API: Express.js + TypeScript (REST API) initialized in apps/api
-- Database: Prisma ORM + PostgreSQL
-- Build System: Turborepo
-- Package Manager: pnpm
-
-### Workspace Structure
-pearl/
-|- apps/
-|  |- web/          (@pearl/web) - React Vite app
-|  |- api/          (@pearl/api) - Express API
-|- packages/
-|  |- common/       (@pearl/common) - Shared utilities
-|  |- config/       (@pearl/config) - Configuration package (Zod schemas)
-|  |- database/     (@pearl/database) - Prisma schema
-|- turbo.json        - Turborepo configuration
-|- pnpm-workspace.yaml - Workspace configuration
-|- docker-compose.yml - PostgreSQL database configuration
-|- .memory-bank/
-   |- systemPatterns.md - Naming and typing conventions
-   |- progress.md - Migration/setup progress
-   |- activeContext.md - This file
-
-### Naming Conventions
-All packages follow the @pearl/ namespace:
-- @pearl/web - Frontend application
-- @pearl/api - Backend API
-- @pearl/database - Database layer
-- @pearl/common - Shared code/utilities
-- @pearl/config - Configuration utilities (Environment Variable Types)
-
-### API Setup Details
-- Entry point: apps/api/src/index.ts
-- Port: 3001 (default, fetched from root .env)
-- CORS enabled for cross-origin requests
-- Health check endpoint: GET /health (implemented, verifies DB connection)
-- Middleware: Centralized logging middleware integrated
-- Env: Validated by @pearl/config via Zod
-- Build: Configured with `tsup` using `tsup.config.ts` to bundle `@pearl/config` seamlessly for production deployments.
-
-### Web Client Setup Details
-- Initialized React + Vite client in apps/web
-- Configured with necessary build scripts
-- Env: Validated by @pearl/config via Zod
-
-### Database Schema
-PostgreSQL database with initial User model (dummy schema for setup):
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-}
-
-- Prisma Client v6.x singleton exported from packages/database/index.ts.
-- `apps/api` successfully imports and connects to the Prisma Client.
-- Root `.env` tracks the connection string.
-
-### Development Scripts
-Available at root level:
-- pnpm dev - Start all dev servers via Turbo
-- pnpm build - Build all packages
-- pnpm lint - Lint all packages
-- pnpm db:generate - Generate Prisma client
-- pnpm db:push - Push schema to database
-
-## Recent Changes
-- Exported PrismaClient singleton from packages/database.
-- Linked @pearl/database to apps/api.
-- API connects to DB on startup and tests connection in the `/health` endpoint.
-- Handled Prisma v7 experimental mismatches by standardizing on Prisma v6.x.
-- Created root `.env` and `.env.example` to centralize environment variables.
-- Scaffolded `@pearl/config` with `zod` for strictly typing and validating the environment.
-- Integrated `zod` validation into `@pearl/api` (`dotenv` integration) and `@pearl/web` (`import.meta.env`).
-- Fixed ESM export named issues by configuring `@pearl/config` with `"type": "module"`.
-- Transitioned Database from SQLite to PostgreSQL. 
-- Mapped Docker container PostgreSQL to **Port 5432** after gracefully shutting down conflicting local databases.
-- Executed dead-code cleanup: Removed unused variables (like `Request` and `Response` in `api/src/index.ts`) and console.logs in React's `App.tsx`.
-- Ran E2E functionality testing via `curl` and `pnpm lint` / `pnpm build` across workspace.
-- **Production Preparedness Fix**: Added `tsup.config.ts` to `@pearl/api` with `noExternal: ['@pearl/config']` to guarantee seamless `node dist/index.js` production deployments without ESM module resolution issues.
-- **Database Configuration Update**: Changed the internal database name from `pearl` to `pearl_local` across all environment configurations and `docker-compose.yml` for clarity during local development.
-- **Pgweb Integration**: Integrated Pgweb into `docker-compose.yml` for database visualization. Resolved port conflict and ensured correct container startup.
+All packages follow the `@pearl/` namespace:
+- `@pearl/web` — Frontend React app
+- `@pearl/api` — Backend Express API
+- `@pearl/database` — Prisma ORM layer
+- `@pearl/common` — Shared Zod schemas & TypeScript interfaces
+- `@pearl/config` — Environment variable schemas (Zod)
+
+---
+
+## Registered API Routes
+
+| Method | Path                    | Module  | Auth Required      |
+|--------|-------------------------|---------|-------------------|
+| GET    | /health                 | health  | None              |
+| POST   | /api/auth/signup        | auth    | None              |
+| POST   | /api/auth/login         | auth    | None              |
+| GET    | /api/auth/me            | auth    | verifySession     |
+| POST   | /api/auth/logout        | auth    | None              |
+| POST   | /api/student/resume/parse | resume | STUDENT           |
+| PUT    | /api/student/resume/commit | resume | STUDENT          |
+| GET    | /api/student/resume     | resume  | STUDENT           |
+| POST   | /api/admin/jobs/parse   | job     | ADMIN             |
+| GET    | /api/admin/jobs/:id     | job     | ADMIN             |
+| PUT    | /api/admin/jobs/:id/publish | job | ADMIN            |
+
+---
+
+## Database Schema (Current)
+
+PostgreSQL via Prisma v6.x. Full production schema:
+
+- **User** — UUID PK, email (unique), passwordHash, Role enum, createdAt
+  - Relations: Student (1-1), Faculty (1-1), Job[] (created jobs)
+- **Student** — UUID PK, FK→User, firstName, lastName, registerNumber, department, batchYear, cgpa, activeArrears, historyOfArrears, tenthMark, twelfthMark
+  - Relations: Resume (1-1), StudentSkill[], Application[]
+- **Faculty** — UUID PK, FK→User, fullName, designation, department
+- **Skill** — UUID PK, name (unique), createdAt
+  - Relations: StudentSkill[], JobSkill[]
+- **StudentSkill** — Composite PK (studentId + skillId), source (default "RESUME")
+- **Resume** — UUID PK, FK→Student (unique), filePath, atsScore?, parsedData (JSON)?, isVerified (default false)
+- **Job** — UUID PK, FK→User (createdBy), companyName, jobRole, ctc?, description (Text), minCgpa (Decimal?), maxActiveArrears (Int?), maxHistoryOfArrears (Int?), allowedDepartments (String[]), parsedData (JSON)?, applicationDeadline?, status (JobStatus, default DRAFT), createdAt, updatedAt
+  - Relations: JobSkill[], Application[]
+- **JobSkill** — Composite PK (jobId + skillId), isMandatory (default true)
+- **Application** — UUID PK, studentId, jobId, status (ApplicationStatus, default APPLIED), createdAt, updatedAt
+  - Unique: (studentId, jobId)
+
+**Enums**: `Role` (STUDENT, FACULTY, ADMIN), `JobStatus` (DRAFT, ACTIVE, CLOSED, COMPLETED, CANCELLED), `ApplicationStatus` (APPLIED, SHORTLISTED, OFFERED, REJECTED)
+
+---
+
+## Module Details
+
+### IAM Module (`/api/auth`)
+- JWT stored in `HttpOnly + Secure + SameSite=Strict` cookie (`auth_token`)
+- `bcrypt` with 12 salt rounds for password hashing
+- Middleware: `verifySession.middleware.ts` (reads cookie, verifies JWT, attaches `req.user`), `requireRole.middleware.ts` (factory accepting `allowedRoles[]`)
+- Rate limiting: 20 req/15min for signup/login, 60 req/min for /me
+- College email domain enforced: `@psnacet.edu.in`
+- Frontend: `authStore.ts` (Zustand), `LoginPage.tsx`, `SignupPage.tsx`, `ProtectedRoute.tsx`
+
+### Resume Module (`/api/student/resume`)
+- **Two-Phase Pattern**: POST `/parse` → Gemini parse → save as DRAFT; PUT `/commit` → Prisma transaction → mark `isVerified=true`
+- AI Model: `gemini-2.5-flash`
+- PDF uploaded via `multer` (5 MB limit) to `uploads/resumes/`; file deleted on Gemini failure
+- Skills deduped via case-insensitive upsert; student profile fields (cgpa, arrears, marks) updated in commit transaction
+- Rate limits: 60 req/min general, 10 req/hr for parse
+- Frontend (`apps/web/src/features/resume/`): MUI v7 dark-theme `ResumePage.tsx` with reusable sub-components: `PageHeader`, `DropzoneState`, `ParsingState`, `DraftForm`, `VerifiedDashboard`, `Section`, `Metric`, `SkeletonLoader`
+
+### Job Module (`/api/admin/jobs`) — Admin only
+- **Two-Phase Pattern**: POST `/parse` → Gemini parse JD → save Job as DRAFT; PUT `/:id/publish` → validate final data → set status ACTIVE
+- Accepts PDF upload (`multer`, 5 MB, `uploads/jds/`) **or** `rawText` JSON body
+- AI Model: `gemini-2.5-flash`
+- `ParsedJobDataSchema` in `@pearl/common` validates Gemini response
+- Rate limits: 60 req/min general, 10 req/hr for parse
+- Frontend (`apps/web/src/features/jobs/`): `JobParsePage.tsx` (FileUploadBox / TextInputBox tabs), `JobVerifyPage.tsx` with reusable sub-components: `FileUploadBox`, `TextInputBox`, `JobParsingState`, `JobDraftSuccess`
+
+---
+
+## API Setup Details
+- Entry point: `apps/api/src/index.ts`
+- Port: 3001 (env `PORT`, default 3001)
+- Build: `tsup` with `noExternal: ['@pearl/config']` → outputs `dist/index.js`
+- CORS: `credentials: true`, origin from `CORS_ORIGIN` env
+- Global error handler: returns `{success: false, error, message}` JSON
+
+## Web Client Setup Details
+- Port: 3000 (`VITE_API_URL` env for API base URL, default `http://localhost:3001`)
+- State: Zustand (`authStore.ts`)
+- Data fetching: TanStack Query v5
+- Routing: react-router-dom v7
+- UI: Material UI v7 dark ThemeProvider; Box+CSS Grid for layouts (no MUI Grid component — breaking API in v7)
+- Auth bootstrap on mount in `App.tsx` via `GET /api/auth/me`
+- `ProtectedRoute.tsx` returns `null` while `authStore.isLoading=true` to avoid redirect race condition
+
+## Development Scripts (root level)
+- `pnpm dev` — Start all dev servers via Turbo
+- `pnpm build` — Build all packages
+- `pnpm lint` — Lint all packages (`pnpm --filter @pearl/web lint`)
+- `pnpm db:generate` — Generate Prisma client
+- `pnpm db:push` — Push schema to database
+- API build: `pnpm --filter @pearl/api build` (tsup → dist/index.js)
+
+## Recent Changes (last 20 commits)
+1. **IAM Module**: JWT auth (`/api/auth`), RBAC middleware, Zustand auth store, login/signup pages
+2. **Security hardening**: Rate limiting on all auth & resume routes; bcrypt 12 rounds; HttpOnly cookies
+3. **Resume UI (initial)**: `ResumeUpload.tsx` component + `ResumeUploadDemo.tsx` feature page
+4. **Resume module (Two-Phase Draft/Commit)**: Gemini PDF parsing → DRAFT save → commit transaction
+5. **Resume fixes**: Code review (camelCase types, MulterError status codes, async file read, Gemini validation, skill dedup, dropzone a11y), CodeQL findings, PDF file cleanup on failure, MUI/testing-lib deps, Gemini model updates (2.0-flash → 2.5-flash)
+6. **ResumePage refactor**: MUI v7 dark ThemeProvider, full component decomposition (`DraftForm`, `VerifiedDashboard`, etc.), responsive CSS Grid layout with mobile-first breakpoints (480px, 768px, 1024px)
+7. **Database schema (Jobs & ATS)**: Added Job, JobSkill, Application, ApplicationStatus; extended Student with academic fields
+8. **Job module Phase 1**: PDF/text JD parsing via Gemini → DRAFT Job saved; `ParsedJobDataSchema` in common
+9. **Job module Phase 2**: Publish transaction — validate, upsert skills, set status ACTIVE; `JobVerifyPage.tsx` frontend

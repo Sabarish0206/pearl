@@ -152,7 +152,7 @@ export default function JobParsePage() {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box
               component="button"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate(-1)}
               aria-label="Back to dashboard"
               sx={{
                 bgcolor: 'transparent',

@@ -108,7 +108,7 @@ model Job {
   companyName         String    @map("company_name")
   jobRole             String    @map("job_role")
   ctc                 String?
-  minCgpa             Decimal   @default(0) @map("min_cgpa") @db.Decimal(4, 2)
+  minCgpa             Float     @default(0) @map("min_cgpa")
   maxActiveArrears    Int       @default(0) @map("max_active_arrears")
   maxHistoryOfArrears Int       @default(99) @map("max_history_of_arrears")
   allowedDepartments  String[]  @map("allowed_departments")

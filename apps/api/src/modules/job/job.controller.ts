@@ -30,7 +30,8 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
   if (req.file) {
     // Validate path is within the expected upload directory before reading
     const resolvedPath = path.resolve(req.file.path);
-    if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
+    const relPath = path.relative(UPLOAD_DIR, resolvedPath);
+    if (relPath.startsWith('..') || path.isAbsolute(relPath)) {
       res.status(400).json({ success: false, message: 'Invalid file path.' });
       return;
     }

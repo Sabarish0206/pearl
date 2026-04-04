@@ -81,32 +81,32 @@ export default function JobParsePage() {
     toast.success(`File selected: ${file.name}`);
   }, []);
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFile(file);
     e.target.value = '';
-  };
+  }, [handleFile]);
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
-  };
+  }, [handleFile]);
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
-  };
+  }, []);
 
-  const handleDragLeave = () => setIsDragging(false);
+  const handleDragLeave = useCallback(() => setIsDragging(false), []);
 
-  const handleTextChange = (value: string) => {
+  const handleTextChange = useCallback((value: string) => {
     setRawText(value);
     if (value) setSelectedFile(null);
-  };
+  }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!selectedFile && !rawText.trim()) {
       toast.error('Please upload a PDF or paste the job description text.');
       return;
@@ -127,14 +127,14 @@ export default function JobParsePage() {
       );
       setUiState('input');
     }
-  };
+  }, [selectedFile, rawText]);
 
-  const handleParseAnother = () => {
+  const handleParseAnother = useCallback(() => {
     setUiState('input');
     setSelectedFile(null);
     setRawText('');
     setResult(null);
-  };
+  }, []);
 
   return (
     <ThemeProvider theme={darkTheme}>

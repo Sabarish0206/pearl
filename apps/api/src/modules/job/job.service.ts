@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import path from 'path';
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
 import { prisma } from '@pearl/database';
 import { env } from '../../config/env';
@@ -70,6 +71,8 @@ For unstructuredData.responsibilities: extract the list of job responsibilities.
 For unstructuredData.perks: extract the list of perks or benefits.
 Return a strictly valid JSON object matching the required schema.`;
 
+const UPLOAD_DIR = path.resolve('uploads/jds');
+
 export const parseAndDraftJob = async (
   input: { filePath: string } | { rawText: string },
 ): Promise<{ job_id: string; parsed_data: ParsedJobData }> => {
@@ -93,7 +96,13 @@ export const parseAndDraftJob = async (
   const deleteUploadedFile = async () => {
     if ('filePath' in input) {
       try {
-        await fs.unlink(input.filePath);
+        // Validate the path stays within the expected upload directory
+        const resolvedPath = path.resolve(input.filePath);
+        if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
+          logger.error('Attempted to delete file outside of upload directory', { filePath: input.filePath });
+          return;
+        }
+        await fs.unlink(resolvedPath);
       } catch (unlinkErr) {
         logger.error('Failed to delete uploaded JD file after parse error', unlinkErr);
       }
@@ -104,7 +113,14 @@ export const parseAndDraftJob = async (
 
   try {
     if ('filePath' in input) {
-      const fileBuffer = await fs.readFile(input.filePath);
+      const resolvedPath = path.resolve(input.filePath);
+      // Validate the path stays within the expected upload directory to prevent path traversal
+      if (!resolvedPath.startsWith(UPLOAD_DIR + path.sep) && resolvedPath !== UPLOAD_DIR) {
+        const err = new Error('Invalid file path.') as Error & { status: number };
+        err.status = 400;
+        throw err;
+      }
+      const fileBuffer = await fs.readFile(resolvedPath);
       const base64Data = fileBuffer.toString('base64');
       result = await model.generateContent([
         {

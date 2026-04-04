@@ -65,7 +65,7 @@ router.post('/parse', parseRateLimiter, upload.single('jd'), handleParseJob);
 
 // Map multer-specific errors to proper HTTP status codes before the global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-router.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
+router.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof MulterError) {
     const status = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
     const message =
@@ -75,7 +75,7 @@ router.use((err: unknown, _req: Request, res: Response, next: NextFunction) => {
     res.status(status).json({ success: false, message });
     return;
   }
-  next(err);
+  _next(err);
 });
 
 export default router;

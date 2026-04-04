@@ -101,6 +101,11 @@ export default function JobParsePage() {
 
   const handleDragLeave = () => setIsDragging(false);
 
+  const handleTextChange = (value: string) => {
+    setRawText(value);
+    if (value) setSelectedFile(null);
+  };
+
   const handleSubmit = async () => {
     if (!selectedFile && !rawText.trim()) {
       toast.error('Please upload a PDF or paste the job description text.');
@@ -258,14 +263,14 @@ export default function JobParsePage() {
                 </Divider>
 
                 {/* Text input */}
-                <TextInputBox value={rawText} onChange={(v) => { setRawText(v); if (v) setSelectedFile(null); }} />
+                <TextInputBox value={rawText} onChange={handleTextChange} />
 
                 {/* Submit */}
                 <Button
                   variant="contained"
                   fullWidth
                   size="large"
-                  onClick={() => { void handleSubmit(); }}
+                  onClick={handleSubmit}
                   disabled={!selectedFile && !rawText.trim()}
                   sx={{ py: 1.5, fontWeight: 700, fontSize: '1rem' }}
                 >

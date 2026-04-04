@@ -19,9 +19,7 @@ export default function TextInputBox({ value, onChange }: TextInputBoxProps) {
         placeholder="Paste the job description here..."
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        slotProps={{
-          htmlInput: { 'aria-label': 'Job description text input' },
-        }}
+        inputProps={{ 'aria-label': 'Job description text input' }}
         sx={{
           '& .MuiOutlinedInput-root': {
             bgcolor: 'background.paper',

@@ -28,6 +28,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/student/resume', resumeRouter);
 app.use('/api/admin/jobs', jobRouter);
 app.use('/api/admin/students', studentAdminRouter);
+// TODO: placeholder route — no implementation yet; URL path subject to change
 app.use('/api/student/profile', studentUserRouter);
 
 

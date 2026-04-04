@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Box,
   CircularProgress,
   Typography,
+  ThemeProvider,
+  createTheme,
 } from '@mui/material';
 import type { ResumeRow } from '@pearl/common';
 import { fetchResume, parseResume, commitResume } from '../../api/resume.api';
@@ -24,6 +26,50 @@ export default function ResumePage() {
   const [verifiedData, setVerifiedData] = useState<ResumeRow | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Create MUI theme that syncs with global theme
+  const muiTheme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: theme,
+          primary: {
+            main: theme === 'dark' ? '#818cf8' : '#4f46e5',
+          },
+          background: {
+            default: theme === 'dark' ? '#0f172a' : '#f9fafb',
+            paper: theme === 'dark' ? '#1e293b' : '#ffffff',
+          },
+          text: {
+            primary: theme === 'dark' ? '#f1f5f9' : '#0f172a',
+            secondary: theme === 'dark' ? '#94a3b8' : '#64748b',
+          },
+        },
+        typography: {
+          fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        },
+        components: {
+          MuiPaper: {
+            styleOverrides: {
+              root: {
+                backgroundImage: 'none',
+                borderRadius: '12px',
+              },
+            },
+          },
+          MuiTextField: {
+            styleOverrides: {
+              root: {
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '10px',
+                },
+              },
+            },
+          },
+        },
+      }),
+    [theme]
+  );
 
   // ---- Populate draft state from a ResumeRow ----
   const populateDraft = useCallback((row: ResumeRow) => {
@@ -154,11 +200,12 @@ export default function ResumePage() {
 
   return (
     <PortalLayout title="My Resume">
-      <ToastContainer position="top-right" autoClose={4000} theme={theme} />
-      
-      <Box sx={{ maxWidth: 860, mx: 'auto', px: 3, py: 4 }}>
-        {uiState === 'loading' && <SkeletonLoader />}
-        {uiState === 'not_uploaded' && (
+      <ThemeProvider theme={muiTheme}>
+        <ToastContainer position="top-right" autoClose={4000} theme={theme} />
+        
+        <Box sx={{ maxWidth: 860, mx: 'auto', px: 3, py: 4 }}>
+          {uiState === 'loading' && <SkeletonLoader />}
+          {uiState === 'not_uploaded' && (
           <DropzoneState
             isDragging={isDragging}
             fileInputRef={fileInputRef}
@@ -204,6 +251,7 @@ export default function ResumePage() {
           />
         )}
       </Box>
+      </ThemeProvider>
     </PortalLayout>
   );
 }

@@ -58,3 +58,29 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
   const result = await JobService.parseAndDraftJob(input, createdById);
   res.status(200).json({ success: true, ...result });
 };
+
+export const handleGetJob = async (req: Request, res: Response): Promise<void> => {
+  const id = req.params['id'] as string;
+  const adminId = req.user!.id;
+
+  const job = await JobService.getJobById(id, adminId);
+  res.status(200).json({ success: true, job });
+};
+
+export const handlePublishJob = async (req: Request, res: Response): Promise<void> => {
+  const id = req.params['id'] as string;
+  const adminId = req.user!.id;
+
+  const validation = JobService.publishJobSchema.safeParse(req.body);
+  if (!validation.success) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid payload.',
+      errors: validation.error.flatten().fieldErrors,
+    });
+    return;
+  }
+
+  const job = await JobService.publishJob(id, adminId, validation.data);
+  res.status(200).json({ success: true, message: 'Job published successfully.', job });
+};

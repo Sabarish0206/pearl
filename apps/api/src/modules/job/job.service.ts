@@ -71,7 +71,8 @@ Return a strictly valid JSON object matching the required schema.`;
 
 // Service accepts pre-read base64 data or raw text — no filesystem access here.
 export const parseAndDraftJob = async (
-  input: { base64Data: string } | { rawText: string },
+  input: { base64Data: string; description: string } | { rawText: string },
+  createdById: string,
 ): Promise<{ job_id: string; parsed_data: ParsedJobData }> => {
   if (!env.GEMINI_API_KEY) {
     const err = new Error('Job parsing is not available. Please contact support.') as Error & { status: number };
@@ -135,12 +136,17 @@ export const parseAndDraftJob = async (
     throw err;
   }
 
+  // The description field stores the raw source text (from rawText or filename placeholder for PDFs)
+  const description = 'rawText' in input ? input.rawText : input.description;
+
   // Save draft job to database
   const job = await prisma.job.create({
     data: {
+      createdById,
       companyName: parsedData.companyName,
       jobRole: parsedData.jobRole,
       ctc: parsedData.ctc ?? null,
+      description,
       minCgpa: parsedData.minCgpa,
       maxActiveArrears: parsedData.maxActiveArrears,
       maxHistoryOfArrears: parsedData.maxHistoryOfArrears,

@@ -25,14 +25,16 @@ export type ParsedJobData = z.infer<typeof ParsedJobDataSchema>;
 
 export interface JobRow {
   id: string;
+  createdById: string;
   companyName: string;
   jobRole: string;
   ctc: string | null;
-  minCgpa: number;
-  maxActiveArrears: number;
-  maxHistoryOfArrears: number;
+  description: string;
+  minCgpa: number | null;
+  maxActiveArrears: number | null;
+  maxHistoryOfArrears: number | null;
   allowedDepartments: string[];
-  status: "DRAFT" | "PUBLISHED" | "CLOSED";
+  status: "DRAFT" | "ACTIVE" | "CLOSED" | "COMPLETED" | "CANCELLED";
   parsedData: ParsedJobData | null;
   createdAt: string;
   updatedAt: string;

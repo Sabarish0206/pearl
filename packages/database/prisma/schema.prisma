@@ -25,6 +25,7 @@ model User {
 
   student Student?
   faculty Faculty?
+  jobs    Job[]
 
   @@map("users")
 }
@@ -43,9 +44,10 @@ model Student {
   tenthMark        Decimal? @map("tenth_mark") @db.Decimal(5, 2)
   twelfthMark      Decimal? @map("twelfth_mark") @db.Decimal(5, 2)
 
-  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   resume        Resume?
   studentSkills StudentSkill[]
+  applications  Application[]
 
   @@map("students")
 }
@@ -55,7 +57,8 @@ model Skill {
   name      String   @unique @db.VarChar(100)
   createdAt DateTime @default(now()) @map("created_at")
 
-  studentSkills StudentSkill[]
+  studentSkills  StudentSkill[]
+  requiredByJobs JobSkill[]
 
   @@map("skills")
 }
@@ -73,12 +76,12 @@ model StudentSkill {
 }
 
 model Resume {
-  id         String   @id @default(uuid())
-  studentId  String   @unique @map("student_id")
-  filePath   String   @map("file_path")
-  atsScore   Int?     @map("ats_score")
-  parsedData Json?    @map("parsed_data")
-  isVerified Boolean  @default(false) @map("is_verified")
+  id         String  @id @default(uuid())
+  studentId  String  @unique @map("student_id")
+  filePath   String  @map("file_path")
+  atsScore   Int?    @map("ats_score")
+  parsedData Json?   @map("parsed_data")
+  isVerified Boolean @default(false) @map("is_verified")
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -99,23 +102,70 @@ model Faculty {
 
 enum JobStatus {
   DRAFT
-  PUBLISHED
+  ACTIVE
   CLOSED
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  SHORTLISTED
+  OFFERED
+  REJECTED
 }
 
 model Job {
   id                  String    @id @default(uuid())
-  companyName         String    @map("company_name")
-  jobRole             String    @map("job_role")
-  ctc                 String?
-  minCgpa             Float     @default(0) @map("min_cgpa")
-  maxActiveArrears    Int       @default(0) @map("max_active_arrears")
-  maxHistoryOfArrears Int       @default(99) @map("max_history_of_arrears")
+  createdById         String    @map("created_by_id")
+  companyName         String    @map("company_name") @db.VarChar(150)
+  jobRole             String    @map("job_role") @db.VarChar(150)
+  ctc                 String?   @map("ctc") @db.VarChar(100)
+  description         String    @db.Text
+  minCgpa             Decimal?  @default(0.00) @map("min_cgpa") @db.Decimal(4, 2)
+  maxActiveArrears    Int?      @default(0) @map("max_active_arrears")
+  maxHistoryOfArrears Int?      @default(99) @map("max_history_of_arrears")
   allowedDepartments  String[]  @map("allowed_departments")
-  status              JobStatus @default(DRAFT)
   parsedData          Json?     @map("parsed_data")
+  applicationDeadline DateTime? @map("application_deadline")
+  status              JobStatus @default(DRAFT)
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 
+  createdBy      User          @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  requiredSkills JobSkill[]
+  applications   Application[]
+
   @@map("jobs")
+}
+
+model JobSkill {
+  jobId       String  @map("job_id")
+  skillId     String  @map("skill_id")
+  isMandatory Boolean @default(true) @map("is_mandatory")
+
+  job   Job   @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([jobId, skillId])
+  @@index([jobId])
+  @@index([skillId])
+  @@map("job_skills")
+}
+
+model Application {
+  id        String            @id @default(uuid())
+  studentId String            @map("student_id")
+  jobId     String            @map("job_id")
+  status    ApplicationStatus @default(APPLIED)
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  job     Job     @relation(fields: [jobId], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, jobId])
+  @@index([jobId])
+  @@index([studentId])
+  @@map("applications")
 }

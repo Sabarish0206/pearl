@@ -16,6 +16,7 @@ const safeDeleteFile = async (filePath: string) => {
 
 export const handleParseJob = async (req: Request, res: Response): Promise<void> => {
   const rawText = typeof req.body?.rawText === 'string' ? (req.body.rawText as string).trim() : '';
+  const createdById = req.user!.id;
 
   if (!req.file && !rawText) {
     res.status(400).json({
@@ -25,7 +26,7 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  let input: { base64Data: string } | { rawText: string };
+  let input: { base64Data: string; description: string } | { rawText: string };
 
   if (req.file) {
     // Validate path is within the expected upload directory before reading
@@ -48,11 +49,12 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
       await safeDeleteFile(resolvedPath);
     }
 
-    input = { base64Data };
+    // Use the original filename as description placeholder for PDF uploads
+    input = { base64Data, description: req.file.originalname };
   } else {
     input = { rawText };
   }
 
-  const result = await JobService.parseAndDraftJob(input);
+  const result = await JobService.parseAndDraftJob(input, createdById);
   res.status(200).json({ success: true, ...result });
 };

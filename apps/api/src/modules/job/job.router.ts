@@ -6,7 +6,7 @@ import multer, { MulterError } from 'multer';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
-import { handleParseJob } from './job.controller';
+import { handleParseJob, handleGetJob, handlePublishJob } from './job.controller';
 
 const UPLOAD_DIR = path.resolve('uploads/jds');
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -62,6 +62,8 @@ const router = Router();
 router.use(jobRateLimiter, verifySession, requireRole(['ADMIN']));
 
 router.post('/parse', parseRateLimiter, upload.single('jd'), handleParseJob);
+router.get('/:id', handleGetJob);
+router.put('/:id/publish', handlePublishJob);
 
 // Map multer-specific errors to proper HTTP status codes before the global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

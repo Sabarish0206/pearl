@@ -9,6 +9,7 @@ import SignupPage from './features/auth/SignupPage';
 import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
 import ResumePage from './features/resume/ResumePage';
 import JobParsePage from './features/jobs/JobParsePage';
+import JobVerifyPage from './features/jobs/JobVerifyPage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -85,6 +86,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
             <JobParsePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/jobs/:id/verify"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <JobVerifyPage />
           </ProtectedRoute>
         }
       />

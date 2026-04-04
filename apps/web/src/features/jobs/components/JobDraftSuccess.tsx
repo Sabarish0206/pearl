@@ -1,4 +1,5 @@
-import { Box, Chip, Divider, Paper, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Box, Button, Chip, Divider, Paper, Typography } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { ParsedJobResult } from './types';
 
@@ -9,6 +10,7 @@ interface JobDraftSuccessProps {
 
 export default function JobDraftSuccess({ result, onParseAnother }: JobDraftSuccessProps) {
   const { parsed_data } = result;
+  const navigate = useNavigate();
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -145,27 +147,21 @@ export default function JobDraftSuccess({ result, onParseAnother }: JobDraftSucc
         )}
       </Paper>
 
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Box
-          component="button"
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+        <Button
+          variant="outlined"
           onClick={onParseAnother}
-          sx={{
-            bgcolor: 'primary.main',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 2,
-            px: 3,
-            py: 1.25,
-            fontFamily: 'inherit',
-            fontSize: '0.9rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'opacity 0.2s',
-            '&:hover': { opacity: 0.85 },
-          }}
+          sx={{ fontWeight: 600 }}
         >
           Parse Another JD
-        </Box>
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => navigate(`/admin/jobs/${result.job_id}/verify`)}
+          sx={{ fontWeight: 600 }}
+        >
+          Review & Publish
+        </Button>
       </Box>
     </Box>
   );

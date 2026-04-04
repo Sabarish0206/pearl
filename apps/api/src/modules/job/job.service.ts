@@ -1,9 +1,24 @@
 import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
-import { prisma } from '@pearl/database';
+import { prisma, Prisma } from '@pearl/database';
 import { env } from '../../config/env';
 import { logger } from '../../services/logger.service';
 import { ParsedJobDataSchema } from '@pearl/common';
 import type { ParsedJobData } from '@pearl/common';
+import { z } from 'zod';
+
+// --- Publish Job Schema ---
+
+export const publishJobSchema = z.object({
+  companyName: z.string().min(1),
+  jobRole: z.string().min(1),
+  ctc: z.string().nullable(),
+  minCgpa: z.number().min(0).max(10),
+  maxActiveArrears: z.number().int().min(0),
+  maxHistoryOfArrears: z.number().int().min(0),
+  allowedDepartments: z.array(z.string()),
+  requiredSkills: z.array(z.string()),
+  parsedData: z.unknown(),
+});
 
 // Gemini structured output schema for Job Description parsing
 const jobResponseSchema = {
@@ -160,4 +175,98 @@ export const parseAndDraftJob = async (
   });
 
   return { job_id: job.id, parsed_data: parsedData };
+};
+
+// --- Get a single job by ID (for admin review form) ---
+
+export const getJobById = async (jobId: string, adminId: string) => {
+  const job = await prisma.job.findUnique({ where: { id: jobId } });
+
+  if (!job) {
+    const err = new Error('Job not found.') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  if (job.createdById !== adminId) {
+    const err = new Error('You do not have permission to access this job.') as Error & { status: number };
+    err.status = 403;
+    throw err;
+  }
+
+  return job;
+};
+
+// --- Publish a job (Phase 2 transaction) ---
+
+export type PublishJobInput = z.infer<typeof publishJobSchema>;
+
+export const publishJob = async (jobId: string, adminId: string, payload: PublishJobInput) => {
+  // Verify the job exists, belongs to this admin, and is a DRAFT
+  const existing = await prisma.job.findUnique({ where: { id: jobId } });
+
+  if (!existing) {
+    const err = new Error('Job not found.') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  if (existing.createdById !== adminId) {
+    const err = new Error('You do not have permission to publish this job.') as Error & { status: number };
+    err.status = 403;
+    throw err;
+  }
+
+  if (existing.status !== 'DRAFT') {
+    const err = new Error('Only DRAFT jobs can be published.') as Error & { status: number };
+    err.status = 409;
+    throw err;
+  }
+
+  // Execute as an interactive Prisma transaction
+  const updatedJob = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    // 1. Update the Job record and set status to ACTIVE
+    const job = await tx.job.update({
+      where: { id: jobId },
+      data: {
+        companyName: payload.companyName,
+        jobRole: payload.jobRole,
+        ctc: payload.ctc ?? null,
+        minCgpa: payload.minCgpa,
+        maxActiveArrears: payload.maxActiveArrears,
+        maxHistoryOfArrears: payload.maxHistoryOfArrears,
+        allowedDepartments: payload.allowedDepartments,
+        parsedData: payload.parsedData ?? existing.parsedData,
+        status: 'ACTIVE',
+      },
+    });
+
+    // 2. Delete existing skill mappings for this job (in case of re-publish)
+    await tx.jobSkill.deleteMany({ where: { jobId } });
+
+    // 3. Upsert each required skill (lowercase) and collect skill IDs
+    const skillIds: string[] = [];
+    for (const rawSkill of payload.requiredSkills) {
+      const skillName = rawSkill.toLowerCase().trim();
+      if (!skillName) continue;
+      const skill = await tx.skill.upsert({
+        where: { name: skillName },
+        update: {},
+        create: { name: skillName },
+      });
+      skillIds.push(skill.id);
+    }
+
+    // 4. Create JobSkill mapping records
+    if (skillIds.length > 0) {
+      await tx.jobSkill.createMany({
+        data: skillIds.map((skillId) => ({ jobId, skillId })),
+        skipDuplicates: true,
+      });
+    }
+
+    return job;
+  });
+
+  return updatedJob;
 };

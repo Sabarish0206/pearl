@@ -7,6 +7,8 @@ import healthRouter from './modules/health/health.router';
 import authRouter from './modules/auth/auth.router';
 import resumeRouter from './modules/resume/resume.router';
 import jobRouter from './modules/job/job.router';
+import studentAdminRouter from './modules/student/student.admin.router';
+import studentUserRouter from './modules/student/student.user.router';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -25,6 +27,9 @@ app.use('/health', healthRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/student/resume', resumeRouter);
 app.use('/api/admin/jobs', jobRouter);
+app.use('/api/admin/students', studentAdminRouter);
+// TODO: placeholder route — no implementation yet; URL path subject to change
+app.use('/api/student/profile', studentUserRouter);
 
 
 // Error Handling Middleware

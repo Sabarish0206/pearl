@@ -236,7 +236,7 @@ export const publishJob = async (jobId: string, adminId: string, payload: Publis
         maxActiveArrears: payload.maxActiveArrears,
         maxHistoryOfArrears: payload.maxHistoryOfArrears,
         allowedDepartments: payload.allowedDepartments,
-        parsedData: payload.parsedData ?? existing.parsedData,
+        parsedData: payload.parsedData ?? existing.parsedData ?? Prisma.JsonNull,
         status: 'ACTIVE',
       },
     });

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -67,7 +67,7 @@ export default function JobParsePage() {
   const [result, setResult] = useState<ParsedJobResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFile = useCallback((file: File) => {
+  const handleFile = (file: File) => {
     if (file.type !== 'application/pdf') {
       toast.error('Only PDF files are accepted.');
       return;
@@ -79,34 +79,34 @@ export default function JobParsePage() {
     setSelectedFile(file);
     setRawText('');
     toast.success(`File selected: ${file.name}`);
-  }, []);
+  };
 
-  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFile(file);
     e.target.value = '';
-  }, [handleFile]);
+  };
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
     if (file) handleFile(file);
-  }, [handleFile]);
+  };
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
-  }, []);
+  };
 
-  const handleDragLeave = useCallback(() => setIsDragging(false), []);
+  const handleDragLeave = () => setIsDragging(false);
 
-  const handleTextChange = useCallback((value: string) => {
+  const handleTextChange = (value: string) => {
     setRawText(value);
     if (value) setSelectedFile(null);
-  }, []);
+  };
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = async () => {
     if (!selectedFile && !rawText.trim()) {
       toast.error('Please upload a PDF or paste the job description text.');
       return;
@@ -127,14 +127,14 @@ export default function JobParsePage() {
       );
       setUiState('input');
     }
-  }, [selectedFile, rawText]);
+  };
 
-  const handleParseAnother = useCallback(() => {
+  const handleParseAnother = () => {
     setUiState('input');
     setSelectedFile(null);
     setRawText('');
     setResult(null);
-  }, []);
+  };
 
   return (
     <ThemeProvider theme={darkTheme}>

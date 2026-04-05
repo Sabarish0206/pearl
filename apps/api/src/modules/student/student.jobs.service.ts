@@ -1,4 +1,5 @@
 import { prisma } from '@pearl/database';
+import type { ParsedJobData } from '@pearl/common';
 
 export const getEligibleJobs = async (userId: string) => {
   // 1. Fetch the student record for this user
@@ -34,7 +35,7 @@ export const getEligibleJobs = async (userId: string) => {
   const activeArrears = student.activeArrears ?? 0;
 
   if (cgpa === null) {
-    return { jobs: [] };
+    return { isPlaced: false, jobs: [] };
   }
 
   const jobs = await prisma.job.findMany({
@@ -44,13 +45,38 @@ export const getEligibleJobs = async (userId: string) => {
       maxActiveArrears: { gte: activeArrears },
       allowedDepartments: { has: student.department },
     },
-    include: {
+    select: {
+      id: true,
+      companyName: true,
+      jobRole: true,
+      ctc: true,
+      applicationDeadline: true,
+      allowedDepartments: true,
+      parsedData: true,
+      requiredSkills: {
+        select: {
+          skill: { select: { name: true } },
+        },
+      },
       applications: {
         where: { studentId: student.id },
+        select: { id: true, status: true },
       },
     },
     orderBy: { createdAt: 'desc' },
   });
 
-  return { isPlaced: false, jobs };
+  const mappedJobs = jobs.map((job) => ({
+    id: job.id,
+    companyName: job.companyName,
+    jobRole: job.jobRole,
+    ctc: job.ctc,
+    applicationDeadline: job.applicationDeadline ? job.applicationDeadline.toISOString() : null,
+    allowedDepartments: job.allowedDepartments,
+    requiredSkills: job.requiredSkills.map((js) => js.skill.name),
+    parsedData: job.parsedData as ParsedJobData | null,
+    applications: job.applications,
+  }));
+
+  return { isPlaced: false, jobs: mappedJobs };
 };

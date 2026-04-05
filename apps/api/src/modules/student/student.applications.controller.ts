@@ -3,7 +3,7 @@ import * as StudentApplicationsService from './student.applications.service';
 
 export const handleApplyToJob = async (req: Request, res: Response): Promise<void> => {
   const userId = req.user!.id;
-  const jobId = req.params.id;
+  const jobId = req.params['id'] as string;
 
   const { companyName } = await StudentApplicationsService.applyToJob(userId, jobId);
   res.status(201).json({ success: true, message: `Successfully applied to ${companyName}` });

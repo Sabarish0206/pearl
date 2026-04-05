@@ -14,6 +14,7 @@ import TalentDirectoryPage from './features/admin/talent-directory/TalentDirecto
 import DriveDashboardPage from './features/admin/drive-dashboard/DriveDashboardPage';
 import JobsListPage from './features/admin/jobs-list/JobsListPage';
 import StudentJobsPage from './features/student/jobs/StudentJobsPage';
+import StudentApplicationsPage from './features/student/applications/StudentApplicationsPage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -90,6 +91,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['STUDENT']}>
             <StudentJobsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/student/applications"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <StudentApplicationsPage />
           </ProtectedRoute>
         }
       />

@@ -265,7 +265,11 @@ export default function StudentJobsPage() {
                   }}
                 >
                   {filteredJobs.map((job) => (
-                    <StudentJobCard key={job.id} job={job} />
+                    <StudentJobCard
+                      key={job.id}
+                      job={job}
+                      onApplySuccess={() => void fetchJobs()}
+                    />
                   ))}
                 </Box>
               )}

@@ -11,7 +11,6 @@ import {
   Tabs,
   ThemeProvider,
   Typography,
-  createTheme,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import WorkIcon from '@mui/icons-material/Work';
@@ -20,31 +19,7 @@ import type { JobListItem } from '@pearl/common';
 import JobCard from './components/JobCard';
 import { TAB_OPTIONS } from './components/types';
 import type { JobStatus, JobStatusFilter } from './components/types';
-
-// ─── Theme ─────────────────────────────────────────────────────────────────────
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#6366f1' },
-    secondary: { main: '#06b6d4' },
-    success: { main: '#22c55e' },
-    warning: { main: '#f59e0b' },
-    error: { main: '#ef4444' },
-    background: { default: '#0f172a', paper: '#111827' },
-    divider: '#1e293b',
-    text: { primary: '#e2e8f0', secondary: '#94a3b8', disabled: '#475569' },
-  },
-  typography: { fontFamily: "'Inter', -apple-system, sans-serif" },
-  components: {
-    MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-    MuiTab: {
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 600, minHeight: 44 },
-      },
-    },
-  },
-});
+import adminTheme from '../shared/adminTheme';
 
 // ─── Jobs List Page ────────────────────────────────────────────────────────────
 
@@ -96,7 +71,7 @@ export default function JobsListPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={adminTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

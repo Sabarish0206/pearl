@@ -96,7 +96,7 @@ export default function JobCard({ job, onClick }: JobCardProps) {
                 height: 20,
                 fontSize: '0.7rem',
                 bgcolor: 'rgba(99,102,241,0.1)',
-                color: '#a5b4fc',
+                color: 'primary.light',
                 border: '1px solid rgba(99,102,241,0.2)',
               }}
             />

@@ -12,6 +12,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import EventIcon from '@mui/icons-material/Event';
 import type { EligibleJob } from '@pearl/common';
 import JobDetailsDialog from './JobDetailsDialog';
+import { formatDeadline } from '../dateUtils';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -19,17 +20,6 @@ interface StudentJobCardProps {
   job: EligibleJob;
   onApplySuccess: (jobId: string) => void;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const formatDeadline = (isoString: string | null): string => {
-  if (!isoString) return 'No deadline set';
-  return new Date(isoString).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 

@@ -23,6 +23,7 @@ import EventIcon from '@mui/icons-material/Event';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { EligibleJob } from '@pearl/common';
 import { applyToJob } from '../../../../api/studentJobs.api';
+import { formatDeadline } from '../dateUtils';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -32,17 +33,6 @@ interface JobDetailsDialogProps {
   onClose: () => void;
   onApplySuccess: (jobId: string) => void;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const formatDeadline = (isoString: string | null): string => {
-  if (!isoString) return 'No deadline set';
-  return new Date(isoString).toLocaleDateString('en-IN', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-};
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -117,7 +107,7 @@ export default function JobDetailsDialog({
               {job.jobRole}
             </Typography>
           </Box>
-          <IconButton onClick={onClose} size="small" sx={{ mt: 0.5 }}>
+          <IconButton aria-label="Close" onClick={onClose} size="small" sx={{ mt: 0.5 }}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </DialogTitle>

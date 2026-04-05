@@ -35,7 +35,7 @@ export const getEligibleJobs = async (userId: string) => {
   const activeArrears = student.activeArrears ?? 0;
 
   if (cgpa === null) {
-    return { jobs: [] };
+    return { isPlaced: false, jobs: [] };
   }
 
   const jobs = await prisma.job.findMany({

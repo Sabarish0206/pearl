@@ -44,3 +44,21 @@ export interface ParseJobResponse {
   job_id: string;
   parsed_data: ParsedJobData;
 }
+
+// --- Jobs list (GET /api/admin/jobs) ---
+
+export interface JobListItem {
+  id: string;
+  companyName: string;
+  jobRole: string;
+  ctc: string | null;
+  status: "DRAFT" | "ACTIVE" | "CLOSED" | "COMPLETED" | "CANCELLED";
+  allowedDepartments: string[];
+  applicationCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface JobsListResponse {
+  jobs: JobListItem[];
+}

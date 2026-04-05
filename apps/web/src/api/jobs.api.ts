@@ -1,7 +1,22 @@
 import { env } from '../config/env';
-import type { ParseJobResponse, JobRow } from '@pearl/common';
+import type { ParseJobResponse, JobRow, JobListItem } from '@pearl/common';
 
 const API_BASE = env.VITE_API_URL;
+
+export const getAdminJobs = async (): Promise<JobListItem[]> => {
+  const response = await fetch(`${API_BASE}/api/admin/jobs`, {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  const data = (await response.json()) as { success: boolean; jobs: JobListItem[]; message?: string };
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Failed to fetch jobs');
+  }
+
+  return data.jobs;
+};
 
 export const parseJob = async (input: { file: File } | { rawText: string }): Promise<ParseJobResponse & { success: boolean }> => {
   let response: Response;

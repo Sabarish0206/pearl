@@ -62,10 +62,10 @@ const router = Router();
 // All job routes require a valid session and rate limiting
 router.use(jobRateLimiter, verifySession);
 
-// ADMIN-only job management routes
-router.post('/parse', requireRole(['ADMIN']), parseRateLimiter, upload.single('jd'), handleParseJob);
-router.get('/:id', requireRole(['ADMIN']), handleGetJob);
-router.put('/:id/publish', requireRole(['ADMIN']), handlePublishJob);
+// ADMIN and FACULTY job management routes
+router.post('/parse', requireRole(['ADMIN', 'FACULTY']), parseRateLimiter, upload.single('jd'), handleParseJob);
+router.get('/:id', requireRole(['ADMIN', 'FACULTY']), handleGetJob);
+router.put('/:id/publish', requireRole(['ADMIN', 'FACULTY']), handlePublishJob);
 
 // ATS (Applicant Tracking System) routes — ADMIN and FACULTY can access
 router.get('/:id/applications', requireRole(['ADMIN', 'FACULTY']), handleGetJobApplications);

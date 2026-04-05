@@ -86,7 +86,7 @@ function AppRoutes() {
       <Route
         path="/admin/jobs/new"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
+          <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
             <JobParsePage />
           </ProtectedRoute>
         }
@@ -95,7 +95,7 @@ function AppRoutes() {
       <Route
         path="/admin/jobs/:id/verify"
         element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
+          <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
             <JobVerifyPage />
           </ProtectedRoute>
         }

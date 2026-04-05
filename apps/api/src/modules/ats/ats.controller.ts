@@ -3,7 +3,7 @@ import * as AtsService from './ats.service';
 
 export const handleGetJobApplications = async (req: Request, res: Response): Promise<void> => {
   const jobId = req.params['id'] as string;
-  const status = typeof req.query['status'] === 'string' ? req.query['status'] : undefined;
+  const status = typeof req.query['status'] === 'string' ? req.query['status'].trim() : undefined;
 
   const data = await AtsService.getJobApplications(jobId, status);
   res.status(200).json({ success: true, data });
@@ -24,7 +24,7 @@ export const handleUpdateApplicationStatus = async (req: Request, res: Response)
 
 export const handleExportJobApplications = async (req: Request, res: Response): Promise<void> => {
   const jobId = req.params['id'] as string;
-  const status = typeof req.query['status'] === 'string' ? req.query['status'] : undefined;
+  const status = typeof req.query['status'] === 'string' ? req.query['status'].trim() : undefined;
 
   const { companyName, status: resolvedStatus, csvString } = await AtsService.exportJobApplications(jobId, status);
 

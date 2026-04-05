@@ -11,6 +11,7 @@ import ResumePage from './features/resume/ResumePage';
 import JobParsePage from './features/jobs/JobParsePage';
 import JobVerifyPage from './features/jobs/JobVerifyPage';
 import TalentDirectoryPage from './features/admin/talent-directory/TalentDirectoryPage';
+import DriveDashboardPage from './features/admin/drive-dashboard/DriveDashboardPage';
 import './App.css';
 
 const queryClient = new QueryClient();
@@ -96,6 +97,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN']}>
             <JobVerifyPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/jobs/:id"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
+            <DriveDashboardPage />
           </ProtectedRoute>
         }
       />

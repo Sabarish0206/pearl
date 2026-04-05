@@ -79,7 +79,7 @@ export const getJobApplications = async (jobId: string, status?: string) => {
   };
 };
 
-// --- Update an application status (enforces placement policy via transaction) ---
+// --- Update an application status ---
 
 export const updateApplicationStatus = async (applicationId: string, newStatus: string) => {
   if (!isValidStatus(newStatus)) {
@@ -92,7 +92,7 @@ export const updateApplicationStatus = async (applicationId: string, newStatus: 
 
   const existing = await prisma.application.findUnique({
     where: { id: applicationId },
-    select: { id: true, status: true, studentId: true },
+    select: { id: true },
   });
 
   if (!existing) {
@@ -101,16 +101,9 @@ export const updateApplicationStatus = async (applicationId: string, newStatus: 
     throw err;
   }
 
-  // Use a transaction to atomically update status and enforce placement policy.
-  // isPlaced is derived from whether the student has any OFFERED application,
-  // so the side-effect is automatic — no separate Student field to update.
-  // The transaction guarantees the application update is atomic.
-  const updatedApplication = await prisma.$transaction(async (tx) => {
-    const updated = await tx.application.update({
-      where: { id: applicationId },
-      data: { status: newStatus as ApplicationStatus },
-    });
-    return updated;
+  const updatedApplication = await prisma.application.update({
+    where: { id: applicationId },
+    data: { status: newStatus as ApplicationStatus },
   });
 
   return updatedApplication;

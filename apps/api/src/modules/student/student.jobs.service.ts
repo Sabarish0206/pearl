@@ -25,7 +25,7 @@ export const getEligibleJobs = async (userId: string) => {
   // 2. College placement policy: placed students are ineligible for further drives
   const isPlaced = student.applications.length > 0;
   if (isPlaced) {
-    return { jobs: [] };
+    return { isPlaced: true, jobs: [] };
   }
 
   // 3. Build the eligibility where-clause against the student's metrics.
@@ -52,5 +52,5 @@ export const getEligibleJobs = async (userId: string) => {
     orderBy: { createdAt: 'desc' },
   });
 
-  return { jobs };
+  return { isPlaced: false, jobs };
 };

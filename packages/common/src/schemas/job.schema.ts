@@ -62,3 +62,25 @@ export interface JobListItem {
 export interface JobsListResponse {
   jobs: JobListItem[];
 }
+
+// --- Eligible Jobs (GET /api/student/jobs/eligible) ---
+
+export interface EligibleJobApplication {
+  id: string;
+  status: 'APPLIED' | 'SHORTLISTED' | 'OFFERED' | 'REJECTED';
+}
+
+export interface EligibleJob {
+  id: string;
+  companyName: string;
+  jobRole: string;
+  ctc: string | null;
+  applicationDeadline: string | null;
+  allowedDepartments: string[];
+  applications: EligibleJobApplication[];
+}
+
+export interface EligibleJobsResponse {
+  isPlaced: boolean;
+  jobs: EligibleJob[];
+}

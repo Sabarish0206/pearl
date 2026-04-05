@@ -53,7 +53,7 @@ export const getEligibleJobs = async (userId: string) => {
       applicationDeadline: true,
       allowedDepartments: true,
       parsedData: true,
-      jobSkills: {
+      requiredSkills: {
         select: {
           skill: { select: { name: true } },
         },
@@ -73,7 +73,7 @@ export const getEligibleJobs = async (userId: string) => {
     ctc: job.ctc,
     applicationDeadline: job.applicationDeadline ? job.applicationDeadline.toISOString() : null,
     allowedDepartments: job.allowedDepartments,
-    requiredSkills: job.jobSkills.map((js) => js.skill.name),
+    requiredSkills: job.requiredSkills.map((js) => js.skill.name),
     parsedData: job.parsedData as ParsedJobData | null,
     applications: job.applications,
   }));

@@ -59,16 +59,17 @@ const jobRateLimiter = rateLimit({
 
 const router = Router();
 
-// All job admin routes require authentication and ADMIN role
-router.use(jobRateLimiter, verifySession, requireRole(['ADMIN']));
+// All job routes require a valid session and rate limiting
+router.use(jobRateLimiter, verifySession);
 
-router.post('/parse', parseRateLimiter, upload.single('jd'), handleParseJob);
-router.get('/:id', handleGetJob);
-router.put('/:id/publish', handlePublishJob);
+// ADMIN-only job management routes
+router.post('/parse', requireRole(['ADMIN']), parseRateLimiter, upload.single('jd'), handleParseJob);
+router.get('/:id', requireRole(['ADMIN']), handleGetJob);
+router.put('/:id/publish', requireRole(['ADMIN']), handlePublishJob);
 
 // ATS (Applicant Tracking System) routes — ADMIN and FACULTY can access
-router.get('/:id/applications', verifySession, requireRole(['ADMIN', 'FACULTY']), handleGetJobApplications);
-router.get('/:id/export', verifySession, requireRole(['ADMIN', 'FACULTY']), handleExportJobApplications);
+router.get('/:id/applications', requireRole(['ADMIN', 'FACULTY']), handleGetJobApplications);
+router.get('/:id/export', requireRole(['ADMIN', 'FACULTY']), handleExportJobApplications);
 
 // Map multer-specific errors to proper HTTP status codes before the global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

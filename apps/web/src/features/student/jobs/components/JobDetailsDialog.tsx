@@ -27,7 +27,7 @@ import { applyToJob } from '../../../../api/studentJobs.api';
 // ─── Props ────────────────────────────────────────────────────────────────────
 
 interface JobDetailsDialogProps {
-  job: EligibleJob | null;
+  job: EligibleJob;
   open: boolean;
   onClose: () => void;
   onApplySuccess: (jobId: string) => void;
@@ -58,8 +58,6 @@ export default function JobDetailsDialog({
     message: '',
     severity: 'success',
   });
-
-  if (!job) return null;
 
   const hasApplied = job.applications.length > 0;
   const responsibilities = job.parsedData?.unstructuredData?.responsibilities ?? [];

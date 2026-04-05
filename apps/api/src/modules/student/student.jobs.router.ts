@@ -3,6 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
 import { handleGetEligibleJobs } from './student.jobs.controller';
+import { handleApplyToJob } from './student.applications.controller';
 
 const studentJobsRateLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -18,5 +19,6 @@ const router = Router();
 router.use(studentJobsRateLimiter, verifySession, requireRole(['STUDENT']));
 
 router.get('/eligible', handleGetEligibleJobs);
+router.post('/:id/apply', handleApplyToJob);
 
 export default router;

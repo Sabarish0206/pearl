@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
 import { handleParseJob, handleGetJob, handlePublishJob } from './job.controller';
+import { handleGetJobApplications, handleExportJobApplications } from '../ats/ats.controller';
 
 const UPLOAD_DIR = path.resolve('uploads/jds');
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -64,6 +65,10 @@ router.use(jobRateLimiter, verifySession, requireRole(['ADMIN']));
 router.post('/parse', parseRateLimiter, upload.single('jd'), handleParseJob);
 router.get('/:id', handleGetJob);
 router.put('/:id/publish', handlePublishJob);
+
+// ATS (Applicant Tracking System) routes — ADMIN and FACULTY can access
+router.get('/:id/applications', verifySession, requireRole(['ADMIN', 'FACULTY']), handleGetJobApplications);
+router.get('/:id/export', verifySession, requireRole(['ADMIN', 'FACULTY']), handleExportJobApplications);
 
 // Map multer-specific errors to proper HTTP status codes before the global error handler.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

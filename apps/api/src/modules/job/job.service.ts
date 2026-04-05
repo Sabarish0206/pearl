@@ -177,6 +177,38 @@ export const parseAndDraftJob = async (
   return { job_id: job.id, parsed_data: parsedData };
 };
 
+// --- Get all jobs created by an admin/faculty ---
+
+export const getJobsByAdmin = async (adminId: string) => {
+  const jobs = await prisma.job.findMany({
+    where: { createdById: adminId },
+    select: {
+      id: true,
+      companyName: true,
+      jobRole: true,
+      ctc: true,
+      status: true,
+      allowedDepartments: true,
+      createdAt: true,
+      updatedAt: true,
+      _count: { select: { applications: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  return jobs.map((job) => ({
+    id: job.id,
+    companyName: job.companyName,
+    jobRole: job.jobRole,
+    ctc: job.ctc,
+    status: job.status,
+    allowedDepartments: job.allowedDepartments,
+    applicationCount: job._count.applications,
+    createdAt: job.createdAt.toISOString(),
+    updatedAt: job.updatedAt.toISOString(),
+  }));
+};
+
 // --- Get a single job by ID (for admin review form) ---
 
 export const getJobById = async (jobId: string, adminId: string) => {

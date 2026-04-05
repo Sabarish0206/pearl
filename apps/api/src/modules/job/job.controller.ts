@@ -59,6 +59,12 @@ export const handleParseJob = async (req: Request, res: Response): Promise<void>
   res.status(200).json({ success: true, ...result });
 };
 
+export const handleGetJobs = async (req: Request, res: Response): Promise<void> => {
+  const adminId = req.user!.id;
+  const jobs = await JobService.getJobsByAdmin(adminId);
+  res.status(200).json({ success: true, jobs });
+};
+
 export const handleGetJob = async (req: Request, res: Response): Promise<void> => {
   const id = req.params['id'] as string;
   const adminId = req.user!.id;

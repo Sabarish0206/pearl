@@ -51,3 +51,18 @@ export interface UpdatedApplicationRecord {
   createdAt: string;
   updatedAt: string;
 }
+
+// --- Student's own application history (GET /api/student/applications) ---
+
+export interface StudentApplicationJob {
+  companyName: string;
+  jobRole: string;
+  ctc: string | null;
+}
+
+export interface StudentApplicationHistory {
+  id: string;
+  status: ApplicationStatus;
+  createdAt: string;
+  job: StudentApplicationJob;
+}

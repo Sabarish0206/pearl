@@ -25,3 +25,21 @@ export const getEligibleJobs = async (): Promise<EligibleJobsResponse> => {
 
   return data.data;
 };
+
+export const applyToJob = async (jobId: string): Promise<{ message: string }> => {
+  const response = await fetch(`${API_BASE}/api/student/jobs/${jobId}/apply`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  const data = (await response.json()) as {
+    success: boolean;
+    message?: string;
+  };
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Failed to apply to job');
+  }
+
+  return { message: data.message ?? 'Application submitted successfully' };
+};

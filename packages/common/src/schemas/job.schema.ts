@@ -77,6 +77,8 @@ export interface EligibleJob {
   ctc: string | null;
   applicationDeadline: string | null;
   allowedDepartments: string[];
+  requiredSkills: string[];
+  parsedData: ParsedJobData | null;
   applications: EligibleJobApplication[];
 }
 

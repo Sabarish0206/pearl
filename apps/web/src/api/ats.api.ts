@@ -96,7 +96,7 @@ export const exportJobApplications = async (
   const downloadUrl = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = downloadUrl;
-  anchor.download = `drive_${companyName.replace(/[^a-z0-9]/gi, '_')}_ALL.csv`;
+  anchor.download = `drive_${companyName.replace(/[^a-z0-9]/gi, '_')}.csv`;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();

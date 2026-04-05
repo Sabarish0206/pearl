@@ -161,7 +161,7 @@ function SummaryCard({ label, value, color, isLoading }: SummaryCardProps) {
         </>
       ) : (
         <>
-          <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{ textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <Typography variant="caption" color="text.secondary" fontWeight={600}>
             {label}
           </Typography>
           <Typography variant="h4" fontWeight={800} sx={{ color, mt: 0.5, lineHeight: 1.2 }}>
@@ -369,7 +369,7 @@ function ApplicationsTable({
                 <TableCell align="center">
                   {app.student.cgpa !== null ? (
                     <Chip
-                      label={app.student.cgpa.toFixed(2)}
+                      label={app.student.cgpa?.toFixed(2) ?? '—'}
                       size="small"
                       variant="outlined"
                       sx={{ borderColor: 'divider', fontWeight: 600, fontSize: '0.8rem' }}

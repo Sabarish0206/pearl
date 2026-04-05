@@ -10,6 +10,7 @@ import jobRouter from './modules/job/job.router';
 import studentAdminRouter from './modules/student/student.admin.router';
 import studentUserRouter from './modules/student/student.user.router';
 import studentJobsRouter from './modules/student/student.jobs.router';
+import studentApplicationsRouter from './modules/student/student.applications.router';
 import atsApplicationsRouter from './modules/ats/ats.applications.router';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
@@ -34,6 +35,7 @@ app.use('/api/admin/students', studentAdminRouter);
 // TODO: placeholder route — no implementation yet; URL path subject to change
 app.use('/api/student/profile', studentUserRouter);
 app.use('/api/student/jobs', studentJobsRouter);
+app.use('/api/student/applications', studentApplicationsRouter);
 
 
 // Error Handling Middleware

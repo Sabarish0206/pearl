@@ -364,7 +364,9 @@ async function main() {
       include: { student: true },
     });
 
-    const student = user.student!;
+    const student =
+      user.student ??
+      (await prisma.student.findUniqueOrThrow({ where: { userId: user.id } }));
     studentMap[s.email] = student.id;
 
     // Attach skills
@@ -382,10 +384,23 @@ async function main() {
   }
 
   // ------------------------------------------------------------------
-  // 4. Create ACTIVE jobs
+  // 4. Create ACTIVE jobs  (idempotent: delete existing seed jobs first)
   // ------------------------------------------------------------------
   console.log('\n💼  Creating jobs...');
   const jobIds: string[] = [];
+
+  // Remove old seed data in the correct order (Restrict FK: apps before jobs)
+  const seedCompanyNames = JOBS.map((j) => j.companyName);
+  const oldJobs = await prisma.job.findMany({
+    where: { companyName: { in: seedCompanyNames }, createdById: facultyUser.id },
+    select: { id: true },
+  });
+  if (oldJobs.length > 0) {
+    const oldJobIds = oldJobs.map((j) => j.id);
+    await prisma.application.deleteMany({ where: { jobId: { in: oldJobIds } } });
+    await prisma.job.deleteMany({ where: { id: { in: oldJobIds } } });
+    console.log(`   ↩  Removed ${oldJobs.length} stale seed job(s)`);
+  }
 
   for (const j of JOBS) {
     const job = await prisma.job.create({

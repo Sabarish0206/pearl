@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
-import { fetchCurrentUser, logoutUser } from './api/auth.api';
+import { fetchCurrentUser } from './api/auth.api';
 import LoginPage from './features/auth/LoginPage';
 import SignupPage from './features/auth/SignupPage';
 import ResumeUploadDemo from './features/demo/ResumeUploadDemo';
@@ -15,49 +15,10 @@ import DriveDashboardPage from './features/admin/drive-dashboard/DriveDashboardP
 import JobsListPage from './features/admin/jobs-list/JobsListPage';
 import StudentJobsPage from './features/student/jobs/StudentJobsPage';
 import StudentApplicationsPage from './features/student/applications/StudentApplicationsPage';
+import DashboardPage from './features/dashboard/DashboardPage';
 import './App.css';
 
 const queryClient = new QueryClient();
-
-function DashboardPage() {
-  const navigate = useNavigate();
-  const { currentUser, clearCurrentUser } = useAuthStore();
-
-  const handleLogout = async () => {
-    await logoutUser();
-    clearCurrentUser();
-    navigate('/login');
-  };
-
-  return (
-    <div className="dashboard-page">
-      <div className="dashboard-header">
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <div className="auth-brand-logo" style={{ width: '1.75rem', height: '1.75rem', fontSize: '0.9rem' }}>P</div>
-            <span className="auth-brand-name">Pearl</span>
-          </div>
-          <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>
-            Campus Placement Platform
-          </p>
-        </div>
-        <button className="btn-secondary" onClick={handleLogout}>
-          Sign out
-        </button>
-      </div>
-
-      <div className="dashboard-card">
-        <h2>Signed in as</h2>
-        <p style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text)', marginTop: '0.25rem' }}>
-          {currentUser?.email}
-        </p>
-        <span className="dashboard-badge">
-          {currentUser?.role}
-        </span>
-      </div>
-    </div>
-  );
-}
 
 function AppRoutes() {
   const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();

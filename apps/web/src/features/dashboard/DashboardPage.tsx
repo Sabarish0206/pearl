@@ -132,6 +132,19 @@ function getRoleLabel(role: string): string {
   }
 }
 
+function getRoleSubtitle(role: string): string {
+  switch (role) {
+    case 'STUDENT':
+      return 'Use the links below to browse drives, track your applications, or manage your resume.';
+    case 'ADMIN':
+      return 'Manage placement drives, review applications, and explore the student talent pool.';
+    case 'FACULTY':
+      return 'Coordinate placement drives, review applications, and browse the student talent pool.';
+    default:
+      return 'Select a section below to get started.';
+  }
+}
+
 function getRoleIcon(role: string): React.ReactNode {
   switch (role) {
     case 'STUDENT':
@@ -155,10 +168,19 @@ export default function DashboardPage() {
   const cards = getCardsForRole(role);
 
   const handleLogout = async () => {
-    await logoutUser();
+    try {
+      await logoutUser();
+    } catch {
+      // Ignore logout errors — clear state and redirect regardless
+    }
     clearCurrentUser();
     navigate('/login');
   };
+
+  // Show nothing while user data is not yet available (ProtectedRoute handles redirect)
+  if (!currentUser) {
+    return null;
+  }
 
   return (
     <ThemeProvider theme={adminTheme}>
@@ -226,9 +248,7 @@ export default function DashboardPage() {
               {currentUser?.email}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {role === 'STUDENT' && 'Use the links below to browse drives, track your applications, or manage your resume.'}
-              {role === 'ADMIN' && 'Manage placement drives, review applications, and explore the student talent pool.'}
-              {role === 'FACULTY' && 'Coordinate placement drives, review applications, and browse the student talent pool.'}
+              {getRoleSubtitle(role)}
             </Typography>
           </Box>
 

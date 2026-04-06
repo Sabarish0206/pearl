@@ -20,7 +20,7 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 const PASSWORD = 'Seed@1234';
-const SALT_ROUNDS = 10;
+const SALT_ROUNDS = 12; // matches SALT_ROUNDS in apps/api/src/modules/auth/auth.service.ts
 const COLLEGE_DOMAIN = '@psnacet.edu.in';
 
 // ---------------------------------------------------------------------------

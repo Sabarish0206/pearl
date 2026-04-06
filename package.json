@@ -9,6 +9,7 @@
     "lint": "turbo run lint",
     "db:generate": "turbo run db:generate --filter=@pearl/database",
     "db:push": "turbo run db:push --filter=@pearl/database",
+    "db:seed": "turbo run db:seed --filter=@pearl/database",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {

@@ -3,14 +3,16 @@ import * as AtsService from './ats.service';
 
 export const handleGetJobApplications = async (req: Request, res: Response): Promise<void> => {
   const jobId = req.params['id'] as string;
+  const requesterId = req.user!.id;
   const status = typeof req.query['status'] === 'string' ? req.query['status'].trim() : undefined;
 
-  const data = await AtsService.getJobApplications(jobId, status);
+  const data = await AtsService.getJobApplications(jobId, requesterId, status);
   res.status(200).json({ success: true, data });
 };
 
 export const handleUpdateApplicationStatus = async (req: Request, res: Response): Promise<void> => {
   const applicationId = req.params['applicationId'] as string;
+  const requesterId = req.user!.id;
   const newStatus = req.body?.status;
 
   if (typeof newStatus !== 'string' || !newStatus.trim()) {
@@ -18,15 +20,16 @@ export const handleUpdateApplicationStatus = async (req: Request, res: Response)
     return;
   }
 
-  const application = await AtsService.updateApplicationStatus(applicationId, newStatus.trim());
+  const application = await AtsService.updateApplicationStatus(applicationId, requesterId, newStatus.trim());
   res.status(200).json({ success: true, data: application });
 };
 
 export const handleExportJobApplications = async (req: Request, res: Response): Promise<void> => {
   const jobId = req.params['id'] as string;
+  const requesterId = req.user!.id;
   const status = typeof req.query['status'] === 'string' ? req.query['status'].trim() : undefined;
 
-  const { companyName, status: resolvedStatus, csvString } = await AtsService.exportJobApplications(jobId, status);
+  const { companyName, status: resolvedStatus, csvString } = await AtsService.exportJobApplications(jobId, requesterId, status);
 
   const filename = `drive_${companyName.replace(/[^a-z0-9]/gi, '_')}_${resolvedStatus}.csv`;
 

@@ -21,9 +21,9 @@ export const searchStudents = async (payload: StudentSearchPayload) => {
     sortOrder = 'desc',
   } = payload;
 
-  // Sanitize pagination parameters
+  // Sanitize pagination parameters (cap limit at 100 to prevent resource exhaustion)
   const page = payload.page !== undefined && payload.page >= 1 ? Math.floor(payload.page) : 1;
-  const limit = payload.limit !== undefined && payload.limit >= 1 ? Math.floor(payload.limit) : 20;
+  const limit = payload.limit !== undefined && payload.limit >= 1 ? Math.min(Math.floor(payload.limit), 100) : 20;
   const skip = (page - 1) * limit;
 
   // Dynamically build the AND conditions array

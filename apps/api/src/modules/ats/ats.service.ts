@@ -9,7 +9,7 @@ const isValidStatus = (value: string): value is ApplicationStatus =>
 
 // --- Fetch all applications for a specific job ---
 
-export const getJobApplications = async (jobId: string, status?: string) => {
+export const getJobApplications = async (jobId: string, requesterId: string, status?: string) => {
   if (status !== undefined && !isValidStatus(status)) {
     const err = new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`) as Error & {
       status: number;
@@ -20,12 +20,18 @@ export const getJobApplications = async (jobId: string, status?: string) => {
 
   const job = await prisma.job.findUnique({
     where: { id: jobId },
-    select: { id: true, companyName: true, jobRole: true },
+    select: { id: true, companyName: true, jobRole: true, createdById: true },
   });
 
   if (!job) {
     const err = new Error('Job not found.') as Error & { status: number };
     err.status = 404;
+    throw err;
+  }
+
+  if (job.createdById !== requesterId) {
+    const err = new Error('You do not have permission to access applications for this job.') as Error & { status: number };
+    err.status = 403;
     throw err;
   }
 
@@ -81,7 +87,7 @@ export const getJobApplications = async (jobId: string, status?: string) => {
 
 // --- Update an application status ---
 
-export const updateApplicationStatus = async (applicationId: string, newStatus: string) => {
+export const updateApplicationStatus = async (applicationId: string, requesterId: string, newStatus: string) => {
   if (!isValidStatus(newStatus)) {
     const err = new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`) as Error & {
       status: number;
@@ -92,12 +98,18 @@ export const updateApplicationStatus = async (applicationId: string, newStatus: 
 
   const existing = await prisma.application.findUnique({
     where: { id: applicationId },
-    select: { id: true },
+    select: { id: true, job: { select: { createdById: true } } },
   });
 
   if (!existing) {
     const err = new Error('Application not found.') as Error & { status: number };
     err.status = 404;
+    throw err;
+  }
+
+  if (existing.job.createdById !== requesterId) {
+    const err = new Error('You do not have permission to update this application.') as Error & { status: number };
+    err.status = 403;
     throw err;
   }
 
@@ -119,7 +131,16 @@ type CsvRow = {
   'Current Status': string;
 };
 
-export const exportJobApplications = async (jobId: string, status?: string) => {
+const sanitizeCsvField = (value: string): string => {
+  // Prevent CSV/formula injection. The trimmed check covers leading-whitespace
+  // variants (e.g. " =cmd") that would still trigger formulas in Excel/Calc.
+  if (/^\s*[=+\-@\t\r]/.test(value)) {
+    return `\t${value}`;
+  }
+  return value;
+};
+
+export const exportJobApplications = async (jobId: string, requesterId: string, status?: string) => {
   if (status !== undefined && !isValidStatus(status)) {
     const err = new Error(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`) as Error & {
       status: number;
@@ -130,12 +151,18 @@ export const exportJobApplications = async (jobId: string, status?: string) => {
 
   const job = await prisma.job.findUnique({
     where: { id: jobId },
-    select: { id: true, companyName: true, jobRole: true },
+    select: { id: true, companyName: true, jobRole: true, createdById: true },
   });
 
   if (!job) {
     const err = new Error('Job not found.') as Error & { status: number };
     err.status = 404;
+    throw err;
+  }
+
+  if (job.createdById !== requesterId) {
+    const err = new Error('You do not have permission to export applications for this job.') as Error & { status: number };
+    err.status = 403;
     throw err;
   }
 
@@ -159,9 +186,9 @@ export const exportJobApplications = async (jobId: string, status?: string) => {
   });
 
   const csvData: CsvRow[] = applications.map((app) => ({
-    'Register Number': app.student.registerNumber,
-    'Full Name': `${app.student.firstName} ${app.student.lastName}`,
-    Department: app.student.department,
+    'Register Number': sanitizeCsvField(app.student.registerNumber),
+    'Full Name': sanitizeCsvField(`${app.student.firstName} ${app.student.lastName}`),
+    Department: sanitizeCsvField(app.student.department),
     CGPA: app.student.cgpa !== null ? Number(app.student.cgpa) : '',
     'Current Status': app.status,
   }));

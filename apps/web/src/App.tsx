@@ -25,9 +25,14 @@ function AppRoutes() {
 
   useEffect(() => {
     const bootstrapAuth = async () => {
-      const user = await fetchCurrentUser();
-      setCurrentUser(user);
-      setIsLoading(false);
+      try {
+        const user = await fetchCurrentUser();
+        setCurrentUser(user);
+      } catch {
+        setCurrentUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
     bootstrapAuth();
   }, [setCurrentUser, setIsLoading]);

@@ -296,4 +296,14 @@ export const commitResume = async (userId: string, input: CommitResumeInput): Pr
       });
     }
   });
+
+  // Clean up the uploaded resume file now that it has been verified and is no longer needed
+  if (resume.filePath) {
+    const absolutePath = path.resolve(process.cwd(), resume.filePath);
+    try {
+      await fs.unlink(absolutePath);
+    } catch (unlinkErr) {
+      logger.error('Failed to delete resume file after commit', unlinkErr);
+    }
+  }
 };

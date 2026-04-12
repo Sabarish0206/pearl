@@ -35,7 +35,7 @@ model Student {
   userId           String   @unique @map("user_id")
   firstName        String   @map("first_name")
   lastName         String   @map("last_name")
-  registerNumber   String   @map("register_number")
+  registerNumber   String   @unique @map("register_number")
   department       String
   batchYear        Int      @map("batch_year")
   cgpa             Decimal? @map("cgpa") @db.Decimal(4, 2)

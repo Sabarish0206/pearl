@@ -94,7 +94,7 @@ PostgreSQL via Prisma v6.x. Full production schema:
 - **Two-Phase Pattern**: POST `/parse` → Gemini parse → save as DRAFT; PUT `/commit` → Prisma transaction → mark `isVerified=true`
 - AI Model: `gemini-2.5-flash`
 - PDF uploaded via `multer` (5 MB limit) to `uploads/resumes/`; file deleted on Gemini failure
-- Skills deduped via case-insensitive upsert; student profile fields (cgpa, arrears, marks) updated in commit transaction
+- Skills are now normalized to canonical industry labels in `commitResume()` via shared `@pearl/common` utilities (case-insensitive dedupe + synonym mapping); student profile fields (cgpa, arrears, marks) updated in commit transaction
 - Rate limits: 60 req/min general, 10 req/hr for parse
 - Frontend (`apps/web/src/features/resume/`): MUI v7 dark-theme `ResumePage.tsx` with reusable sub-components: `PageHeader`, `DropzoneState`, `ParsingState`, `DraftForm`, `VerifiedDashboard`, `Section`, `Metric`, `SkeletonLoader`
 
@@ -142,3 +142,8 @@ PostgreSQL via Prisma v6.x. Full production schema:
 7. **Database schema (Jobs & ATS)**: Added Job, JobSkill, Application, ApplicationStatus; extended Student with academic fields
 8. **Job module Phase 1**: PDF/text JD parsing via Gemini → DRAFT Job saved; `ParsedJobDataSchema` in common
 9. **Job module Phase 2**: Publish transaction — validate, upsert skills, set status ACTIVE; `JobVerifyPage.tsx` frontend
+
+## In-Progress (Uncommitted)
+
+- Added deterministic skill extraction + normalization utilities to `@pearl/common` (`packages/common/src/skills/*`) and a comprehensive Jest test suite in `@pearl/web` validating skill normalization/dedup and extraction completeness/accuracy for student resume snippets.
+- Fixed web Jest configuration conflict (removed duplicate config file), and improved existing `ResumeUpload` component tests to query hidden file inputs reliably.

@@ -36,6 +36,15 @@
   - Phase 2 — `PUT /api/student/resume/commit`: client confirms parsed data → Prisma transaction (update Student academic fields, upsert Skills, mark Resume `isVerified=true`)
 - **Common Schemas** (`packages/common/src/schemas/resume.schema.ts`): `ParsedResumeDataSchema`, `CommitResumeSchema`, `ResumeRow`, `GetResumeResponse`, `ParseResumeResponse`
 - **Safety**: PDF deleted on Gemini failure; skills case-insensitively deduped; `MulterError` mapped to 400/413
+
+### 3a. Skill Extraction/Normalization Accuracy Testing
+
+- Added shared, deterministic skill normalization utilities to `@pearl/common` (canonical mapping + abbreviation handling + case-insensitive dedupe)
+- Added deterministic skill extraction from raw resume text for validation (captures scattered mentions, list separators, grouped headers; flags ambiguous phrases)
+- Added comprehensive Jest tests in `@pearl/web` to validate:
+  - CASE 1: semantic normalization + dedup to industry-standard labels
+  - CASE 2: extraction completeness/accuracy across scattered mentions, separators, ambiguous phrases, context false positives, and multi-level groupings
+- Fixed `@pearl/web` Jest config ambiguity and stabilized existing `ResumeUpload` UI tests
 - **Rate limits**: 60 req/min general, 10 req/hr parse endpoint
 - **Frontend** (`apps/web/src/features/resume/`):
   - `ResumePage.tsx`: MUI v7 dark ThemeProvider, state-machine UI (NOT_UPLOADED → parsing → DRAFT → VERIFIED)
@@ -64,7 +73,7 @@
 | Module             | Backend | Frontend | Tests  | Status        |
 |--------------------|---------|----------|--------|---------------|
 | IAM / Auth         | ✅       | ✅        | Partial | Production-ready |
-| Resume Processing  | ✅       | ✅        | Partial | Production-ready |
+| Resume Processing  | ✅       | ✅        | Improved | Production-ready |
 | Job Management     | ✅       | ✅        | —      | Production-ready |
 | Application / ATS  | Schema ✅ | —       | —      | Pending         |
 

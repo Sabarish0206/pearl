@@ -6,6 +6,7 @@ import { env } from '../../config/env';
 import { logger } from '../../services/logger.service';
 import { ParsedResumeDataSchema } from '@pearl/common';
 import type { CommitResumeInput, ParsedResumeData } from '@pearl/common';
+import { normalizeSkills } from '@pearl/common';
 
 // Gemini client is instantiated lazily — GEMINI_API_KEY is optional and
 // validated at call time so the server starts fine without it (e.g. CI/test).
@@ -235,8 +236,9 @@ export const commitResume = async (userId: string, input: CommitResumeInput): Pr
 
   const { resume_id, skills: rawSkills, cgpa, active_arrears, history_of_arrears, tenth_mark, twelfth_mark, ...restData } = input;
 
-  // Normalize skills to lowercase and de-duplicate
-  const normalizedSkills = [...new Set(rawSkills.map((s) => s.trim().toLowerCase()).filter(Boolean))];
+  // Normalize skills to canonical labels and de-duplicate.
+  // This ensures downstream matching (jobs/filters) uses industry-standard names.
+  const normalizedSkills = normalizeSkills(rawSkills).normalized.map((s) => s.trim());
 
   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     // Step 2: Update resume - set parsed_data to edited payload and mark as verified

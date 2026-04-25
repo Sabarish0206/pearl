@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
@@ -34,7 +35,11 @@ function AppRoutes() {
 
   // Avoid rendering public routes (like /login) before we know session state.
   if (isLoading) {
-    return null;
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (

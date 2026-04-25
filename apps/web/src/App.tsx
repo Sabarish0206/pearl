@@ -36,7 +36,12 @@ function AppRoutes() {
   // Avoid rendering public routes (like /login) before we know session state.
   if (isLoading) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box
+        role="status"
+        aria-live="polite"
+        aria-label="Loading"
+        sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <CircularProgress />
       </Box>
     );

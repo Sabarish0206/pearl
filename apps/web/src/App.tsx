@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './stores/authStore';
@@ -21,7 +22,7 @@ import './App.css';
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, setCurrentUser, setIsLoading } = useAuthStore();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
@@ -32,10 +33,30 @@ function AppRoutes() {
     bootstrapAuth();
   }, [setCurrentUser, setIsLoading]);
 
+  // Avoid rendering public routes (like /login) before we know session state.
+  if (isLoading) {
+    return (
+      <Box
+        role="status"
+        aria-live="polite"
+        aria-label="Loading"
+        sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/signup"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <SignupPage />}
+      />
       <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
 
       <Route

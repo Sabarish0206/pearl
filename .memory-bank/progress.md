@@ -70,6 +70,10 @@
 
 TypeScript compiles cleanly for both `@pearl/api` and `@pearl/web`. CodeQL security scan passes with zero alerts. 
 
+### Latest Update
+
+- Web auth routing: public routes (`/login`, `/signup`) now redirect authenticated users to `/dashboard`, and route rendering is delayed until auth bootstrap completes (prevents login screen showing briefly on refresh).
+
 ---
 
 ## Next Steps

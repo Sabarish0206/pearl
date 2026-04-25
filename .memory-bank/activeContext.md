@@ -124,6 +124,10 @@ PostgreSQL via Prisma v6.x. Full production schema:
 - Auth bootstrap on mount in `App.tsx` via `GET /api/auth/me`
 - `ProtectedRoute.tsx` returns `null` while `authStore.isLoading=true` to avoid redirect race condition
 
+## Recent Work (Uncommitted)
+
+- Fixed public-route auth redirect: `/login` and `/signup` now redirect to `/dashboard` when already authenticated; `AppRoutes` waits for auth bootstrap to finish before rendering routes to prevent login-page flash on refresh/navigation.
+
 ## Development Scripts (root level)
 - `pnpm dev` — Start all dev servers via Turbo
 - `pnpm build` — Build all packages

@@ -21,7 +21,7 @@ import './App.css';
 const queryClient = new QueryClient();
 
 function AppRoutes() {
-  const { isAuthenticated, setCurrentUser, setIsLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, setCurrentUser, setIsLoading } = useAuthStore();
 
   useEffect(() => {
     const bootstrapAuth = async () => {
@@ -32,10 +32,21 @@ function AppRoutes() {
     bootstrapAuth();
   }, [setCurrentUser, setIsLoading]);
 
+  // Avoid rendering public routes (like /login) before we know session state.
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/signup" element={<SignupPage />} />
+      <Route
+        path="/login"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/signup"
+        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <SignupPage />}
+      />
       <Route path="/demo/resume-upload" element={<ResumeUploadDemo />} />
 
       <Route

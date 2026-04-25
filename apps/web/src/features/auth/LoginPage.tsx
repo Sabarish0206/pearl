@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { LoginSchema } from '@pearl/common';
 import type { LoginInput } from '@pearl/common';
@@ -7,7 +7,13 @@ import { useAuthStore } from '../../stores/authStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
+  const { isAuthenticated, isLoading, setCurrentUser } = useAuthStore();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const [formData, setFormData] = useState<LoginInput>({
     email: '',

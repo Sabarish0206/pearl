@@ -7,7 +7,7 @@ import { useAuthStore } from '../../stores/authStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { setCurrentUser } = useAuthStore();
+  const setCurrentUser = useAuthStore((state) => state.setCurrentUser);
 
   const [formData, setFormData] = useState<LoginInput>({
     email: '',

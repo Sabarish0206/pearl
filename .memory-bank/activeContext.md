@@ -146,3 +146,7 @@ PostgreSQL via Prisma v6.x. Full production schema:
 7. **Database schema (Jobs & ATS)**: Added Job, JobSkill, Application, ApplicationStatus; extended Student with academic fields
 8. **Job module Phase 1**: PDF/text JD parsing via Gemini → DRAFT Job saved; `ParsedJobDataSchema` in common
 9. **Job module Phase 2**: Publish transaction — validate, upsert skills, set status ACTIVE; `JobVerifyPage.tsx` frontend
+Re-implemented production Docker configuration after git hard reset.
+- Re-created `apps/api/Dockerfile` with multi-stage pnpm build.
+- Updated `docker-compose.yml` to production version (adds api, secures db, removes pgweb).
+- Ready for EC2 deployment steps: .env config, db:push, and docker compose up.Updated `docker-compose.yml` to expose port 5432 and added default values for POSTGRES environment variables to ensure container stability when `.env` isn't fully picked up by the shell. Ready for local testing.

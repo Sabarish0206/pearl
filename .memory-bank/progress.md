@@ -83,3 +83,6 @@ TypeScript compiles cleanly for both `@pearl/api` and `@pearl/web`. CodeQL secur
 - Configure CI/CD pipelines
 - Expand test coverage (Jest + React Testing Library already scaffolded)
 - Run `pnpm db:push` in `packages/database` to apply full schema to PostgreSQL
+- 2026-04-25: Restored production Docker configuration (Dockerfile & docker-compose.yml) after branch reset.
+- Project is ready for deployment on EC2.
+- Next steps: Initialize .env on EC2 and run database sync.

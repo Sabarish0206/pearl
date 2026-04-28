@@ -1,17 +1,42 @@
-version: '3.8'
+version: "3.9"
+
 services:
   db:
     image: postgres:15
     container_name: pearl-postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: pearl_local
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-pearl_local}
     ports:
       - "5432:5432"
     volumes:
       - pearl_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    container_name: pearl-api
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "80:3000"
+    networks:
+      - backend
 
   pgweb:
     image: sosedoff/pgweb
@@ -23,7 +48,13 @@ services:
       PGWEB_DATABASE_URL: postgres://postgres:postgres@db:5432/pearl_local?sslmode=disable
     command: pgweb --listen 8080 --bind 0.0.0.0 --host db --port 5432 --user postgres --pass postgres --db pearl_local --ssl=disable
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - backend
+
+networks:
+  backend:
 
 volumes:
   pearl_pgdata:

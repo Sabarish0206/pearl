@@ -223,6 +223,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@pearl/config':
+        specifier: workspace:*
+        version: link:../config
       '@prisma/client':
         specifier: 6.4.1
         version: 6.4.1(prisma@6.4.1(typescript@5.9.3))(typescript@5.9.3)

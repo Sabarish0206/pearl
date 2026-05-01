@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@prisma/client": "6.4.1",
+    "dotenv-cli": "^8.0.0",
     "prisma": "6.4.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
-    "dotenv-cli": "^8.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3"
   }

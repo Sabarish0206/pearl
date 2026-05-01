@@ -45,8 +45,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      PGWEB_DATABASE_URL: postgres://postgres:postgres@db:5432/pearl_local?sslmode=disable
-    command: pgweb --listen 8080 --bind 0.0.0.0 --host db --port 5432 --user postgres --pass postgres --db pearl_local --ssl=disable
+      PGWEB_DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-pearl_local}?sslmode=disable
+    command: pgweb --listen 8080 --bind 0.0.0.0 --host db --port 5432 --user ${POSTGRES_USER:-postgres} --pass ${POSTGRES_PASSWORD:-postgres} --db ${POSTGRES_DB:-pearl_local} --ssl=disable
     depends_on:
       db:
         condition: service_healthy

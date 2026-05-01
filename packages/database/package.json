@@ -14,6 +14,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@pearl/config": "workspace:*",
     "@prisma/client": "6.4.1",
     "dotenv-cli": "^8.0.0",
     "prisma": "6.4.1"

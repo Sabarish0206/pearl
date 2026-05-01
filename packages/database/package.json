@@ -5,10 +5,10 @@
   "main": "./index.ts",
   "types": "./index.ts",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:push:prod": "prisma db push --skip-generate",
-    "db:seed": "prisma db seed"
+    "db:generate": "dotenv -e ../../.env -- prisma generate",
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:push:prod": "dotenv -e ../../.env -- prisma db push --skip-generate",
+    "db:seed": "dotenv -e ../../.env -- prisma db seed"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "bcrypt": "^6.0.0",
+    "dotenv-cli": "^8.0.0",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3"
   }

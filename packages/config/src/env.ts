@@ -11,7 +11,7 @@ export const apiEnvSchema = z.object({
 });
 
 export const webEnvSchema = z.object({
-  VITE_API_URL: z.string().url().default("http://localhost:3001"),
+  VITE_API_URL: z.string().url().default("http://localhost:3000"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const apiEnvSchema = z.object({
   DATABASE_URL: z.string().url(),
-  PORT: z.string().transform((s) => parseInt(s, 10)).default("3001"),
+  PORT: z.string().transform((s) => parseInt(s, 10)).default("3000"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
   CORS_ORIGIN: z.string().url().default("http://localhost:5173"),
   JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),

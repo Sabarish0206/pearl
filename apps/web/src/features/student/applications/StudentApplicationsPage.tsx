@@ -17,7 +17,6 @@ import {
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import WorkIcon from '@mui/icons-material/Work';
 import { useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import type { ApplicationStatus, StudentApplicationHistory } from '@pearl/common';
 import { getApplicationHistory } from '../../../api/studentApplications.api';
 import adminTheme from '../../admin/shared/adminTheme';
@@ -193,14 +192,6 @@ export default function StudentApplicationsPage() {
             gap: 2,
           }}
         >
-          <Button
-            size="small"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate('/student/jobs')}
-            sx={{ color: 'text.secondary', minWidth: 0 }}
-          >
-            Drives
-          </Button>
           <AssignmentIcon sx={{ color: 'primary.main', fontSize: 24, flexShrink: 0 }} />
           <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1 }}>
             My Applications

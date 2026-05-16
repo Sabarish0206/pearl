@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -12,7 +11,6 @@ import {
   createTheme,
   CssBaseline,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import WorkIcon from '@mui/icons-material/Work';
 import { parseJob } from '../../api/jobs.api';
 import FileUploadBox from './components/FileUploadBox';
@@ -59,7 +57,6 @@ const darkTheme = createTheme({
 });
 
 export default function JobParsePage() {
-  const navigate = useNavigate();
   const [uiState, setUiState] = useState<JobUIState>('input');
   const [isDragging, setIsDragging] = useState(false);
   const [rawText, setRawText] = useState('');
@@ -150,26 +147,6 @@ export default function JobParsePage() {
         <Box sx={{ maxWidth: 800, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box
-              component="button"
-              onClick={() => navigate(-1)}
-              aria-label="Back to dashboard"
-              sx={{
-                bgcolor: 'transparent',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                p: 1,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                color: 'text.secondary',
-                transition: 'all 0.2s',
-                '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-              }}
-            >
-              <ArrowBackIcon fontSize="small" />
-            </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <WorkIcon sx={{ color: 'primary.main', fontSize: 28 }} />
               <Box>

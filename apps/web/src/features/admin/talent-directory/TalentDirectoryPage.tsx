@@ -10,6 +10,7 @@ import {
   Paper,
   Skeleton,
   ThemeProvider,
+  Tooltip,
   Typography,
   createTheme,
   useMediaQuery,
@@ -210,19 +211,21 @@ export default function TalentDirectoryPage() {
           </Box>
 
           {isMobile && (
-            <IconButton
-              onClick={() => setDrawerOpen(true)}
-              size="small"
-              sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                color: 'text.secondary',
-                '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-              }}
-            >
-              <FilterListIcon fontSize="small" />
-            </IconButton>
+            <Tooltip title="Toggle filters">
+              <IconButton
+                onClick={() => setDrawerOpen(true)}
+                size="small"
+                sx={{
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  color: 'text.secondary',
+                  '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
+                }}
+              >
+                <FilterListIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           )}
         </Box>
 

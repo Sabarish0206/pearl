@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -17,7 +16,6 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
@@ -117,7 +115,6 @@ function EmptyState() {
 }
 
 export default function TalentDirectoryPage() {
-  const navigate = useNavigate();
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
 
@@ -201,22 +198,6 @@ export default function TalentDirectoryPage() {
             gap: 2,
           }}
         >
-          <Tooltip title="Back to dashboard">
-            <IconButton
-              onClick={() => navigate(-1)}
-              size="small"
-              sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                color: 'text.secondary',
-                '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-              }}
-            >
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
             <PeopleAltIcon sx={{ color: 'primary.main', fontSize: 26, flexShrink: 0 }} />
             <Box sx={{ minWidth: 0 }}>

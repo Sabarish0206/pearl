@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -8,17 +8,14 @@ import {
   Chip,
   CircularProgress,
   CssBaseline,
-  IconButton,
   Paper,
   Skeleton,
   Tab,
   Tabs,
   ThemeProvider,
-  Tooltip,
   Typography,
   createTheme,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DownloadIcon from '@mui/icons-material/Download';
 import BusinessIcon from '@mui/icons-material/Business';
 import {
@@ -93,7 +90,6 @@ function countByStatus(
 
 export default function DriveDashboardPage() {
   const { id: jobId } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   // Data state
   const [jobInfo, setJobInfo] = useState<ApplicationsJobInfo | null>(null);
@@ -240,22 +236,6 @@ export default function DriveDashboardPage() {
             gap: 2,
           }}
         >
-          <Tooltip title="Back">
-            <IconButton
-              onClick={() => navigate(-1)}
-              size="small"
-              sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                color: 'text.secondary',
-                '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-              }}
-            >
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flex: 1, minWidth: 0 }}>
             <BusinessIcon sx={{ color: 'primary.main', fontSize: 24, flexShrink: 0 }} />
             <Box sx={{ minWidth: 0 }}>

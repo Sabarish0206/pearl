@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
@@ -55,7 +54,6 @@ const darkTheme = createTheme({
 });
 
 export default function ResumePage() {
-  const navigate = useNavigate();
   const [uiState, setUiState] = useState<UIState>('loading');
   const [draftData, setDraftData] = useState<DraftFormData | null>(null);
   const [verifiedData, setVerifiedData] = useState<ResumeRow | null>(null);
@@ -194,7 +192,7 @@ export default function ResumePage() {
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
         <ToastContainer position="top-right" autoClose={4000} theme="dark" />
-        <PageHeader onBack={() => navigate('/dashboard')} />
+        <PageHeader />
 
         <Box sx={{ maxWidth: 860, mx: 'auto', px: 3, py: 4 }}>
           {uiState === 'loading' && <SkeletonLoader />}

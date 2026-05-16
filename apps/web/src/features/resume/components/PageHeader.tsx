@@ -1,12 +1,7 @@
-import { Box, Typography, Button, Tooltip } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box, Typography } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 
-interface PageHeaderProps {
-  onBack: () => void;
-}
-
-export default function PageHeader({ onBack }: PageHeaderProps) {
+export default function PageHeader() {
   return (
     <Box
       component="header"
@@ -48,17 +43,6 @@ export default function PageHeader({ onBack }: PageHeaderProps) {
           </Typography>
         </Box>
       </Box>
-      <Tooltip title="Back to Dashboard">
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={onBack}
-          size="small"
-          sx={{ color: 'text.secondary', borderColor: 'divider' }}
-        >
-          Dashboard
-        </Button>
-      </Tooltip>
     </Box>
   );
 }

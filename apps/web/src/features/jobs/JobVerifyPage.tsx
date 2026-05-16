@@ -15,7 +15,6 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PublishIcon from '@mui/icons-material/Publish';
 import { getJob, publishJob } from '../../api/jobs.api';
 import type { JobRow } from '@pearl/common';
@@ -161,26 +160,6 @@ export default function JobVerifyPage() {
         <Box sx={{ maxWidth: 800, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
           {/* Header */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box
-              component="button"
-              onClick={() => navigate(-1)}
-              aria-label="Back"
-              sx={{
-                bgcolor: 'transparent',
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2,
-                p: 1,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                color: 'text.secondary',
-                transition: 'all 0.2s',
-                '&:hover': { borderColor: 'primary.main', color: 'primary.main' },
-              }}
-            >
-              <ArrowBackIcon fontSize="small" />
-            </Box>
             <Box>
               <Typography variant="h5" fontWeight={700} color="text.primary" lineHeight={1.2}>
                 Review & Publish Job

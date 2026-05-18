@@ -20,7 +20,6 @@ const fetchProfileData = async (
   const response = await fetch(`${API_BASE}${path}`, {
     method: 'GET',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
   });
 
   const payload = (await response.json()) as ProfileApiResponse;

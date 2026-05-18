@@ -54,6 +54,7 @@ All packages follow the `@pearl/` namespace:
 | POST   | /api/admin/jobs/parse   | job     | ADMIN             |
 | GET    | /api/admin/jobs/:id     | job     | ADMIN             |
 | PUT    | /api/admin/jobs/:id/publish | job | ADMIN            |
+| DELETE | /api/admin/jobs/:id     | job     | ADMIN             |
 
 ---
 
@@ -127,6 +128,7 @@ PostgreSQL via Prisma v6.x. Full production schema:
 ## Recent Work
 
 - Fixed public-route auth redirect: `/login` and `/signup` now redirect to `/dashboard` when already authenticated; `AppRoutes` waits for auth bootstrap to finish before rendering routes to prevent login-page flash on refresh/navigation.
+- Added draft-job soft delete support: admins/faculty can now mark draft drives as `CANCELLED` through `DELETE /api/admin/jobs/:id`, and the draft review screen now exposes a confirmation dialog and delete action.
 
 ## Development Scripts (root level)
 - `pnpm dev` — Start all dev servers via Turbo

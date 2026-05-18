@@ -121,15 +121,13 @@ function ApplicationCard({ application }: { application: StudentApplicationHisto
               size="small"
               sx={{ fontWeight: 700, fontSize: '0.75rem' }}
             />
-            {application.job.status !== 'ACTIVE' && (
-              <Chip
-                label={`Drive: ${JOB_STATUS_LABELS[application.job.status] ?? application.job.status}`}
-                color={JOB_STATUS_CHIP_COLOR[application.job.status] ?? 'default'}
-                size="small"
-                variant="outlined"
-                sx={{ fontWeight: 600, fontSize: '0.7rem' }}
-              />
-            )}
+            <Chip
+              label={`Drive: ${JOB_STATUS_LABELS[application.job.status] ?? application.job.status}`}
+              color={JOB_STATUS_CHIP_COLOR[application.job.status] ?? 'default'}
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+            />
           </Box>
         </Box>
 

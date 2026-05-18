@@ -78,6 +78,7 @@ TypeScript compiles cleanly for both `@pearl/api` and `@pearl/web`. CodeQL secur
   - Refactored `DashboardPage` to remove redundant layout wrappers (AppBar, CssBaseline) now handled by `MainLayout`.
 - Web auth routing: public routes (`/login`, `/signup`) now redirect authenticated users to `/dashboard`, and route rendering is delayed until auth bootstrap completes (prevents login screen showing briefly on refresh).
 - Issue #54 completed: Added Student (`/student/profile`) and Admin/Faculty (`/admin/profile`) profile dashboards with MUI-only responsive layouts, loading skeletons, retry error states, and role-specific metrics. Added typed profile API client, shared profile schemas in `@pearl/common`, dashboard profile navigation cards, and 404 wildcard fallback route.
+- Issue: Talent Directory Export: Added server-side CSV generation for student search (`exportStudentsCsv`) and client-side download handling in `TalentDirectoryPage`.
 
 ---
 

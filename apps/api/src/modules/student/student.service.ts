@@ -1,4 +1,5 @@
 import { prisma, Prisma } from '@pearl/database';
+import { parse as csvParse } from 'json2csv';
 
 export interface StudentSearchPayload {
   skills?: string[];
@@ -153,4 +154,111 @@ export const searchStudents = async (payload: StudentSearchPayload) => {
       totalPages: Math.ceil(total / limit),
     },
   };
+};
+
+type StudentCsvRow = {
+  'Register Number': string;
+  'First Name': string;
+  'Last Name': string;
+  Department: string;
+  CGPA: number | string;
+  'Active Arrears': number | string;
+  'Placement Status': string;
+  Skills: string;
+};
+
+export const exportStudentsCsv = async (payload: StudentSearchPayload) => {
+  const {
+    skills,
+    minCgpa,
+    maxActiveArrears,
+    departments,
+    sortBy = 'cgpa',
+    sortOrder = 'desc',
+  } = payload;
+
+  const andConditions: Prisma.StudentWhereInput[] = [];
+
+  if (minCgpa !== undefined) {
+    andConditions.push({ cgpa: { gte: minCgpa } });
+  }
+
+  if (maxActiveArrears !== undefined) {
+    andConditions.push({ activeArrears: { lte: maxActiveArrears } });
+  }
+
+  if (departments && departments.length > 0) {
+    andConditions.push({ department: { in: departments } });
+  }
+
+  if (skills && skills.length > 0) {
+    for (const rawSkill of skills) {
+      const skillName = rawSkill.toLowerCase().trim();
+      if (!skillName) continue;
+      andConditions.push({
+        studentSkills: {
+          some: {
+            skill: { name: skillName },
+          },
+        },
+      });
+    }
+  }
+
+  const where: Prisma.StudentWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const orderBy: Prisma.StudentOrderByWithRelationInput =
+    sortBy === 'name'
+      ? { firstName: sortOrder }
+      : { cgpa: sortOrder };
+
+  const students = await prisma.student.findMany({
+    where,
+    orderBy,
+    select: {
+      firstName: true,
+      lastName: true,
+      registerNumber: true,
+      department: true,
+      cgpa: true,
+      activeArrears: true,
+      studentSkills: {
+        select: {
+          skill: {
+            select: { name: true },
+          },
+        },
+      },
+      applications: {
+        where: { status: 'OFFERED' },
+        select: { id: true },
+      },
+    },
+  });
+
+  const csvData: StudentCsvRow[] = students.map((s) => ({
+    'Register Number': s.registerNumber,
+    'First Name': s.firstName,
+    'Last Name': s.lastName,
+    Department: s.department,
+    CGPA: s.cgpa !== null ? Number(s.cgpa) : '',
+    'Active Arrears': s.activeArrears ?? '0',
+    'Placement Status': s.applications.length > 0 ? 'Placed' : 'Unplaced',
+    Skills: s.studentSkills.map((ss) => ss.skill.name).join(', '),
+  }));
+
+  const fields = [
+    'Register Number',
+    'First Name',
+    'Last Name',
+    'Department',
+    'CGPA',
+    'Active Arrears',
+    'Placement Status',
+    'Skills',
+  ];
+
+  const csvString = csvParse<StudentCsvRow>(csvData, { fields });
+
+  return csvString;
 };

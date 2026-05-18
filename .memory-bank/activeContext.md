@@ -134,6 +134,7 @@ PostgreSQL via Prisma v6.x. Full production schema:
   - Added shared profile schemas/types in `packages/common/src/schemas/profile.schema.ts` and exported from common index.
   - Added dashboard navigation cards linking roles to the new profile routes.
   - Restored wildcard `*` route in `App.tsx` for 404-safe navigation fallback.
+- Implemented Talent Directory Export: Added an export endpoint to generate CSV for student search results natively and client-side handling to download it securely using `json2csv` and `URL.createObjectURL`.
 
 ## Development Scripts (root level)
 - `pnpm dev` — Start all dev servers via Turbo

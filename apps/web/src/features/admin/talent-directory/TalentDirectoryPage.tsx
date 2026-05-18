@@ -19,7 +19,8 @@ import { currentTheme } from '../../../theme/theme';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
-import { searchStudents } from '../../../api/students.api';
+import DownloadIcon from '@mui/icons-material/Download';
+import { searchStudents, exportStudents } from '../../../api/students.api';
 import type { StudentRecord } from '../../../api/students.api';
 import { useDebounce } from '../../../hooks/useDebounce';
 import FilterPanel from './FilterPanel';
@@ -101,6 +102,7 @@ export default function TalentDirectoryPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -149,6 +151,33 @@ export default function TalentDirectoryPage() {
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const payload = {
+        ...(filters.skills.length > 0 && { skills: filters.skills }),
+        ...(filters.minCgpa > 0 && { minCgpa: filters.minCgpa }),
+        ...(filters.maxActiveArrears !== undefined && { maxActiveArrears: filters.maxActiveArrears }),
+        ...(filters.departments.length > 0 && { departments: filters.departments }),
+      };
+      
+      const blob = await exportStudents(payload);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `student_directory_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('[TalentDirectory] Export failed:', error);
+      // Ideally show a toast here
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const filterPanel = (
@@ -277,6 +306,17 @@ export default function TalentDirectoryPage() {
                   )}
                 </Typography>
               </Box>
+              
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={isExporting ? <CircularProgress size={20} color="inherit" /> : <DownloadIcon />}
+                onClick={handleExport}
+                disabled={isExporting || total === 0 || isLoading || isInitialLoad}
+                sx={{ borderRadius: 2 }}
+              >
+                {isExporting ? 'Exporting...' : 'Export CSV'}
+              </Button>
             </Box>
 
             {/* Grid */}

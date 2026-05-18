@@ -61,3 +61,27 @@ export const searchStudents = async (
 
   return data.data;
 };
+
+export const exportStudents = async (payload: StudentSearchPayload): Promise<Blob> => {
+  const response = await fetch(`${API_BASE}/api/admin/students/export`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to export students';
+    try {
+      const errorData = await response.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch {
+      // If parsing json fails, just use default message
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.blob();
+};

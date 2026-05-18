@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
-import { handleSearchStudents } from './student.controller';
+import { handleSearchStudents, handleExportStudents } from './student.controller';
 
 // General rate limit for student admin endpoints
 const studentAdminRateLimiter = rateLimit({
@@ -19,5 +19,6 @@ const router = Router();
 router.use(studentAdminRateLimiter, verifySession, requireRole(['ADMIN', 'FACULTY']));
 
 router.post('/search', handleSearchStudents);
+router.post('/export', handleExportStudents);
 
 export default router;

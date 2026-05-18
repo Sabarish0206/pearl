@@ -177,7 +177,58 @@ export const parseAndDraftJob = async (
   return { job_id: job.id, parsed_data: parsedData };
 };
 
-// --- Get all jobs created by an admin/faculty ---
+// --- Update job status (ACTIVE → CLOSED / COMPLETED / CANCELLED) ---
+
+const CLOSEABLE_STATUSES = ['CLOSED', 'COMPLETED', 'CANCELLED'] as const;
+type CloseableStatus = (typeof CLOSEABLE_STATUSES)[number];
+
+const isCloseableStatus = (value: string): value is CloseableStatus =>
+  CLOSEABLE_STATUSES.includes(value as CloseableStatus);
+
+export const updateJobStatus = async (jobId: string, adminId: string, newStatus: string) => {
+  if (!isCloseableStatus(newStatus)) {
+    const err = new Error(
+      `Invalid status. Must be one of: ${CLOSEABLE_STATUSES.join(', ')}`,
+    ) as Error & { status: number };
+    err.status = 400;
+    throw err;
+  }
+
+  const existing = await prisma.job.findUnique({ where: { id: jobId } });
+
+  if (!existing) {
+    const err = new Error('Job not found.') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  if (existing.createdById !== adminId) {
+    const err = new Error('You do not have permission to update this job.') as Error & { status: number };
+    err.status = 403;
+    throw err;
+  }
+
+  if (existing.status === 'DRAFT') {
+    const err = new Error('DRAFT jobs must be published before their status can be changed.') as Error & {
+      status: number;
+    };
+    err.status = 409;
+    throw err;
+  }
+
+  if (existing.status === newStatus) {
+    const err = new Error(`Job is already marked as ${newStatus}.`) as Error & { status: number };
+    err.status = 409;
+    throw err;
+  }
+
+  const updatedJob = await prisma.job.update({
+    where: { id: jobId },
+    data: { status: newStatus },
+  });
+
+  return updatedJob;
+};
 
 export const getJobsByAdmin = async (adminId: string) => {
   const jobs = await prisma.job.findMany({

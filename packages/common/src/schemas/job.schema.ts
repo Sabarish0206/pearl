@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+// --- Job Status ---
+
+export const JobStatusSchema = z.enum(["DRAFT", "ACTIVE", "CLOSED", "COMPLETED", "CANCELLED"]);
+export type JobStatus = z.infer<typeof JobStatusSchema>;
+
 // --- Parsed Job Data returned by Gemini ---
 
 export const UnstructuredJobDataSchema = z.object({
@@ -34,7 +39,7 @@ export interface JobRow {
   maxActiveArrears: number | null;
   maxHistoryOfArrears: number | null;
   allowedDepartments: string[];
-  status: "DRAFT" | "ACTIVE" | "CLOSED" | "COMPLETED" | "CANCELLED";
+  status: JobStatus;
   parsedData: ParsedJobData | null;
   createdAt: string;
   updatedAt: string;
@@ -52,7 +57,7 @@ export interface JobListItem {
   companyName: string;
   jobRole: string;
   ctc: string | null;
-  status: "DRAFT" | "ACTIVE" | "CLOSED" | "COMPLETED" | "CANCELLED";
+  status: JobStatus;
   allowedDepartments: string[];
   applicationCount: number;
   createdAt: string;

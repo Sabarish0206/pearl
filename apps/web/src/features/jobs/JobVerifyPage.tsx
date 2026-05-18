@@ -354,7 +354,7 @@ export default function JobVerifyPage() {
         }}
       >
         <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
-          Delete Draft Drive?
+          Delete Draft Job?
         </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: 'text.secondary' }}>

@@ -127,6 +127,13 @@ PostgreSQL via Prisma v6.x. Full production schema:
 ## Recent Work
 
 - Fixed public-route auth redirect: `/login` and `/signup` now redirect to `/dashboard` when already authenticated; `AppRoutes` waits for auth bootstrap to finish before rendering routes to prevent login-page flash on refresh/navigation.
+- Implemented Issue #54 Profile Dashboards:
+  - Added student profile page (`/student/profile`) with identity hub, dynamic placement-status chip, and 3 responsive metric panels (student details, academic performance, prior academic scores).
+  - Added admin/faculty profile page (`/admin/profile`) with identity block, designation badge, department card, and jobs-created impact metric.
+  - Added typed frontend profile API client (`apps/web/src/api/profile.api.ts`) consuming existing backend endpoints (`/api/student/profile`, `/api/admin/profile`).
+  - Added shared profile schemas/types in `packages/common/src/schemas/profile.schema.ts` and exported from common index.
+  - Added dashboard navigation cards linking roles to the new profile routes.
+  - Restored wildcard `*` route in `App.tsx` for 404-safe navigation fallback.
 
 ## Development Scripts (root level)
 - `pnpm dev` — Start all dev servers via Turbo

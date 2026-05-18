@@ -5,6 +5,8 @@ import {
   CardActionArea,
   CardContent,
   Chip,
+  CssBaseline,
+  ThemeProvider,
   Typography,
 } from '@mui/material';
 import WorkIcon from '@mui/icons-material/Work';
@@ -16,6 +18,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuthStore } from '../../stores/authStore';
+import { lightTheme } from '../../theme/theme';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -189,6 +192,8 @@ export default function DashboardPage() {
   }
 
   return (
+    <ThemeProvider theme={lightTheme}>
+      <CssBaseline />
     <Box sx={{ minHeight: '100%', bgcolor: 'background.default' }}>
       {/* ── Content ────────────────────────────────────────────────────────── */}
       <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: { xs: 3, sm: 4 }, maxWidth: 1100, mx: 'auto' }}>
@@ -279,5 +284,6 @@ export default function DashboardPage() {
         </Box>
       </Box>
     </Box>
+    </ThemeProvider>
   );
 }

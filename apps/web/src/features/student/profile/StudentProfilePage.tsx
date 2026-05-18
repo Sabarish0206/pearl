@@ -184,7 +184,7 @@ export default function StudentProfilePage() {
 
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 4 }}>
-                  <InfoPanel title="Structural Attributes">
+                  <InfoPanel title="Student Details">
                     <MetricBlock label="Register Number" value={profile.registerNumber} />
                     <MetricBlock label="Department" value={profile.department} />
                     <MetricBlock label="Batch Year" value={String(profile.batchYear)} />
@@ -192,7 +192,7 @@ export default function StudentProfilePage() {
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 4 }}>
-                  <InfoPanel title="Current Status Metrics">
+                  <InfoPanel title="Academic Performance">
                     <MetricBlock label="CGPA" value={formatNullableValue(profile.cgpa)} />
                     <MetricBlock label="Active Arrears" value={formatNullableValue(profile.activeArrears)} />
                     <MetricBlock
@@ -203,7 +203,7 @@ export default function StudentProfilePage() {
                 </Grid>
 
                 <Grid size={{ xs: 12, md: 4 }}>
-                  <InfoPanel title="Background Benchmarks">
+                  <InfoPanel title="Prior Academic Scores">
                     <MetricBlock label="10th Mark" value={formatNullableValue(profile.tenthMark)} />
                     <MetricBlock label="12th Mark" value={formatNullableValue(profile.twelfthMark)} />
                   </InfoPanel>

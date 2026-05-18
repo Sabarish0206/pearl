@@ -175,6 +175,17 @@ function AppRoutes() {
         path="/"
         element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
       />
+
+      <Route
+        path="*"
+        element={
+          <div className="error-page">
+            <h1>404</h1>
+            <p>Page not found.</p>
+            <Link to="/dashboard">Go back to Dashboard</Link>
+          </div>
+        }
+      />
     </Routes>
   );
 }

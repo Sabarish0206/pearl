@@ -171,9 +171,9 @@ export default function AdminProfilePage() {
               <Grid container spacing={2}>
                 <Grid size={{ xs: 12, md: 6 }}>
                   <MetricCard
-                    title="Department Scope"
+                    title="Department"
                     value={profile.department}
-                    caption="Institutional unit assigned for placement operations"
+                    caption="Your assigned department"
                   />
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -193,7 +193,7 @@ export default function AdminProfilePage() {
                           Drive Impact
                         </Typography>
                       </Box>
-                      <Typography variant="h2" fontWeight={800} color="text.primary" sx={{ lineHeight: 1.15 }}>
+                      <Typography variant="h3" fontWeight={800} color="text.primary" sx={{ lineHeight: 1.15 }}>
                         {profile.jobsCreatedCount}
                       </Typography>
                       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>

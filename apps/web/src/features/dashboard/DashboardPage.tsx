@@ -18,6 +18,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import SchoolIcon from '@mui/icons-material/School';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import PersonIcon from '@mui/icons-material/Person';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutUser } from '../../api/auth.api';
 import adminTheme from '../admin/shared/adminTheme';
@@ -56,6 +57,13 @@ const STUDENT_CARDS: NavCard[] = [
     path: '/resume',
     color: '#22c55e',
   },
+  {
+    icon: <PersonIcon sx={{ fontSize: 32 }} />,
+    title: 'My Profile',
+    description: 'Review your academic profile and placement readiness status.',
+    path: '/student/profile',
+    color: '#a855f7',
+  },
 ];
 
 const ADMIN_CARDS: NavCard[] = [
@@ -80,6 +88,13 @@ const ADMIN_CARDS: NavCard[] = [
     path: '/admin/talent-directory',
     color: '#06b6d4',
   },
+  {
+    icon: <PersonIcon sx={{ fontSize: 32 }} />,
+    title: 'My Profile',
+    description: 'View your faculty profile and placement drive contribution metrics.',
+    path: '/admin/profile',
+    color: '#a855f7',
+  },
 ];
 
 const FACULTY_CARDS: NavCard[] = [
@@ -103,6 +118,13 @@ const FACULTY_CARDS: NavCard[] = [
     description: 'Explore the student talent pool. Filter by skills, department, CGPA and placement status.',
     path: '/admin/talent-directory',
     color: '#06b6d4',
+  },
+  {
+    icon: <PersonIcon sx={{ fontSize: 32 }} />,
+    title: 'My Profile',
+    description: 'View your faculty profile and placement drive contribution metrics.',
+    path: '/admin/profile',
+    color: '#a855f7',
   },
 ];
 

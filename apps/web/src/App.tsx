@@ -16,6 +16,8 @@ import DriveDashboardPage from './features/admin/drive-dashboard/DriveDashboardP
 import JobsListPage from './features/admin/jobs-list/JobsListPage';
 import StudentJobsPage from './features/student/jobs/StudentJobsPage';
 import StudentApplicationsPage from './features/student/applications/StudentApplicationsPage';
+import StudentProfilePage from './features/student/profile/StudentProfilePage';
+import AdminProfilePage from './features/admin/profile/AdminProfilePage';
 import DashboardPage from './features/dashboard/DashboardPage';
 import './App.css';
 
@@ -87,6 +89,15 @@ function AppRoutes() {
       />
 
       <Route
+        path="/student/profile"
+        element={
+          <ProtectedRoute allowedRoles={['STUDENT']}>
+            <StudentProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/admin/jobs"
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
@@ -127,6 +138,15 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
             <TalentDirectoryPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/profile"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN', 'FACULTY']}>
+            <AdminProfilePage />
           </ProtectedRoute>
         }
       />

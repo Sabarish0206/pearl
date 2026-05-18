@@ -74,6 +74,7 @@ TypeScript compiles cleanly for both `@pearl/api` and `@pearl/web`. CodeQL secur
 
 - Web auth routing: public routes (`/login`, `/signup`) now redirect authenticated users to `/dashboard`, and route rendering is delayed until auth bootstrap completes (prevents login screen showing briefly on refresh).
 - Draft job management: admins/faculty can now soft-delete draft drives from the review screen, which updates the job status to `CANCELLED` instead of publishing it.
+- Validation status: targeted web lint/build and API build pass, while the existing web Jest suite still fails in `src/components/ResumeUpload.test.tsx`.
 
 ---
 

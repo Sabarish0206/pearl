@@ -302,3 +302,30 @@ export const publishJob = async (jobId: string, adminId: string, payload: Publis
 
   return updatedJob;
 };
+
+export const deleteDraftJob = async (jobId: string, adminId: string) => {
+  const existing = await prisma.job.findUnique({ where: { id: jobId } });
+
+  if (!existing) {
+    const err = new Error('Job not found.') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  if (existing.createdById !== adminId) {
+    const err = new Error('You do not have permission to delete this job.') as Error & { status: number };
+    err.status = 403;
+    throw err;
+  }
+
+  if (existing.status !== 'DRAFT') {
+    const err = new Error('Only DRAFT jobs can be deleted.') as Error & { status: number };
+    err.status = 409;
+    throw err;
+  }
+
+  return prisma.job.update({
+    where: { id: jobId },
+    data: { status: 'CANCELLED' },
+  });
+};

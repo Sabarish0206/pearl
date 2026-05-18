@@ -8,6 +8,11 @@ import {
   Button,
   CircularProgress,
   CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Paper,
   TextField,
@@ -15,8 +20,9 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PublishIcon from '@mui/icons-material/Publish';
-import { getJob, publishJob } from '../../api/jobs.api';
+import { deleteDraftJob, getJob, publishJob } from '../../api/jobs.api';
 import type { JobRow } from '@pearl/common';
 
 const darkTheme = createTheme({
@@ -34,6 +40,8 @@ const darkTheme = createTheme({
     MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
   },
 });
+
+const POST_ACTION_REDIRECT_DELAY_MS = 1200;
 
 interface FormState {
   companyName: string;
@@ -79,6 +87,8 @@ export default function JobVerifyPage() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const loadJob = useCallback(async () => {
     if (!id) return;
@@ -150,6 +160,22 @@ export default function JobVerifyPage() {
       toast.error(err instanceof Error ? err.message : 'Failed to publish job.');
     } finally {
       setIsPublishing(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!id) return;
+
+    setIsDeleting(true);
+    try {
+      await deleteDraftJob(id);
+      setIsDeleteDialogOpen(false);
+      toast.success('Draft job deleted successfully.');
+      setTimeout(() => navigate('/admin/jobs'), POST_ACTION_REDIRECT_DELAY_MS);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete draft job.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -282,13 +308,24 @@ export default function JobVerifyPage() {
 
                 <Divider sx={{ borderColor: 'divider' }} />
 
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="large"
+                    startIcon={isDeleting ? <CircularProgress size={18} color="inherit" /> : <DeleteOutlineIcon />}
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    disabled={isPublishing || isDeleting}
+                    sx={{ fontWeight: 700 }}
+                  >
+                    Delete Draft
+                  </Button>
                   <Button
                     variant="contained"
                     size="large"
                     startIcon={isPublishing ? <CircularProgress size={18} color="inherit" /> : <PublishIcon />}
                     onClick={handlePublish}
-                    disabled={isPublishing}
+                    disabled={isPublishing || isDeleting}
                     sx={{ fontWeight: 700, px: 4 }}
                   >
                     {isPublishing ? 'Publishing…' : 'Publish Job'}
@@ -305,6 +342,49 @@ export default function JobVerifyPage() {
         theme="dark"
         toastStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
       />
+      <Dialog
+        open={isDeleteDialogOpen}
+        onClose={() => !isDeleting && setIsDeleteDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            bgcolor: '#111827',
+            border: '1px solid #ef4444',
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ color: 'error.main', fontWeight: 700 }}>
+          Delete Draft Job?
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: 'text.secondary' }}>
+            This will soft-delete the draft by marking it as cancelled. You can&apos;t publish it after this action.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="inherit"
+            onClick={() => setIsDeleteDialogOpen(false)}
+            disabled={isDeleting}
+            sx={{ borderColor: 'divider' }}
+          >
+            Keep Draft
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            startIcon={isDeleting ? <CircularProgress size={18} color="inherit" /> : <DeleteOutlineIcon />}
+            sx={{ fontWeight: 700 }}
+          >
+            {isDeleting ? 'Deleting…' : 'Delete Draft'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 }

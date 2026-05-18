@@ -90,3 +90,11 @@ export const handlePublishJob = async (req: Request, res: Response): Promise<voi
   const job = await JobService.publishJob(id, adminId, validation.data);
   res.status(200).json({ success: true, message: 'Job published successfully.', job });
 };
+
+export const handleDeleteDraftJob = async (req: Request, res: Response): Promise<void> => {
+  const id = req.params['id'] as string;
+  const adminId = req.user!.id;
+
+  const job = await JobService.deleteDraftJob(id, adminId);
+  res.status(200).json({ success: true, message: 'Draft job deleted successfully.', job });
+};

@@ -32,6 +32,22 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   REJECTED: 'Rejected',
 };
 
+const JOB_STATUS_LABELS: Record<string, string> = {
+  ACTIVE: 'Active',
+  CLOSED: 'Closed',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  DRAFT: 'Draft',
+};
+
+const JOB_STATUS_CHIP_COLOR: Record<string, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'> = {
+  ACTIVE: 'success',
+  CLOSED: 'info',
+  COMPLETED: 'default',
+  CANCELLED: 'error',
+  DRAFT: 'warning',
+};
+
 /** Returns the activeStep index for the MUI Stepper (0-based). */
 function getActiveStep(status: ApplicationStatus): number {
   if (status === 'REJECTED') return -1; // handled separately
@@ -104,6 +120,13 @@ function ApplicationCard({ application }: { application: StudentApplicationHisto
               color={isRejected ? 'error' : isOffered ? 'success' : 'primary'}
               size="small"
               sx={{ fontWeight: 700, fontSize: '0.75rem' }}
+            />
+            <Chip
+              label={`Drive: ${JOB_STATUS_LABELS[application.job.status] ?? application.job.status}`}
+              color={JOB_STATUS_CHIP_COLOR[application.job.status] ?? 'default'}
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: 600, fontSize: '0.7rem' }}
             />
           </Box>
         </Box>

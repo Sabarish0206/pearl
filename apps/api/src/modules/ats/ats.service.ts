@@ -20,7 +20,7 @@ export const getJobApplications = async (jobId: string, status?: string) => {
 
   const job = await prisma.job.findUnique({
     where: { id: jobId },
-    select: { id: true, companyName: true, jobRole: true },
+    select: { id: true, companyName: true, jobRole: true, status: true },
   });
 
   if (!job) {
@@ -74,7 +74,7 @@ export const getJobApplications = async (jobId: string, status?: string) => {
   }));
 
   return {
-    job: { id: job.id, companyName: job.companyName, jobRole: job.jobRole },
+    job: { id: job.id, companyName: job.companyName, jobRole: job.jobRole, status: job.status },
     applications: mappedApplications,
   };
 };

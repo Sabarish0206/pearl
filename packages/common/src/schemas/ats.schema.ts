@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { JobStatus } from './job.schema';
 
 // --- Application Status ---
 
@@ -32,6 +33,7 @@ export interface ApplicationsJobInfo {
   id: string;
   companyName: string;
   jobRole: string;
+  status: JobStatus;
 }
 
 // --- Full response from GET /api/admin/jobs/:id/applications ---
@@ -58,6 +60,7 @@ export interface StudentApplicationJob {
   companyName: string;
   jobRole: string;
   ctc: string | null;
+  status: JobStatus;
 }
 
 export interface StudentApplicationHistory {

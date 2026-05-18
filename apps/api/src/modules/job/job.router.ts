@@ -6,7 +6,7 @@ import multer, { MulterError } from 'multer';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
-import { handleParseJob, handleGetJobs, handleGetJob, handlePublishJob } from './job.controller';
+import { handleParseJob, handleGetJobs, handleGetJob, handlePublishJob, handleUpdateJobStatus } from './job.controller';
 import { handleGetJobApplications, handleExportJobApplications } from '../ats/ats.controller';
 
 const UPLOAD_DIR = path.resolve('uploads/jds');
@@ -67,6 +67,7 @@ router.get('/', handleGetJobs);
 router.post('/parse', parseRateLimiter, upload.single('jd'), handleParseJob);
 router.get('/:id', handleGetJob);
 router.put('/:id/publish', handlePublishJob);
+router.patch('/:id/status', handleUpdateJobStatus);
 
 // ATS (Applicant Tracking System) routes
 router.get('/:id/applications', handleGetJobApplications);

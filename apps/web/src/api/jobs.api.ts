@@ -91,3 +91,18 @@ export const publishJob = async (id: string, payload: PublishJobPayload): Promis
 
   return data.job;
 };
+
+export const deleteDraftJob = async (id: string): Promise<JobRow> => {
+  const response = await fetch(`${API_BASE}/api/admin/jobs/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  const data = (await response.json()) as { success: boolean; job: JobRow; message?: string };
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Failed to delete draft job');
+  }
+
+  return data.job;
+};

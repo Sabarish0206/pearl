@@ -182,10 +182,10 @@ export default function DriveDashboardPage() {
     !loadError &&
     jobInfo !== null &&
     MANAGEABLE_DRIVE_STATUSES.includes(jobInfo.status);
-  const availableDriveStatusOptions = useMemo(
-    () => DRIVE_STATUS_OPTIONS.filter((opt) => opt.value !== jobInfo?.status),
-    [jobInfo?.status],
-  );
+  const availableDriveStatusOptions = useMemo(() => {
+    if (!jobInfo || !MANAGEABLE_DRIVE_STATUSES.includes(jobInfo.status)) return [];
+    return DRIVE_STATUS_OPTIONS.filter((opt) => opt.value !== jobInfo.status);
+  }, [jobInfo]);
 
   // ─── Drive Status Update ────────────────────────────────────────────────────
 

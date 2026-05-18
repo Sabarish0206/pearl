@@ -12,10 +12,10 @@ import {
   ThemeProvider,
   Tooltip,
   Typography,
-  createTheme,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
+import { currentTheme } from '../../../theme/theme';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
@@ -27,29 +27,6 @@ import type { FilterState } from './types';
 import { INITIAL_FILTERS } from './types';
 import StudentCard from './StudentCard';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#6366f1' },
-    secondary: { main: '#06b6d4' },
-    success: { main: '#22c55e' },
-    warning: { main: '#f59e0b' },
-    error: { main: '#ef4444' },
-    background: { default: '#0f172a', paper: '#111827' },
-    divider: '#1e293b',
-    text: { primary: '#e2e8f0', secondary: '#94a3b8', disabled: '#475569' },
-  },
-  typography: { fontFamily: "'Inter', -apple-system, sans-serif" },
-  components: {
-    MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-    MuiCard: { styleOverrides: { root: { backgroundImage: 'none' } } },
-    MuiDrawer: {
-      styleOverrides: {
-        paper: { backgroundImage: 'none', backgroundColor: '#111827', borderRight: '1px solid #1e293b' },
-      },
-    },
-  },
-});
 
 const RESULTS_PER_PAGE = 12;
 const FILTER_DRAWER_WIDTH = 320;
@@ -179,7 +156,7 @@ export default function TalentDirectoryPage() {
   );
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
         {/* Top Bar */}

@@ -14,8 +14,8 @@ import {
   Tabs,
   ThemeProvider,
   Typography,
-  createTheme,
 } from '@mui/material';
+import { currentTheme } from '../../../theme/theme';
 import DownloadIcon from '@mui/icons-material/Download';
 import BusinessIcon from '@mui/icons-material/Business';
 import {
@@ -36,46 +36,6 @@ import { TAB_OPTIONS } from './components/types';
 import type { TabValue } from './components/types';
 
 // ─── Theme ────────────────────────────────────────────────────────────────────
-
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#6366f1' },
-    secondary: { main: '#06b6d4' },
-    success: { main: '#22c55e' },
-    warning: { main: '#f59e0b' },
-    error: { main: '#ef4444' },
-    background: { default: '#0f172a', paper: '#111827' },
-    divider: '#1e293b',
-    text: { primary: '#e2e8f0', secondary: '#94a3b8', disabled: '#475569' },
-  },
-  typography: { fontFamily: "'Inter', -apple-system, sans-serif" },
-  components: {
-    MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-    MuiTab: {
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 600, minHeight: 44 },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        head: {
-          backgroundColor: '#0f172a',
-          fontWeight: 700,
-          color: '#94a3b8',
-          fontSize: '0.75rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          borderBottom: '1px solid #1e293b',
-        },
-        body: {
-          borderBottom: '1px solid #1e293b',
-          fontSize: '0.875rem',
-        },
-      },
-    },
-  },
-});
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
@@ -216,7 +176,7 @@ export default function DriveDashboardPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

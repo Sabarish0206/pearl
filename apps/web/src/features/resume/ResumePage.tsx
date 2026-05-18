@@ -6,9 +6,9 @@ import {
   CircularProgress,
   Typography,
   ThemeProvider,
-  createTheme,
   CssBaseline,
 } from '@mui/material';
+import { currentTheme } from '../../theme/theme';
 import type { ResumeRow } from '@pearl/common';
 import { fetchResume, parseResume, commitResume } from '../../api/resume.api';
 import PageHeader from './components/PageHeader';
@@ -19,39 +19,6 @@ import DraftForm from './components/DraftForm';
 import VerifiedDashboard from './components/VerifiedDashboard';
 import type { DraftFormData, UIState } from './components/types';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#6366f1',
-    },
-    background: {
-      default: '#0f172a',
-      paper: '#111827',
-    },
-    divider: '#1e293b',
-    text: {
-      primary: '#e2e8f0',
-      secondary: '#94a3b8',
-      disabled: '#475569',
-    },
-    error: {
-      main: '#ef4444',
-    },
-  },
-  typography: {
-    fontFamily: "'Inter', -apple-system, sans-serif",
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-      },
-    },
-  },
-});
 
 export default function ResumePage() {
   const [uiState, setUiState] = useState<UIState>('loading');
@@ -188,7 +155,7 @@ export default function ResumePage() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
         <ToastContainer position="top-right" autoClose={4000} theme="dark" />

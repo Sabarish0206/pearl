@@ -19,7 +19,7 @@ import type { JobListItem } from '@pearl/common';
 import JobCard from './components/JobCard';
 import { TAB_OPTIONS } from './components/types';
 import type { JobStatus, JobStatusFilter } from './components/types';
-import adminTheme from '../shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 // ─── Jobs List Page ────────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ export default function JobsListPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

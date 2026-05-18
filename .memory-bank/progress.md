@@ -72,14 +72,16 @@ TypeScript compiles cleanly for both `@pearl/api` and `@pearl/web`. CodeQL secur
 
 ### Latest Update
 
+- **App Shell Navigation Sidebar**: Refactored the app to use a unified `MainLayout` component with React Router Nested Routing, providing a persistent sidebar.
+  - Sidebar is fully responsive: permanent drawer on desktop (`md` and up) and a temporary togglable drawer + AppBar on mobile.
+  - Role-based routing: navigation links are dynamically filtered based on `currentUser.role`.
+  - Refactored `DashboardPage` to remove redundant layout wrappers (AppBar, CssBaseline) now handled by `MainLayout`.
 - Web auth routing: public routes (`/login`, `/signup`) now redirect authenticated users to `/dashboard`, and route rendering is delayed until auth bootstrap completes (prevents login screen showing briefly on refresh).
 - Issue #54 completed: Added Student (`/student/profile`) and Admin/Faculty (`/admin/profile`) profile dashboards with MUI-only responsive layouts, loading skeletons, retry error states, and role-specific metrics. Added typed profile API client, shared profile schemas in `@pearl/common`, dashboard profile navigation cards, and 404 wildcard fallback route.
 
 ---
 
 ## Next Steps
-- Implement Navigation Sidebar layout (role-based persistent drawer with nested routes)
-- Integrate profile pages into upcoming app-shell/sidebar navigation config
 - Implement remaining Student Application flow enhancements (ATS module)
 - Configure CI/CD pipelines
 - Expand test coverage (Jest + React Testing Library already scaffolded)

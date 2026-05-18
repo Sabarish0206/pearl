@@ -73,6 +73,20 @@ export const handleGetJob = async (req: Request, res: Response): Promise<void> =
   res.status(200).json({ success: true, job });
 };
 
+export const handleUpdateJobStatus = async (req: Request, res: Response): Promise<void> => {
+  const id = req.params['id'] as string;
+  const adminId = req.user!.id;
+  const newStatus = req.body?.status;
+
+  if (typeof newStatus !== 'string' || !newStatus.trim()) {
+    res.status(400).json({ success: false, message: 'The status field is required.' });
+    return;
+  }
+
+  const job = await JobService.updateJobStatus(id, adminId, newStatus.trim());
+  res.status(200).json({ success: true, message: `Drive status updated to ${job.status}.`, job });
+};
+
 export const handlePublishJob = async (req: Request, res: Response): Promise<void> => {
   const id = req.params['id'] as string;
   const adminId = req.user!.id;

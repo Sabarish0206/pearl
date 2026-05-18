@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,25 +8,35 @@ import {
   Chip,
   CircularProgress,
   CssBaseline,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  MenuItem,
+  MenuList,
   Paper,
   Skeleton,
   Tab,
   Tabs,
   ThemeProvider,
   Typography,
-  createTheme,
 } from '@mui/material';
+import { currentTheme } from '../../../theme/theme';
 import DownloadIcon from '@mui/icons-material/Download';
 import BusinessIcon from '@mui/icons-material/Business';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import {
   getJobApplications,
   updateApplicationStatus,
   exportJobApplications,
 } from '../../../api/ats.api';
+import { updateJobStatus } from '../../../api/jobs.api';
 import type {
   ApplicationRecord,
   ApplicationStatus,
   ApplicationsJobInfo,
+  JobStatus,
 } from '@pearl/common';
 import SummaryCard from './components/SummaryCard';
 import OfferedConfirmDialog from './components/OfferedConfirmDialog';
@@ -35,47 +45,24 @@ import ApplicationsTable from './components/ApplicationsTable';
 import { TAB_OPTIONS } from './components/types';
 import type { TabValue } from './components/types';
 
-// ─── Theme ────────────────────────────────────────────────────────────────────
+// ─── Drive status config ──────────────────────────────────────────────────────
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#6366f1' },
-    secondary: { main: '#06b6d4' },
-    success: { main: '#22c55e' },
-    warning: { main: '#f59e0b' },
-    error: { main: '#ef4444' },
-    background: { default: '#0f172a', paper: '#111827' },
-    divider: '#1e293b',
-    text: { primary: '#e2e8f0', secondary: '#94a3b8', disabled: '#475569' },
-  },
-  typography: { fontFamily: "'Inter', -apple-system, sans-serif" },
-  components: {
-    MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-    MuiTab: {
-      styleOverrides: {
-        root: { textTransform: 'none', fontWeight: 600, minHeight: 44 },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        head: {
-          backgroundColor: '#0f172a',
-          fontWeight: 700,
-          color: '#94a3b8',
-          fontSize: '0.75rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          borderBottom: '1px solid #1e293b',
-        },
-        body: {
-          borderBottom: '1px solid #1e293b',
-          fontSize: '0.875rem',
-        },
-      },
-    },
-  },
-});
+type CloseableStatus = 'CLOSED' | 'COMPLETED' | 'CANCELLED';
+const MANAGEABLE_DRIVE_STATUSES: JobStatus[] = ['ACTIVE', 'CLOSED'];
+
+const DRIVE_STATUS_OPTIONS: { value: CloseableStatus; label: string; description: string; color: string }[] = [
+  { value: 'CLOSED', label: 'Close Drive', description: 'Stop accepting new applications', color: '#06b6d4' },
+  { value: 'COMPLETED', label: 'Mark Completed', description: 'Drive finished; candidates placed', color: '#22c55e' },
+  { value: 'CANCELLED', label: 'Cancel Drive', description: 'Permanently cancel this drive', color: '#ef4444' },
+];
+
+const JOB_STATUS_CHIP_COLOR: Record<JobStatus, string> = {
+  DRAFT: '#f59e0b',
+  ACTIVE: '#22c55e',
+  CLOSED: '#06b6d4',
+  COMPLETED: '#94a3b8',
+  CANCELLED: '#ef4444',
+};
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
@@ -101,6 +88,11 @@ export default function DriveDashboardPage() {
   const [activeTab, setActiveTab] = useState<TabValue>('ALL');
   const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set());
   const [isExporting, setIsExporting] = useState(false);
+
+  // Drive status dialog state
+  const [isDriveStatusDialogOpen, setIsDriveStatusDialogOpen] = useState(false);
+  const [pendingDriveStatus, setPendingDriveStatus] = useState<CloseableStatus | null>(null);
+  const [isUpdatingDriveStatus, setIsUpdatingDriveStatus] = useState(false);
 
   // OFFERED confirmation dialog state
   const [pendingStatusChange, setPendingStatusChange] = useState<{
@@ -144,8 +136,35 @@ export default function DriveDashboardPage() {
   const shortlistedCount = countByStatus(applications, 'SHORTLISTED');
   const offeredCount = countByStatus(applications, 'OFFERED');
   const rejectedCount = countByStatus(applications, 'REJECTED');
+  const shouldShowManageStatus =
+    !isLoading &&
+    !loadError &&
+    jobInfo !== null &&
+    MANAGEABLE_DRIVE_STATUSES.includes(jobInfo.status);
+  const availableDriveStatusOptions = useMemo(() => {
+    if (!jobInfo || !MANAGEABLE_DRIVE_STATUSES.includes(jobInfo.status)) return [];
+    return DRIVE_STATUS_OPTIONS.filter((opt) => opt.value !== jobInfo.status);
+  }, [jobInfo]);
 
-  // ─── Status Update ──────────────────────────────────────────────────────────
+  // ─── Drive Status Update ────────────────────────────────────────────────────
+
+  const handleDriveStatusChange = async () => {
+    if (!jobId || !pendingDriveStatus) return;
+    setIsUpdatingDriveStatus(true);
+    try {
+      const updated = await updateJobStatus(jobId, pendingDriveStatus);
+      setJobInfo((prev) => prev ? { ...prev, status: updated.status } : prev);
+      toast.success(`Drive marked as ${updated.status}`);
+      setIsDriveStatusDialogOpen(false);
+      setPendingDriveStatus(null);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update drive status.');
+    } finally {
+      setIsUpdatingDriveStatus(false);
+    }
+  };
+
+  // ─── Application Status Update ──────────────────────────────────────────────
 
   const handleStatusChange = (
     applicationId: string,
@@ -216,7 +235,7 @@ export default function DriveDashboardPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 
@@ -246,15 +265,31 @@ export default function DriveDashboardPage() {
                 </>
               ) : (
                 <>
-                  <Typography
-                    variant="h6"
-                    fontWeight={700}
-                    color="text.primary"
-                    lineHeight={1.2}
-                    noWrap
-                  >
-                    {jobInfo?.companyName ?? 'Drive Dashboard'}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                    <Typography
+                      variant="h6"
+                      fontWeight={700}
+                      color="text.primary"
+                      lineHeight={1.2}
+                      noWrap
+                    >
+                      {jobInfo?.companyName ?? 'Drive Dashboard'}
+                    </Typography>
+                    {jobInfo?.status && (
+                      <Chip
+                        label={jobInfo.status}
+                        size="small"
+                        sx={{
+                          bgcolor: `${JOB_STATUS_CHIP_COLOR[jobInfo.status]}20`,
+                          color: JOB_STATUS_CHIP_COLOR[jobInfo.status],
+                          border: `1px solid ${JOB_STATUS_CHIP_COLOR[jobInfo.status]}40`,
+                          fontWeight: 700,
+                          fontSize: '0.7rem',
+                          flexShrink: 0,
+                        }}
+                      />
+                    )}
+                  </Box>
                   <Typography variant="caption" color="text.secondary" noWrap>
                     {jobInfo?.jobRole ?? ''} · Placement Drive
                   </Typography>
@@ -263,23 +298,37 @@ export default function DriveDashboardPage() {
             </Box>
           </Box>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            startIcon={
-              isExporting ? (
-                <CircularProgress size={14} color="inherit" />
-              ) : (
-                <DownloadIcon fontSize="small" />
-              )
-            }
-            onClick={() => void handleExport()}
-            disabled={isExporting || isLoading || !!loadError}
-            sx={{ fontWeight: 700, flexShrink: 0, whiteSpace: 'nowrap' }}
-          >
-            Export Pipeline (CSV)
-          </Button>
+          <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {shouldShowManageStatus && (
+              <Button
+                variant="outlined"
+                color="warning"
+                size="small"
+                startIcon={<EditNoteIcon fontSize="small" />}
+                onClick={() => setIsDriveStatusDialogOpen(true)}
+                sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
+              >
+                Manage Status
+              </Button>
+            )}
+            <Button
+              variant="contained"
+              color="secondary"
+              size="small"
+              startIcon={
+                isExporting ? (
+                  <CircularProgress size={14} color="inherit" />
+                ) : (
+                  <DownloadIcon fontSize="small" />
+                )
+              }
+              onClick={() => void handleExport()}
+              disabled={isExporting || isLoading || !!loadError}
+              sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
+            >
+              Export Pipeline (CSV)
+            </Button>
+          </Box>
         </Box>
 
         {/* ── Page Body ───────────────────────────────────────────────────── */}
@@ -445,6 +494,90 @@ export default function DriveDashboardPage() {
         onConfirm={handleOfferedConfirm}
         onCancel={handleOfferedCancel}
       />
+
+      {/* ── Manage Drive Status Dialog ──────────────────────────────────────── */}
+      <Dialog
+        open={isDriveStatusDialogOpen}
+        onClose={() => {
+          if (!isUpdatingDriveStatus) {
+            setIsDriveStatusDialogOpen(false);
+            setPendingDriveStatus(null);
+          }
+        }}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{ sx: { bgcolor: '#111827', border: '1px solid #1e293b', borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, color: 'text.primary' }}>
+          Manage Drive Status
+        </DialogTitle>
+        <Divider sx={{ borderColor: 'divider' }} />
+        <DialogContent sx={{ pt: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Select the new status for <strong>{jobInfo?.companyName}</strong> — {jobInfo?.jobRole}:
+          </Typography>
+          <MenuList sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {availableDriveStatusOptions.map((opt) => (
+              <MenuItem
+                key={opt.value}
+                selected={pendingDriveStatus === opt.value}
+                onClick={() => setPendingDriveStatus(opt.value)}
+                sx={{
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: pendingDriveStatus === opt.value ? opt.color : 'divider',
+                  bgcolor: pendingDriveStatus === opt.value ? `${opt.color}15` : 'transparent',
+                  '&:hover': { bgcolor: `${opt.color}10`, borderColor: opt.color },
+                  transition: 'all 0.15s',
+                  px: 2,
+                  py: 1.5,
+                }}
+              >
+                <Box>
+                  <Typography variant="body2" fontWeight={700} sx={{ color: opt.color }}>
+                    {opt.label}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {opt.description}
+                  </Typography>
+                </Box>
+              </MenuItem>
+            ))}
+          </MenuList>
+        </DialogContent>
+        <Divider sx={{ borderColor: 'divider' }} />
+        <DialogActions sx={{ px: 3, py: 2, gap: 1 }}>
+          <Button
+            variant="text"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setIsDriveStatusDialogOpen(false);
+              setPendingDriveStatus(null);
+            }}
+            disabled={isUpdatingDriveStatus}
+            sx={{ color: 'text.secondary' }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => void handleDriveStatusChange()}
+            disabled={!pendingDriveStatus || isUpdatingDriveStatus}
+            startIcon={isUpdatingDriveStatus ? <CircularProgress size={14} color="inherit" /> : undefined}
+            sx={{
+              fontWeight: 700,
+              bgcolor: pendingDriveStatus ? DRIVE_STATUS_OPTIONS.find((o) => o.value === pendingDriveStatus)?.color : undefined,
+              '&:hover': {
+                bgcolor: pendingDriveStatus ? `${DRIVE_STATUS_OPTIONS.find((o) => o.value === pendingDriveStatus)?.color}cc` : undefined,
+              },
+            }}
+          >
+            {isUpdatingDriveStatus ? 'Updating…' : 'Confirm'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <ToastContainer
         position="bottom-right"

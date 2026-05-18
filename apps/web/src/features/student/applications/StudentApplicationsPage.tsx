@@ -19,7 +19,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import { useNavigate } from 'react-router-dom';
 import type { ApplicationStatus, StudentApplicationHistory } from '@pearl/common';
 import { getApplicationHistory } from '../../../api/studentApplications.api';
-import adminTheme from '../../admin/shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 // ─── ATS Pipeline steps ───────────────────────────────────────────────────────
 
@@ -30,6 +30,22 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
   SHORTLISTED: 'Shortlisted',
   OFFERED: 'Offered',
   REJECTED: 'Rejected',
+};
+
+const JOB_STATUS_LABELS: Record<string, string> = {
+  ACTIVE: 'Active',
+  CLOSED: 'Closed',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  DRAFT: 'Draft',
+};
+
+const JOB_STATUS_CHIP_COLOR: Record<string, 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info'> = {
+  ACTIVE: 'success',
+  CLOSED: 'info',
+  COMPLETED: 'default',
+  CANCELLED: 'error',
+  DRAFT: 'warning',
 };
 
 /** Returns the activeStep index for the MUI Stepper (0-based). */
@@ -105,6 +121,13 @@ function ApplicationCard({ application }: { application: StudentApplicationHisto
               size="small"
               sx={{ fontWeight: 700, fontSize: '0.75rem' }}
             />
+            <Chip
+              label={`Drive: ${JOB_STATUS_LABELS[application.job.status] ?? application.job.status}`}
+              color={JOB_STATUS_CHIP_COLOR[application.job.status] ?? 'default'}
+              size="small"
+              variant="outlined"
+              sx={{ fontWeight: 600, fontSize: '0.7rem' }}
+            />
           </Box>
         </Box>
 
@@ -172,7 +195,7 @@ export default function StudentApplicationsPage() {
   }, [fetchApplications]);
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

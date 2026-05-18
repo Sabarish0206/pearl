@@ -63,7 +63,7 @@ export const getApplicationHistory = async (userId: string) => {
     where: { studentId: student.id },
     include: {
       job: {
-        select: { companyName: true, jobRole: true, ctc: true },
+        select: { companyName: true, jobRole: true, ctc: true, status: true },
       },
     },
     orderBy: { createdAt: 'desc' },

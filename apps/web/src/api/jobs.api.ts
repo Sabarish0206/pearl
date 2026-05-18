@@ -1,5 +1,5 @@
 import { env } from '../config/env';
-import type { ParseJobResponse, JobRow, JobListItem } from '@pearl/common';
+import type { ParseJobResponse, JobRow, JobListItem, JobStatus } from '@pearl/common';
 
 const API_BASE = env.VITE_API_URL;
 
@@ -87,6 +87,23 @@ export const publishJob = async (id: string, payload: PublishJobPayload): Promis
 
   if (!response.ok) {
     throw new Error(data.message ?? 'Failed to publish job');
+  }
+
+  return data.job;
+};
+
+export const updateJobStatus = async (id: string, status: Exclude<JobStatus, 'DRAFT' | 'ACTIVE'>): Promise<JobRow> => {
+  const response = await fetch(`${API_BASE}/api/admin/jobs/${id}/status`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  });
+
+  const data = (await response.json()) as { success: boolean; job: JobRow; message?: string };
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Failed to update job status');
   }
 
   return data.job;

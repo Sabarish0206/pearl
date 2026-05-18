@@ -13,27 +13,12 @@ import {
   TextField,
   ThemeProvider,
   Typography,
-  createTheme,
 } from '@mui/material';
+import { currentTheme } from '../../theme/theme';
 import PublishIcon from '@mui/icons-material/Publish';
 import { getJob, publishJob } from '../../api/jobs.api';
 import type { JobRow } from '@pearl/common';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: { main: '#6366f1' },
-    background: { default: '#0f172a', paper: '#111827' },
-    divider: '#1e293b',
-    text: { primary: '#e2e8f0', secondary: '#94a3b8', disabled: '#475569' },
-    error: { main: '#ef4444' },
-    success: { main: '#22c55e' },
-  },
-  typography: { fontFamily: "'Inter', -apple-system, sans-serif" },
-  components: {
-    MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
-  },
-});
 
 interface FormState {
   companyName: string;
@@ -154,7 +139,7 @@ export default function JobVerifyPage() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4, px: { xs: 2, sm: 3 } }}>
         <Box sx={{ maxWidth: 800, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>

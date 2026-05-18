@@ -21,7 +21,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuthStore } from '../../stores/authStore';
 import { logoutUser } from '../../api/auth.api';
-import adminTheme from '../admin/shared/adminTheme';
+import { currentTheme } from '../../theme/theme';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -205,7 +205,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

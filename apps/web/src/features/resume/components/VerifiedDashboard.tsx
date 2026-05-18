@@ -4,6 +4,7 @@ import UploadIcon from '@mui/icons-material/Upload';
 import type { ResumeRow } from '@pearl/common';
 import Section from './Section';
 import Metric from './Metric';
+import { currentTheme } from "../../../theme/theme";
 
 interface VerifiedDashboardProps {
   data: ResumeRow;
@@ -104,7 +105,7 @@ export default function VerifiedDashboard({ data, onReplace }: VerifiedDashboard
                     size="small"
                     sx={{
                       bgcolor: 'rgba(99, 102, 241, 0.15)',
-                      color: '#a5b4fc',
+                      color: currentTheme.palette.text.primary,
                       border: '1px solid rgba(99, 102, 241, 0.3)',
                     }}
                   />

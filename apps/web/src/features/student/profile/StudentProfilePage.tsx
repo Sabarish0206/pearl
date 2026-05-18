@@ -15,7 +15,7 @@ import {
 import PersonIcon from '@mui/icons-material/Person';
 import type { StudentProfileData } from '@pearl/common';
 import { getStudentProfile } from '../../../api/profile.api';
-import adminTheme from '../../admin/shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 function MetricBlock({ label, value }: { label: string; value: string }) {
   return (
@@ -87,7 +87,7 @@ export default function StudentProfilePage() {
   const isPlaced = profile?.placementStatus === 'PLACED';
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
         <Box

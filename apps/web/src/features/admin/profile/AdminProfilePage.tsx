@@ -16,7 +16,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
 import type { AdminProfileData } from '@pearl/common';
 import { getAdminProfile } from '../../../api/profile.api';
-import adminTheme from '../shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 function MetricCard({
   title,
@@ -76,7 +76,7 @@ export default function AdminProfilePage() {
   }, [fetchProfile]);
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
         <Box

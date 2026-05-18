@@ -8,9 +8,9 @@ import {
   Paper,
   ThemeProvider,
   Typography,
-  createTheme,
   CssBaseline,
 } from '@mui/material';
+import { currentTheme } from '../../theme/theme';
 import WorkIcon from '@mui/icons-material/Work';
 import { parseJob } from '../../api/jobs.api';
 import FileUploadBox from './components/FileUploadBox';
@@ -19,42 +19,6 @@ import JobParsingState from './components/JobParsingState';
 import JobDraftSuccess from './components/JobDraftSuccess';
 import type { JobUIState, ParsedJobResult } from './components/types';
 
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#6366f1',
-    },
-    background: {
-      default: '#0f172a',
-      paper: '#111827',
-    },
-    divider: '#1e293b',
-    text: {
-      primary: '#e2e8f0',
-      secondary: '#94a3b8',
-      disabled: '#475569',
-    },
-    error: {
-      main: '#ef4444',
-    },
-    success: {
-      main: '#22c55e',
-    },
-  },
-  typography: {
-    fontFamily: "'Inter', -apple-system, sans-serif",
-  },
-  components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundImage: 'none',
-        },
-      },
-    },
-  },
-});
 
 export default function JobParsePage() {
   const [uiState, setUiState] = useState<JobUIState>('input');
@@ -134,7 +98,7 @@ export default function JobParsePage() {
   };
 
   return (
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box
         sx={{

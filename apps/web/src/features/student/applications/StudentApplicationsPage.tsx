@@ -19,7 +19,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import { useNavigate } from 'react-router-dom';
 import type { ApplicationStatus, StudentApplicationHistory } from '@pearl/common';
 import { getApplicationHistory } from '../../../api/studentApplications.api';
-import adminTheme from '../../admin/shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 // ─── ATS Pipeline steps ───────────────────────────────────────────────────────
 
@@ -195,7 +195,7 @@ export default function StudentApplicationsPage() {
   }, [fetchApplications]);
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

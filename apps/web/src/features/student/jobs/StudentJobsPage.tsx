@@ -17,7 +17,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { getEligibleJobs } from '../../../api/studentJobs.api';
 import type { EligibleJob } from '@pearl/common';
 import StudentJobCard from './components/StudentJobCard';
-import adminTheme from '../../admin/shared/adminTheme';
+import { currentTheme } from '../../../theme/theme';
 
 // ─── Student Jobs Page ────────────────────────────────────────────────────────
 
@@ -62,7 +62,7 @@ export default function StudentJobsPage() {
   // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <ThemeProvider theme={adminTheme}>
+    <ThemeProvider theme={currentTheme}>
       <CssBaseline />
       <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
 

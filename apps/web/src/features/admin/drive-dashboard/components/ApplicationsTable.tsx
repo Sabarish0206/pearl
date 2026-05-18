@@ -14,9 +14,10 @@ import {
   Tooltip,
   Typography,
   type SelectChangeEvent,
-} from '@mui/material';
-import type { ApplicationRecord, ApplicationStatus } from '@pearl/common';
-import { ALL_STATUSES, STATUS_CHIP_COLOR } from './types';
+} from "@mui/material";
+import type { ApplicationRecord, ApplicationStatus } from "@pearl/common";
+import { ALL_STATUSES, STATUS_CHIP_COLOR } from "./types";
+import { currentTheme } from "../../../../theme/theme";
 
 export interface ApplicationsTableProps {
   applications: ApplicationRecord[];
@@ -38,10 +39,10 @@ export default function ApplicationsTable({
       component={Paper}
       elevation={0}
       sx={{
-        border: '1px solid',
-        borderColor: 'divider',
+        border: "1px solid",
+        borderColor: "divider",
         borderRadius: 3,
-        overflow: 'hidden',
+        overflow: "hidden",
       }}
     >
       <Table sx={{ minWidth: 700 }} aria-label="applications table">
@@ -63,9 +64,9 @@ export default function ApplicationsTable({
               <TableRow
                 key={app.id}
                 sx={{
-                  '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' },
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.02)" },
                   opacity: isUpdating ? 0.6 : 1,
-                  transition: 'opacity 0.2s',
+                  transition: "opacity 0.2s",
                 }}
               >
                 {/* Candidate */}
@@ -84,7 +85,7 @@ export default function ApplicationsTable({
                         size="small"
                         color="success"
                         variant="outlined"
-                        sx={{ mt: 0.5, fontSize: '0.65rem', height: 18 }}
+                        sx={{ mt: 0.5, fontSize: "0.65rem", height: 18 }}
                       />
                     )}
                   </Box>
@@ -112,13 +113,13 @@ export default function ApplicationsTable({
                 <TableCell align="center">
                   {app.student.cgpa !== null ? (
                     <Chip
-                      label={app.student.cgpa?.toFixed(2) ?? '—'}
+                      label={app.student.cgpa?.toFixed(2) ?? "—"}
                       size="small"
                       variant="outlined"
                       sx={{
-                        borderColor: 'divider',
+                        borderColor: "divider",
                         fontWeight: 600,
-                        fontSize: '0.8rem',
+                        fontSize: "0.8rem",
                       }}
                     />
                   ) : (
@@ -132,9 +133,9 @@ export default function ApplicationsTable({
                 <TableCell>
                   <Box
                     sx={{
-                      display: 'flex',
+                      display: "flex",
                       gap: 0.5,
-                      flexWrap: 'wrap',
+                      flexWrap: "wrap",
                       maxWidth: 240,
                     }}
                   >
@@ -144,17 +145,17 @@ export default function ApplicationsTable({
                         label={skill}
                         size="small"
                         sx={{
-                          bgcolor: 'rgba(99,102,241,0.1)',
-                          color: '#a5b4fc',
-                          border: '1px solid rgba(99,102,241,0.25)',
-                          fontSize: '0.7rem',
+                          bgcolor: "rgba(99,102,241,0.1)",
+                          color: currentTheme.palette.text.primary,
+                          border: "1px solid rgba(99,102,241,0.25)",
+                          fontSize: "0.7rem",
                           height: 20,
                         }}
                       />
                     ))}
                     {app.student.skills.length > 4 && (
                       <Tooltip
-                        title={app.student.skills.slice(4).join(', ')}
+                        title={app.student.skills.slice(4).join(", ")}
                         arrow
                         placement="top"
                       >
@@ -162,9 +163,9 @@ export default function ApplicationsTable({
                           label={`+${app.student.skills.length - 4}`}
                           size="small"
                           sx={{
-                            fontSize: '0.7rem',
+                            fontSize: "0.7rem",
                             height: 20,
-                            bgcolor: 'rgba(255,255,255,0.05)',
+                            bgcolor: "rgba(255,255,255,0.05)",
                           }}
                         />
                       </Tooltip>
@@ -193,13 +194,13 @@ export default function ApplicationsTable({
                         )
                       }
                       sx={{
-                        fontSize: '0.8rem',
+                        fontSize: "0.8rem",
                         fontWeight: 700,
                         minWidth: 130,
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'divider',
+                        "& .MuiOutlinedInput-notchedOutline": {
+                          borderColor: "divider",
                         },
-                        '& .MuiSelect-select': {
+                        "& .MuiSelect-select": {
                           py: 0.75,
                           px: 1.5,
                         },
@@ -211,8 +212,8 @@ export default function ApplicationsTable({
                           color={STATUS_CHIP_COLOR[value as ApplicationStatus]}
                           sx={{
                             fontWeight: 700,
-                            fontSize: '0.75rem',
-                            cursor: 'pointer',
+                            fontSize: "0.75rem",
+                            cursor: "pointer",
                           }}
                         />
                       )}
@@ -221,13 +222,13 @@ export default function ApplicationsTable({
                         <MenuItem
                           key={s}
                           value={s}
-                          sx={{ fontSize: '0.85rem', fontWeight: 600 }}
+                          sx={{ fontSize: "0.85rem", fontWeight: 600 }}
                         >
                           <Chip
                             label={s}
                             size="small"
                             color={STATUS_CHIP_COLOR[s]}
-                            sx={{ fontWeight: 700, fontSize: '0.75rem', mr: 1 }}
+                            sx={{ fontWeight: 700, fontSize: "0.75rem", mr: 1 }}
                           />
                         </MenuItem>
                       ))}
@@ -238,10 +239,10 @@ export default function ApplicationsTable({
                 {/* Applied On */}
                 <TableCell>
                   <Typography variant="body2" color="text.secondary">
-                    {new Date(app.appliedAt).toLocaleDateString('en-IN', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
+                    {new Date(app.appliedAt).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
                     })}
                   </Typography>
                 </TableCell>

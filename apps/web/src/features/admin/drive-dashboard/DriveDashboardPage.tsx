@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -89,6 +89,7 @@ const darkTheme = createTheme({
 // ─── Drive status config ──────────────────────────────────────────────────────
 
 type CloseableStatus = 'CLOSED' | 'COMPLETED' | 'CANCELLED';
+const MANAGEABLE_DRIVE_STATUSES: JobStatus[] = ['ACTIVE', 'CLOSED'];
 
 const DRIVE_STATUS_OPTIONS: { value: CloseableStatus; label: string; description: string; color: string }[] = [
   { value: 'CLOSED', label: 'Close Drive', description: 'Stop accepting new applications', color: '#06b6d4' },
@@ -176,6 +177,15 @@ export default function DriveDashboardPage() {
   const shortlistedCount = countByStatus(applications, 'SHORTLISTED');
   const offeredCount = countByStatus(applications, 'OFFERED');
   const rejectedCount = countByStatus(applications, 'REJECTED');
+  const shouldShowManageStatus =
+    !isLoading &&
+    !loadError &&
+    jobInfo !== null &&
+    MANAGEABLE_DRIVE_STATUSES.includes(jobInfo.status);
+  const availableDriveStatusOptions = useMemo(
+    () => DRIVE_STATUS_OPTIONS.filter((opt) => opt.value !== jobInfo?.status),
+    [jobInfo?.status],
+  );
 
   // ─── Drive Status Update ────────────────────────────────────────────────────
 
@@ -330,7 +340,7 @@ export default function DriveDashboardPage() {
           </Box>
 
           <Box sx={{ display: 'flex', gap: 1, flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-            {!isLoading && !loadError && jobInfo && jobInfo.status !== 'DRAFT' && jobInfo.status !== 'CANCELLED' && jobInfo.status !== 'COMPLETED' && (
+            {shouldShowManageStatus && (
               <Button
                 variant="outlined"
                 color="warning"
@@ -548,7 +558,7 @@ export default function DriveDashboardPage() {
             Select the new status for <strong>{jobInfo?.companyName}</strong> — {jobInfo?.jobRole}:
           </Typography>
           <MenuList sx={{ p: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {DRIVE_STATUS_OPTIONS.filter((opt) => opt.value !== jobInfo?.status).map((opt) => (
+            {availableDriveStatusOptions.map((opt) => (
               <MenuItem
                 key={opt.value}
                 selected={pendingDriveStatus === opt.value}

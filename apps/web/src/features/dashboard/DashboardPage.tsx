@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
-  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -16,12 +15,10 @@ import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import SchoolIcon from '@mui/icons-material/School';
-import LogoutIcon from '@mui/icons-material/Logout';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuthStore } from '../../stores/authStore';
-import { logoutUser } from '../../api/auth.api';
-import { currentTheme } from '../../theme/theme';
+import { lightTheme } from '../../theme/theme';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -184,20 +181,10 @@ function getRoleIcon(role: string): React.ReactNode {
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { currentUser, clearCurrentUser } = useAuthStore();
+  const { currentUser } = useAuthStore();
 
   const role = currentUser?.role ?? '';
   const cards = getCardsForRole(role);
-
-  const handleLogout = async () => {
-    try {
-      await logoutUser();
-    } catch {
-      // Ignore logout errors — clear state and redirect regardless
-    }
-    clearCurrentUser();
-    navigate('/login');
-  };
 
   // Show nothing while user data is not yet available (ProtectedRoute handles redirect)
   if (!currentUser) {
@@ -205,135 +192,98 @@ export default function DashboardPage() {
   }
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <ThemeProvider theme={lightTheme}>
       <CssBaseline />
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: '100%', bgcolor: 'background.default' }}>
+      {/* ── Content ────────────────────────────────────────────────────────── */}
+      <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: { xs: 3, sm: 4 }, maxWidth: 1100, mx: 'auto' }}>
 
-        {/* ── Top Bar ────────────────────────────────────────────────────────── */}
+        {/* Welcome Section */}
+        <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mb: 0.75 }}>
+            <Typography variant="h5" fontWeight={700} color="text.primary">
+              Welcome back
+            </Typography>
+            <Chip
+              icon={getRoleIcon(role) as React.ReactElement}
+              label={getRoleLabel(role)}
+              size="small"
+              sx={{
+                bgcolor: 'primary.main',
+                color: '#fff',
+                fontWeight: 600,
+                '& .MuiChip-icon': { color: '#fff' },
+              }}
+            />
+          </Box>
+          <Typography variant="body2" color="text.secondary">
+            {currentUser?.email}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {getRoleSubtitle(role)}
+          </Typography>
+        </Box>
+
+        {/* Navigation Cards Grid */}
         <Box
           sx={{
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
-            bgcolor: 'background.default',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            px: { xs: 2, sm: 3, md: 4 },
-            py: 1.5,
-            display: 'flex',
-            alignItems: 'center',
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
             gap: 2,
           }}
         >
-          <DashboardIcon sx={{ color: 'primary.main', fontSize: 24, flexShrink: 0 }} />
-          <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ flex: 1 }}>
-            Dashboard
-          </Typography>
-          <Button
-            variant="outlined"
-            color="inherit"
-            size="small"
-            startIcon={<LogoutIcon />}
-            onClick={() => void handleLogout()}
-            sx={{
-              borderColor: 'divider',
-              color: 'text.secondary',
-              '&:hover': { borderColor: 'text.secondary', color: 'text.primary' },
-            }}
-          >
-            Sign out
-          </Button>
-        </Box>
-
-        {/* ── Content ────────────────────────────────────────────────────────── */}
-        <Box sx={{ px: { xs: 2, sm: 3, md: 4 }, py: { xs: 3, sm: 4 }, maxWidth: 1100, mx: 'auto' }}>
-
-          {/* Welcome Section */}
-          <Box sx={{ mb: { xs: 3, sm: 4 } }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mb: 0.75 }}>
-              <Typography variant="h5" fontWeight={700} color="text.primary">
-                Welcome back
-              </Typography>
-              <Chip
-                icon={getRoleIcon(role) as React.ReactElement}
-                label={getRoleLabel(role)}
-                size="small"
-                sx={{
-                  bgcolor: 'primary.main',
-                  color: '#fff',
-                  fontWeight: 600,
-                  '& .MuiChip-icon': { color: '#fff' },
-                }}
-              />
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              {currentUser?.email}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              {getRoleSubtitle(role)}
-            </Typography>
-          </Box>
-
-          {/* Navigation Cards Grid */}
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr',
-                sm: 'repeat(2, 1fr)',
-                md: 'repeat(3, 1fr)',
-              },
-              gap: 2,
-            }}
-          >
-            {cards.map((card) => (
-              <Card
-                key={card.path}
-                sx={{
-                  bgcolor: 'background.paper',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 2,
-                  transition: 'border-color 0.2s, box-shadow 0.2s',
-                  '&:hover': {
-                    borderColor: card.color,
-                    boxShadow: `0 0 0 1px ${card.color}40`,
-                  },
-                }}
+          {cards.map((card) => (
+            <Card
+              key={card.path}
+              sx={{
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  borderColor: card.color,
+                  boxShadow: `0 0 0 1px ${card.color}40`,
+                },
+              }}
+            >
+              <CardActionArea
+                onClick={() => navigate(card.path)}
+                sx={{ height: '100%', p: 0 }}
               >
-                <CardActionArea
-                  onClick={() => navigate(card.path)}
-                  sx={{ height: '100%', p: 0 }}
-                >
-                  <CardContent sx={{ p: 3, height: '100%' }}>
-                    <Box
-                      sx={{
-                        width: 52,
-                        height: 52,
-                        borderRadius: 2,
-                        bgcolor: `${card.color}1a`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: card.color,
-                        mb: 2,
-                      }}
-                    >
-                      {card.icon}
-                    </Box>
-                    <Typography variant="subtitle1" fontWeight={700} color="text.primary" gutterBottom>
-                      {card.title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                      {card.description}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            ))}
-          </Box>
+                <CardContent sx={{ p: 3, height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: 52,
+                      height: 52,
+                      borderRadius: 2,
+                      bgcolor: `${card.color}1a`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: card.color,
+                      mb: 2,
+                    }}
+                  >
+                    {card.icon}
+                  </Box>
+                  <Typography variant="subtitle1" fontWeight={700} color="text.primary" gutterBottom>
+                    {card.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
+                    {card.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          ))}
         </Box>
       </Box>
+    </Box>
     </ThemeProvider>
   );
 }

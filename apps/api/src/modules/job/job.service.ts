@@ -181,9 +181,14 @@ export const parseAndDraftJob = async (
 
 const CLOSEABLE_STATUSES = ['CLOSED', 'COMPLETED', 'CANCELLED'] as const;
 type CloseableStatus = (typeof CLOSEABLE_STATUSES)[number];
+const MANAGEABLE_SOURCE_STATUSES = ['ACTIVE', 'CLOSED'] as const;
+type ManageableSourceStatus = (typeof MANAGEABLE_SOURCE_STATUSES)[number];
 
 const isCloseableStatus = (value: string): value is CloseableStatus =>
   CLOSEABLE_STATUSES.includes(value as CloseableStatus);
+
+const isManageableSourceStatus = (value: string): value is ManageableSourceStatus =>
+  MANAGEABLE_SOURCE_STATUSES.includes(value as ManageableSourceStatus);
 
 export const updateJobStatus = async (jobId: string, adminId: string, newStatus: string) => {
   if (!isCloseableStatus(newStatus)) {
@@ -208,10 +213,12 @@ export const updateJobStatus = async (jobId: string, adminId: string, newStatus:
     throw err;
   }
 
-  if (existing.status === 'DRAFT') {
-    const err = new Error('DRAFT jobs must be published before their status can be changed.') as Error & {
-      status: number;
-    };
+  if (!isManageableSourceStatus(existing.status)) {
+    const err = new Error(
+      existing.status === 'DRAFT'
+        ? 'DRAFT jobs must be published before their status can be changed.'
+        : `Jobs marked as ${existing.status} cannot be moved to another status.`,
+    ) as Error & { status: number };
     err.status = 409;
     throw err;
   }

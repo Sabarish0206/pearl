@@ -41,6 +41,8 @@ const darkTheme = createTheme({
   },
 });
 
+const POST_ACTION_REDIRECT_DELAY_MS = 1200;
+
 interface FormState {
   companyName: string;
   jobRole: string;
@@ -169,7 +171,7 @@ export default function JobVerifyPage() {
       await deleteDraftJob(id);
       setIsDeleteDialogOpen(false);
       toast.success('Draft job deleted successfully.');
-      setTimeout(() => navigate('/admin/jobs'), 1200);
+      setTimeout(() => navigate('/admin/jobs'), POST_ACTION_REDIRECT_DELAY_MS);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to delete draft job.');
     } finally {

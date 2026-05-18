@@ -2,6 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { verifySession } from '../../middleware/verifySession.middleware';
 import { requireRole } from '../../middleware/requireRole.middleware';
+import { handleGetStudentProfile } from './student.controller';
 
 // General rate limit for student self-service endpoints
 const studentUserRateLimiter = rateLimit({
@@ -18,5 +19,6 @@ const router = Router();
 router.use(studentUserRateLimiter, verifySession, requireRole(['STUDENT']));
 
 // Student self-service routes go here
+router.get('/', handleGetStudentProfile);
 
 export default router;

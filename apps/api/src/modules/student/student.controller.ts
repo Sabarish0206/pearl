@@ -19,3 +19,9 @@ export const handleSearchStudents = async (req: Request, res: Response): Promise
   const data = await StudentService.searchStudents(payload);
   res.status(200).json({ success: true, data });
 };
+
+export const handleGetStudentProfile = async (req: Request, res: Response): Promise<void> => {
+  const userId = req.user!.id;
+  const data = await StudentService.getStudentProfile(userId);
+  res.status(200).json({ success: true, data });
+};

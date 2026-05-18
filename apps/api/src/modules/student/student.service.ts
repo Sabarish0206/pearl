@@ -11,6 +11,42 @@ export interface StudentSearchPayload {
   sortOrder?: 'asc' | 'desc';
 }
 
+export const getStudentProfile = async (userId: string) => {
+  const student = await prisma.student.findUnique({
+    where: { userId },
+    include: {
+      user: {
+        select: { email: true },
+      },
+      applications: {
+        where: { status: 'OFFERED' },
+        select: { id: true },
+      },
+    },
+  });
+
+  if (!student) {
+    const err = new Error('Student profile not found.') as Error & { status: number };
+    err.status = 404;
+    throw err;
+  }
+
+  return {
+    firstName: student.firstName,
+    lastName: student.lastName,
+    email: student.user.email,
+    registerNumber: student.registerNumber,
+    department: student.department,
+    batchYear: student.batchYear,
+    cgpa: student.cgpa !== null ? Number(student.cgpa) : null,
+    activeArrears: student.activeArrears ?? null,
+    historyOfArrears: student.historyOfArrears ?? null,
+    tenthMark: student.tenthMark !== null ? Number(student.tenthMark) : null,
+    twelfthMark: student.twelfthMark !== null ? Number(student.twelfthMark) : null,
+    placementStatus: student.applications.length > 0 ? 'PLACED' : 'UNPLACED',
+  };
+};
+
 export const searchStudents = async (payload: StudentSearchPayload) => {
   const {
     skills,
